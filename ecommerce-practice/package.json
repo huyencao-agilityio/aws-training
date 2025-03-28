@@ -1,0 +1,22 @@
+{
+  "name": "ecommerce-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Huyen Cao",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.asoft-python.com/huyen.cao/aws-training"
+  },
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "pg": "^8.14.1",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.21"
+  }
+}
