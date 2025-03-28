@@ -5,8 +5,7 @@ This guide provides instructions on setting up the environment, running database
 
 ## Environment Setup
 
-Create a `.env` file in the root of the project and add the following variables:
-
+Create a `.env` file in the root of the project following `env.sample`
 
 ## Install Dependencies
 
@@ -18,6 +17,9 @@ To install the necessary dependencies, run the following command in the project 
 
 To apply database migrations, run the following command:
 
-`npm run db:migrate`
+`
+npm run migration:generate
+npm run migration:run
+`
 
-This will execute all migrations in the prisma/migrations directory and update the database schema accordingly.
+This will execute all migrations in the migrations directory and update the database schema accordingly.
