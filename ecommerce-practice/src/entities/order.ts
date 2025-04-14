@@ -14,11 +14,11 @@ import { OrderItem } from './order-item';
 
 @Entity()
 export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
-  ownerId: string;
+  owner_id: string;
 
   @Column()
   amount: number;
@@ -29,19 +29,22 @@ export class Order {
   @Column()
   status: string;
 
+  @Column({ nullable: true })
+  completed_at: Date;
+
   @CreateDateColumn()
-  createdAt: Date = new Date();
+  created_at: Date = new Date();
 
   @UpdateDateColumn()
-  updatedAt: Date = new Date();
+  updated_at: Date = new Date();
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'ownerId' })
+  @JoinColumn({ name: 'owner_id' })
   user: User;
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
+  @OneToMany(() => OrderItem, (order_item) => order_item.order, {
     eager: true,
     cascade: true
   })
-  orderItems: OrderItem[];
+  order_items: OrderItem[];
 }

@@ -13,29 +13,29 @@ import { Product } from './product';
 
 @Entity()
 export class CartItem {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
-  cartId: string;
+  cart_id: string;
 
   @Column()
-  productId: string;
+  product_id: string;
 
   @Column()
-  quantity: string;
+  quantity: number;
 
   @CreateDateColumn()
-  createdAt: Date = new Date();
+  created_at: Date = new Date();
 
   @UpdateDateColumn()
-  updatedAt: Date = new Date();
+  updated_at: Date = new Date();
 
-  @ManyToOne(() => Cart, cart => cart.cartItems)
-  @JoinColumn({ name: 'cartId' })
+  @ManyToOne(() => Cart, cart => cart.cart_items)
+  @JoinColumn({ name: 'cart_id' })
   cart: Cart;
 
   @ManyToOne(() => Product)
-  @JoinColumn({ name: 'productId' })
+  @JoinColumn({ name: 'product_id' })
   product: Product;
 }
