@@ -13,8 +13,8 @@ import { Product } from './product';
 
 @Entity()
 export class OrderItem {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   quantity: number;
@@ -23,22 +23,22 @@ export class OrderItem {
   amount: number;
 
   @Column()
-  orderId: string;
+  order_id: string;
 
   @Column()
-  productId: string;
+  product_id: string;
 
   @CreateDateColumn()
-  createdAt: Date = new Date();
+  created_at: Date = new Date();
 
   @UpdateDateColumn()
-  updatedAt: Date = new Date();
+  updated_at: Date = new Date();
 
-  @ManyToOne(() => Order, (order) => order.orderItems)
-  @JoinColumn({ name: 'orderId' })
+  @ManyToOne(() => Order, (order) => order.order_items)
+  @JoinColumn({ name: 'order_id' })
   order: Order;
 
   @ManyToOne(() => Product)
-  @JoinColumn({ name: 'productId' })
+  @JoinColumn({ name: 'product_id' })
   product: Product;
 }

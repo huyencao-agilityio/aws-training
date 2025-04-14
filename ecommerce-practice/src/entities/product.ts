@@ -4,28 +4,28 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn
-} from 'typeorm';
+} from "typeorm";
 
 @Entity()
 export class Product {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
 
-  @Column({ default: '' })
+  @Column()
   description: string;
 
-  @Column({ default: 0 })
-  price: number;
-
-  @Column({ default: 0 })
+  @Column()
   quantity: number;
 
+  @Column()
+  price: number;
+
   @CreateDateColumn()
-  createdAt: Date = new Date();
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date = new Date();
+  updated_at: Date;
 }
