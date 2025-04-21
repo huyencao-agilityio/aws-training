@@ -1,14 +1,45 @@
-# Welcome to your CDK TypeScript project
 
-This is a blank project for CDK development with TypeScript.
+# Ecommerce CDK Practice
+This is a practice repository for building a application on AWS for the Ecommerce app using AWS CDK.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Requirement
+[Ecommerce app practice](https://docs.google.com/document/d/1Ixvg4oiE0SedlEZOwOF6tpUO5qx7-emW8tbNe5pv4J8/edit?tab=t.0)
 
-## Useful commands
+## Prerequisites
+Node.js (>=18.x)
+AWS CDK CLI (npm install -g aws-cdk)
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+## Setup
+
+1. Clone the repository:
+```
+git clone https://gitlab.asoft-python.com/huyen.cao/aws-training
+git checkout develop
+cd ecommerce-cdk-practice
+```
+
+## Install dependencies:
+```
+npm install
+```
+
+## Configure AWS credentials:
+```
+aws configure
+```
+
+## Bootstrap CDK (run once per AWS account/region):
+```
+cdk bootstrap aws://123456789012/us-east-1
+```
+
+## Deploy the pipeline:
+```
+cdk deploy PipelineStack
+```
+
+## Cleanup
+To avoid costs, destroy the stacks:
+```
+cdk destroy --all
+```
