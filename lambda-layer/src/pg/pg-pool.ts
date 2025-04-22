@@ -1,0 +1,38 @@
+import { Pool, PoolConfig } from 'pg';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import 'dotenv/config';
+
+export class PgPool {
+  private static instance: Pool;
+
+  private constructor() {}
+
+  public static getInstance(): Pool {
+    if (!PgPool.instance) {
+      const config: PoolConfig = {
+        host: process.env.DB_HOST,
+        port: 5432,
+        database: process.env.DB_NAME,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        ssl: {
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../certs/us-east-1-bundle.pem')).toString(),
+        },
+      };
+
+      PgPool.instance = new Pool(config);
+      console.log('PgPool instance created', PgPool.instance);
+    }
+
+    return PgPool.instance;
+  }
+
+  static async query(text: string, params?: any[]) {
+    const pool = PgPool.getInstance();
+
+    return pool.query(text, params);
+  }
+}

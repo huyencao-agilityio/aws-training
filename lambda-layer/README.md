@@ -12,6 +12,7 @@ npm install
 ### 2. Build the Project
 ```bash
 npm run build
+npm run build:layer
 ```
 
 ### 3. Deploy to AWS
