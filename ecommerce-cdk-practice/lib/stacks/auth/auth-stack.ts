@@ -43,7 +43,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../lambda/trigger/auth/create-auth-challenge/dist')),
+      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/create-auth-challenge/')),
       environment: {
         DEFAULT_EMAIL: defaultEmail
       },
@@ -54,7 +54,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../lambda/trigger/auth/define-auth-challenge/'))
+      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/define-auth-challenge/'))
     });
 
     // Lambda for Verify Auth Challenge
@@ -62,7 +62,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../lambda/trigger/auth/verify-auth-challenge/'))
+      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/verify-auth-challenge/'))
     });
 
     // Lambda for Custom Message
@@ -70,14 +70,15 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../lambda/trigger/auth/custom-message/')),
+      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/custom-message/')),
     });
+
     // Lambda for Custom Message
     const postConfirmationLambda = new Function(this, 'PostConfirmationLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../lambda/trigger/auth/post-confirmation/')),
+      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/post-confirmation/')),
       environment: {
         DB_HOST: dbHost,
         DB_NAME: dbName,
@@ -91,13 +92,14 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../lambda/trigger/auth/pre-sign-up/')),
+      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/pre-sign-up/')),
       environment: {
         DB_HOST: dbHost,
         DB_NAME: dbName,
         DB_PASSWORD: dbPassword,
         DB_USER: dbUser
       },
+      timeout: Duration.minutes(15),
     });
 
     // Grant permission for Cognito to invoke Lambdas
@@ -191,14 +193,14 @@ export class AuthStack extends Stack {
       clientId: fbClientId ,
       clientSecret: fbClientSecret ,
       userPool: this.userPool,
-      scopes: ['public_profile', 'email'],
+      scopes: ['public_profile', 'email']
     });
 
     const googleProvider = new UserPoolIdentityProviderGoogle(this, 'GoogleProvider', {
       clientId: googleClientId,
       clientSecret: googleClientSecret,
       userPool: this.userPool,
-      scopes: ['profile', 'email', 'openid'],
+      scopes: ['profile', 'email', 'openid']
     });
 
     // App Client
