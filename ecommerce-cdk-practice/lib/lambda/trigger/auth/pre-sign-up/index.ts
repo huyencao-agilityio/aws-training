@@ -3,7 +3,7 @@ import { UserType, AdminLinkProviderForUserRequest } from 'aws-sdk/clients/cogni
 import { PreSignUpTriggerEvent } from 'aws-lambda';
 import { Handler } from 'aws-cdk-lib/aws-lambda';
 
-import { PgPool } from 'lambda-layer';
+import { PgPool } from '/opt/nodejs/index.js';
 
 const cognito = new CognitoIdentityServiceProvider();
 
@@ -21,7 +21,7 @@ const parseProviderFromUsername = (username: string) => {
   if (!username || !username.includes('_')) return null;
   const [prefix] = username.split('_', 1);
 
-  return PROVIDER_MAP[prefix] || null;
+  return PROVIDER_MAP[prefix.toLowerCase()] || null;
 };
 
 const parseUserDetails = (username: string) => {
@@ -32,7 +32,7 @@ const parseUserDetails = (username: string) => {
   const [prefix, sub] = username.split('_', 2);
 
   return {
-    provider: PROVIDER_MAP[prefix] || '',
+    provider: PROVIDER_MAP[prefix.toLowerCase()] || '',
     providerSub: sub || ''
   };
 };
@@ -64,7 +64,6 @@ const handleNativeSignup = async (
     throw new Error('An account already exists with this email address, please sign in using Google or Facebook');
   }
 
-  console.log(`Email ${email} exists with ${existingUsername}, but allowing signup`);
   return event;
 };
 

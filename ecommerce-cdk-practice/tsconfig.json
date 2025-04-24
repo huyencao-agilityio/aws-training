@@ -6,6 +6,12 @@
       "es2020",
       "dom"
     ],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "/opt/nodejs/*": ["../lambda-layer/layer/nodejs/*"]
+    },
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -26,6 +32,8 @@
   },
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "dist",
+    "**/*.test.ts"
   ]
 }
