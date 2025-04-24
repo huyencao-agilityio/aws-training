@@ -46,6 +46,7 @@ export const handler: Handler = async (
     if (!params.Source) {
       throw new Error('Source email is required');
     }
+
     const result = await ses.sendEmail(params).promise();
 
     console.log(`Email sent successfully: ${result}`);

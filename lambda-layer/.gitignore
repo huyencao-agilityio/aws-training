@@ -7,5 +7,5 @@ node_modules
 cdk.out
 .env
 dist
-*.d.ts
 *.js.map
+*.d.ts

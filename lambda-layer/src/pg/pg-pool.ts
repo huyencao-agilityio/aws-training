@@ -19,12 +19,11 @@ export class PgPool {
         password: process.env.DB_PASSWORD,
         ssl: {
           rejectUnauthorized: true,
-          ca: fs.readFileSync(path.join(__dirname, '../certs/us-east-1-bundle.pem')).toString(),
+          ca: fs.readFileSync(path.join(__dirname, 'certs', 'us-east-1-bundle.pem')).toString()
         },
       };
 
       PgPool.instance = new Pool(config);
-      console.log('PgPool instance created', PgPool.instance);
     }
 
     return PgPool.instance;

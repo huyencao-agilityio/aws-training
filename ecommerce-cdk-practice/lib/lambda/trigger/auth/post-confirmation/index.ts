@@ -1,7 +1,7 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { Handler, PostConfirmationTriggerEvent } from 'aws-lambda';
 
-import { PgPool } from 'lambda-layer';
+import { PgPool } from '/opt/nodejs/index.js';
 
 const cognito = new CognitoIdentityServiceProvider();
 
@@ -14,11 +14,16 @@ export const handler: Handler = async (
   event: PostConfirmationTriggerEvent
 ): Promise<PostConfirmationTriggerEvent> => {
   console.log('Post Confirmation Trigger Event:', JSON.stringify(event, null, 2));
+
+  if (event.triggerSource !== 'PostConfirmation_ConfirmSignUp') {
+    return event;
+  }
+
   const userAttributes = event.request.userAttributes;
 
   const userSub = userAttributes.sub || '';
   const email = userAttributes.email || '';
-  const name = userAttributes.name || '';
+  const name = userAttributes.given_name || '';
   const userPoolId = event.userPoolId || '';
   const identitiesStr = userAttributes['identities'] || '[]';
 
