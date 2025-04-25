@@ -44,11 +44,11 @@ class PipelineStack extends Stack {
     });
     pipeline.addStage(stagingCoreStage);
 
-    const stagingAppStage = new AppStage(this, 'StagingApp', {
-      stageName: environments.staging.stageName,
-      env: environments.staging.env
-    });
-    pipeline.addStage(stagingAppStage);
+    // const stagingAppStage = new AppStage(this, 'StagingApp', {
+    //   stageName: environments.staging.stageName,
+    //   env: environments.staging.env
+    // });
+    // pipeline.addStage(stagingAppStage);
 
     const stagingMonitoringStage = new MonitoringStage(this, 'StagingMonitoring', {
       stageName: environments.staging.stageName,
@@ -65,11 +65,11 @@ class PipelineStack extends Stack {
       pre: [new pipelines.ManualApprovalStep('PromoteToProd')],
     });
 
-    const prodAppStage = new AppStage(this, 'ProdApp', {
-      stageName: environments.prod.stageName,
-      env: environments.prod.env
-    });
-    pipeline.addStage(prodAppStage);
+    // const prodAppStage = new AppStage(this, 'ProdApp', {
+    //   stageName: environments.prod.stageName,
+    //   env: environments.prod.env
+    // });
+    // pipeline.addStage(prodAppStage);
 
     const prodMonitoringStage = new MonitoringStage(this, 'ProdMonitoring', {
       stageName: environments.prod.stageName,
@@ -85,10 +85,10 @@ const app = new App();
 //   env: { account: '149379632015', region: 'us-east-1' },
 // });
 
-new CoreStage(app, 'StagingCore', {
-  stageName: 'staging',
-  env: { account: '149379632015', region: 'us-east-1' }
-});
+// const coreStage = new CoreStage(app, 'StagingCore', {
+//   stageName: 'staging',
+//   env: { account: '149379632015', region: 'us-east-1' }
+// });
 
 new AppStage(app, 'StagingApp', {
   stageName: 'staging',
