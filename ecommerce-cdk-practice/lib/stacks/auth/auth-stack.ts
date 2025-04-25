@@ -45,7 +45,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/create-auth-challenge/')),
+      code: Code.fromAsset('dist/lib/lambda/trigger/auth/create-auth-challenge/'),
       environment: {
         DEFAULT_EMAIL: defaultEmail,
         CHALLENGE_CODE: challengeCode
@@ -57,7 +57,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/define-auth-challenge/')),
+      code: Code.fromAsset('dist/lib/lambda/trigger/auth/define-auth-challenge/'),
       timeout: Duration.minutes(15),
     });
 
@@ -66,7 +66,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/verify-auth-challenge/'))
+      code: Code.fromAsset('dist/lib/lambda/trigger/auth/verify-auth-challenge/')
     });
 
     // Lambda for Custom Message
@@ -74,7 +74,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/custom-message/')),
+      code: Code.fromAsset('dist/lib/lambda/trigger/auth/custom-message/'),
     });
 
     // Lambda for Custom Message
@@ -82,7 +82,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/post-confirmation/')),
+      code: Code.fromAsset('dist/lib/lambda/trigger/auth/post-confirmation/'),
       environment: {
         DB_HOST: dbHost,
         DB_NAME: dbName,
@@ -97,7 +97,7 @@ export class AuthStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       layers: [librariesLayer],
-      code: Code.fromAsset(path.join(__dirname, '../../../dist/lib/lambda/trigger/auth/pre-sign-up/')),
+      code: Code.fromAsset('dist/lib/lambda/trigger/auth/pre-sign-up/'),
       environment: {
         DB_HOST: dbHost,
         DB_NAME: dbName,
