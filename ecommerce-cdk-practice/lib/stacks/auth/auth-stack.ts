@@ -240,7 +240,6 @@ export class AuthStack extends Stack {
     // Ensure providers are created before client
     this.userPoolClient.node.addDependency(facebookProvider, googleProvider);
 
-
     // Add role policy for Lambda functions
     createAuthChallengeLambda.addToRolePolicy(new PolicyStatement({
       actions: ['ses:SendEmail'],

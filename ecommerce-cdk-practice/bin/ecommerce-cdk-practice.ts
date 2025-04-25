@@ -80,11 +80,17 @@ class PipelineStack extends Stack {
 }
 
 const app = new App();
+// TODO: this to deploy the pipeline
 // new PipelineStack(app, 'PipelineStack', {
 //   env: { account: '149379632015', region: 'us-east-1' },
 // });
 
 new CoreStage(app, 'StagingCore', {
+  stageName: 'staging',
+  env: { account: '149379632015', region: 'us-east-1' }
+});
+
+new AppStage(app, 'StagingApp', {
   stageName: 'staging',
   env: { account: '149379632015', region: 'us-east-1' }
 });
