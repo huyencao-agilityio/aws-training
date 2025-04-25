@@ -1,4 +1,4 @@
-import { Stack, StackProps, Duration } from 'aws-cdk-lib';
+import { Stack, StackProps, Duration, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
   RestApi,
@@ -30,6 +30,7 @@ export class ApiStack extends Stack {
     // Get layer from SSM
     const layerArn = StringParameter.valueForStringParameter(this, '/lambda/layer/LibrariesLayerArn');
     const librariesLayer = LayerVersion.fromLayerVersionArn(this, 'LibrariesLayer', layerArn);
+
 
     // Create REST API
     this.api = new RestApi(this, 'EcommerceApi', {
@@ -115,6 +116,12 @@ export class ApiStack extends Stack {
       methodResponses: [{ statusCode: '200' }],
       apiKeyRequired: false,
       authorizationType: AuthorizationType.CUSTOM
+    });
+
+    // Output
+    new CfnOutput(this, 'API Gateway', {
+      value: this.api.url,
+      description: `API Gateway`,
     });
   }
 }

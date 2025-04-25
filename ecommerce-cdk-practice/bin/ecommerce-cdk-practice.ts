@@ -91,6 +91,5 @@ const app = new App();
 // });
 
 new AppStage(app, 'StagingApp', {
-  stageName: 'staging',
   env: { account: '149379632015', region: 'us-east-1' }
 });
