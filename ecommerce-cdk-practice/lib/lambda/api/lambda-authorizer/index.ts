@@ -55,17 +55,14 @@ interface JwksResponse {
 async function verifyCognitoToken(token: string): Promise<jwt.JwtPayload> {
   const jwksUrl = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
   const response = await fetch(jwksUrl);
-  console.log('response', response);
   const jwks: JwksResponse = await response.json();
-  console.log('jwks', jwks);
 
   const decoded = decode(token, { complete: true });
-  console.log('decoded', decoded);
+
   if (!decoded || !decoded.header) {
     throw new Error('Invalid token structure');
   }
   const kid = decoded.header.kid;
-  console.log('kid', kid);
   const jwk = jwks.keys.find((key) => key.kid === kid);
 
   if (!jwk) throw new Error('Invalid token: No matching key found');
