@@ -1,0 +1,22 @@
+import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
+
+import { LambdaConstructProps } from '@interface/construct-props.interface';
+
+export class VerifyAuthChallengeLambdaConstruct extends Construct {
+  public readonly verifyAuthChallenge: Function;
+
+  constructor(scope: Construct, id: string, props: LambdaConstructProps) {
+    super(scope, id);
+
+    // Lambda for Verify Auth Challenge
+    this.verifyAuthChallenge = new Function(this, 'VerifyAuthChallengeLambda', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'verify-auth-challenge.handler',
+      layers: [props.librariesLayer],
+      code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
+        exclude: ['**/*', '!verify-auth-challenge.js'],
+      })
+    });
+  }
+}

@@ -2,6 +2,12 @@ import { Handler } from 'aws-lambda';
 import * as jwt from 'jsonwebtoken';
 import * as jwkToPem from 'jwk-to-pem';
 
+import {
+  JwksResponse,
+  LambdaAuthorizerEvent,
+  LambdaAuthorizerResponse
+} from 'src/interfaces/lambda-authorizer.interface';
+
 // Decode and verify JWT
 const { decode, verify } = jwt;
 
@@ -9,43 +15,6 @@ const { decode, verify } = jwt;
 const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || '';
 // Cognito Region
 const COGNITO_REGION = process.env.COGNITO_REGION || '';
-
-// Lambda Authorizer Event
-interface LambdaAuthorizerEvent {
-  authorizationToken: string;
-  methodArn: string;
-}
-
-// Lambda Authorizer Response
-interface LambdaAuthorizerResponse {
-  principalId: string;
-  policyDocument: {
-    Version: string;
-    Statement: Array<{
-      Action: string;
-      Effect: string;
-      Resource: string;
-    }>;
-  };
-  context: {
-    [key: string]: string;
-  };
-}
-
-// Define interface for JWK key
-interface JwkKey {
-  kid: string;
-  kty: string;
-  alg: string;
-  use: string;
-  n: string;
-  e: string;
-}
-
-// Define interface for JWKS response
-interface JwksResponse {
-  keys: JwkKey[];
-}
 
 /**
  * Verify Cognito token
@@ -113,7 +82,9 @@ function generatePolicy(
  * @param event - The event
  * @returns The policy document
  */
-export const handler: Handler = async (event: LambdaAuthorizerEvent): Promise<LambdaAuthorizerResponse> => {
+export const handler: Handler = async (
+  event: LambdaAuthorizerEvent
+): Promise<LambdaAuthorizerResponse> => {
   console.log('Lambda Authorizer', event);
 
   const { authorizationToken: token, methodArn} = event;

@@ -1,8 +1,8 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { ApiStack } from '../../stacks/api/api-stack';
-import { AuthStack } from '../../stacks/auth/auth-stack';
+import { ApiStack } from '../../stacks/api-stack';
+import { AuthStack } from '../../stacks/auth-stack';
 
 export class AppStage extends Stage {
   public readonly apiStack: ApiStack;
@@ -17,7 +17,7 @@ export class AppStage extends Stage {
 
     this.apiStack = new ApiStack(this, 'ApiStack', {
       stackName: 'staging-api',
-      userPool: this.authStack.userPool
+      userPool: this.authStack.userPoolConstruct.userPool
     });
 
     // Explicit dependency

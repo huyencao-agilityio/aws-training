@@ -10,7 +10,8 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "/opt/nodejs/*": ["../lambda-layer/layer/nodejs/*"]
+      "/opt/nodejs/*": ["../lambda-layer/layer/nodejs/*"],
+      "@interface/*": ["src/interfaces/*"]
     },
     "declaration": true,
     "strict": true,
