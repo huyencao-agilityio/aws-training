@@ -13,7 +13,7 @@ import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
 import { UserPoolConstructProps } from '@interfaces/construct-props.interface';
-import { COGNITO } from '@constants/cognito.constant';
+import { COGNITO } from '../../../src/constants/cognito.constant';
 
 import { ProviderConstruct } from './provider.construct';
 import {

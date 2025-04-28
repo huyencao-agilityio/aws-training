@@ -3,7 +3,7 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { LambdaConstructProps } from '@interfaces/construct-props.interface';
+import { ConstructProps } from '@interfaces/construct-props.interface';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -11,7 +11,7 @@ import { LambdaConstructProps } from '@interfaces/construct-props.interface';
 export class CreateAuthChallengeLambdaConstruct extends Construct {
   public readonly createAuthChallenge: Function;
 
-  constructor(scope: Construct, id: string, props: LambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: ConstructProps) {
     super(scope, id);
 
     const defaultEmail = process.env.DEFAULT_EMAIL || '';
