@@ -1,9 +1,14 @@
+/**
+ * Defines interface for the event received by a Lambda Authorizer.
+ */
 export interface LambdaAuthorizerEvent {
   authorizationToken: string;
   methodArn: string;
 }
 
-// Lambda Authorizer Response
+/**
+ * Defines interface for the response returned by a Lambda Authorizer.
+ */
 export interface LambdaAuthorizerResponse {
   principalId: string;
   policyDocument: {
@@ -19,7 +24,9 @@ export interface LambdaAuthorizerResponse {
   };
 }
 
-// Define interface for JWK key
+/**
+ * Defines interface for a single JWK (JSON Web Key) used for JWT verification.
+ */
 export interface JwkKey {
   kid: string;
   kty: string;
@@ -29,7 +36,9 @@ export interface JwkKey {
   e: string;
 }
 
-// Define interface for JWKS response
+/**
+ * Defines interface for a JWKS (JSON Web Key Set) response.
+ */
 export interface JwksResponse {
   keys: JwkKey[];
 }

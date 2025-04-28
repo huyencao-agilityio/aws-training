@@ -2,11 +2,16 @@ import { Handler } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
-import { APIEvent } from 'src/interfaces/api-event.interface';
-import { APIGatewayResponse } from 'src/interfaces/api-response.interface';
+import { ListAPIEvent } from '@interfaces/api-event.interface';
+import { APIGatewayResponse } from '@interfaces/api-response.interface';
 
+/**
+ * Lambda handler for retrieving all products.
+ *
+ *  @param event - ListAPIEvent containing pagination and authorization info.
+ */
 export const handler: Handler = async (
-  event: APIEvent
+  event: ListAPIEvent
 ): Promise<APIGatewayResponse | void> => {
   console.log('API Get All Product', JSON.stringify(event));
 

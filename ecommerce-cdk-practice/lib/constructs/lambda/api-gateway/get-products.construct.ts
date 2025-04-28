@@ -1,10 +1,15 @@
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { UserPoolLambdaConstructProps } from '@interface/construct-props.interface';
-import { Duration } from 'aws-cdk-lib';
+import {
+  UserPoolLambdaConstructProps
+} from '@interface/construct-props.interface';
 
+/**
+ * Construct for creating Lambda function to handles GET requests to retrieve products
+ */
 export class GetProductsLambdaConstruct extends Construct {
   public readonly getProductsLambda: Function;
 
@@ -16,8 +21,8 @@ export class GetProductsLambdaConstruct extends Construct {
     const dbPassword = process.env.DB_PASSWORD || '';
     const dbUser= process.env.DB_USER || '';
 
-    // Create Lambda function
-    this.getProductsLambda = new Function(scope, 'GetProductsLambda', {
+    // Create the Lambda function for product retrieval
+    this.getProductsLambda = new Function(this, 'GetProducts', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'get-products.handler',
       code: Code.fromAsset('dist/src/lambda-handler/api/products/', {

@@ -4,6 +4,10 @@ import { Construct } from 'constructs';
 import { ApiStack } from '../../stacks/api-stack';
 import { AuthStack } from '../../stacks/auth-stack';
 
+/**
+ * AppStage is responsible for grouping and deploying all application stacks
+ * such as API and authentication stacks.
+ */
 export class AppStage extends Stage {
   public readonly apiStack: ApiStack;
   public readonly authStack: AuthStack;

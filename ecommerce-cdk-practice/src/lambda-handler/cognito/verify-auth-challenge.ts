@@ -1,5 +1,11 @@
 import { Handler, VerifyAuthChallengeResponseTriggerEvent } from 'aws-lambda';
 
+/**
+ * Lambda handler for Cognito Verify Auth Challenge Response trigger.
+ *
+ * @param event - VerifyAuthChallengeResponseTriggerEvent containing user response and session information.
+ * @returns The updated event object with the verification result for Cognito.
+ */
 export const handler: Handler = async (
   event: VerifyAuthChallengeResponseTriggerEvent
 ): Promise<VerifyAuthChallengeResponseTriggerEvent> => {

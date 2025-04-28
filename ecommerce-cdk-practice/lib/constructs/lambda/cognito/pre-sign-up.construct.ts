@@ -6,6 +6,10 @@ import 'dotenv/config';
 
 import { UserPoolLambdaConstructProps } from '@interface/construct-props.interface';
 
+/**
+ * Construct sets up a Lambda function that
+ * handles pre-signup validation in Cognito User Pool
+ */
 export class PreSignUpLambdaConstruct extends Construct {
   public readonly preSignUp: Function;
 
@@ -17,8 +21,8 @@ export class PreSignUpLambdaConstruct extends Construct {
     const dbPassword = process.env.DB_PASSWORD || '';
     const dbUser= process.env.DB_USER || '';
 
-    // Lambda for Pre Sign Up
-    this.preSignUp = new Function(this, 'PreSignUpLambda', {
+    // Create the Lambda function for pre-signup validation
+    this.preSignUp = new Function(this, 'PreSignUp', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'pre-sign-up.handler',
       layers: [props.librariesLayer],
@@ -34,7 +38,7 @@ export class PreSignUpLambdaConstruct extends Construct {
       timeout: Duration.minutes(15),
     });
 
-    // Add role policy for Lambda functions
+    // Add IAM policy to allow Lambda access to Cognito
     this.preSignUp.addToRolePolicy(new PolicyStatement({
       actions: [
         'cognito-idp:ListUsers',

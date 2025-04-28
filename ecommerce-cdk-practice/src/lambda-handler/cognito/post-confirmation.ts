@@ -4,13 +4,18 @@ import 'dotenv/config';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
+import { CognitoIdentity } from '@interfaces/cognito.interface';
+import { ProviderType } from '@enums/provider-type.enum';
+import { UserGroup } from '@enums/user-group.enum';
+
 const cognito = new CognitoIdentityServiceProvider();
 
-export interface CognitoIdentity {
-  providerName: string;
-  userId: string;
-}
-
+/**
+ * Lambda handler for Cognito Post Confirmation trigger.
+ *
+ * @param event - PostConfirmationTriggerEvent containing user and trigger information.
+ * @returns The updated event object, possibly with additional attributes or side effects.
+ */
 export const handler: Handler = async (
   event: PostConfirmationTriggerEvent
 ): Promise<PostConfirmationTriggerEvent> => {
@@ -21,22 +26,23 @@ export const handler: Handler = async (
   }
 
   const userAttributes = event.request.userAttributes;
-
   const userSub = userAttributes.sub || '';
   const email = userAttributes.email || '';
   const name = userAttributes.given_name || '';
   const userPoolId = event.userPoolId || '';
   const identitiesStr = userAttributes['identities'] || '[]';
-
   const params = {
-    GroupName: 'User',
+    GroupName: UserGroup.USER,
     UserPoolId: userPoolId,
     Username: userSub
   };
-
   const identities: CognitoIdentity[] = JSON.parse(identitiesStr) || [];
-  const facebookUserId = identities.find(id => id.providerName === 'Facebook')?.userId || null;
-  const googleUserId = identities.find(id => id.providerName === 'Google')?.userId || null;
+  const facebookUserId = identities.find(
+    id => id.providerName === ProviderType.FACEBOOK
+  )?.userId || null;
+  const googleUserId = identities.find(
+    id => id.providerName === ProviderType.GOOGLE
+  )?.userId || null;
 
   try {
     await cognito.adminAddUserToGroup(params).promise();

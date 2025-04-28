@@ -1,30 +1,39 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { UserType, AdminLinkProviderForUserRequest } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import {
+  UserType,
+  AdminLinkProviderForUserRequest
+} from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { PreSignUpTriggerEvent } from 'aws-lambda';
 import { Handler } from 'aws-cdk-lib/aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
+import { ParseProviderInfo } from '@interfaces/cognito.interface';
+import { DB_PROVIDER_FIELDS, PROVIDER_MAP } from '@constants/cognito.constant';
+import { PreSignUpTrigger } from '@enums/pre-signup-trigger.enum';
+import { ProviderType } from '@enums/provider-type.enum';
 
 const cognito = new CognitoIdentityServiceProvider();
 
-const PROVIDER_MAP: Record<string, string> = {
-  facebook: 'Facebook',
-  google: 'Google'
-};
-
-const DB_PROVIDER_FIELDS: Record<string, string> = {
-  Google: 'google_id',
-  Facebook: 'facebook_id'
-};
-
-const parseProviderFromUsername = (username: string) => {
+/**
+ * Parses the identity provider from a Cognito username.
+ *
+ * @param username - The Cognito username.
+ * @returns The provider name from PROVIDER_MAP, or null if not found.
+ */
+const parseProviderFromUsername = (username: string): string | null => {
   if (!username || !username.includes('_')) return null;
   const [prefix] = username.split('_', 1);
 
   return PROVIDER_MAP[prefix.toLowerCase()] || null;
 };
 
-const parseUserDetails = (username: string) => {
+/**
+ * Extracts provider and provider sub (user ID) from a Cognito username.
+ *
+ * @param username - The Cognito username.
+ * @returns An object with 'provider' and 'providerSub' properties.
+ */
+const parseProviderInfo = (username: string): ParseProviderInfo => {
   if (!username || !username.includes('_')) {
     return { provider: '', providerSub: '' };
   }
@@ -37,7 +46,17 @@ const parseUserDetails = (username: string) => {
   };
 };
 
-const checkExistingUser = async (userPoolId: string, email: string): Promise<UserType | null> => {
+/**
+ * Checks if a user with the given email already exists in the Cognito User Pool.
+ *
+ * @param userPoolId - The ID of the Cognito User Pool.
+ * @param email - The email address to search for.
+ * @returns The existing user (UserType) if found, otherwise null.
+ */
+const checkExistingUser = async (
+  userPoolId: string,
+  email: string
+): Promise<UserType | null> => {
   const params = {
     UserPoolId: userPoolId,
     Filter: `email = "${email}"`,
@@ -49,6 +68,12 @@ const checkExistingUser = async (userPoolId: string, email: string): Promise<Use
   return users.length > 0 ? users[0] : null;
 };
 
+/**
+ * Handles the pre sign-up logic for native (non-social) sign-ups.
+ *
+ * @param event - The PreSignUpTriggerEvent from Cognito.
+ * @returns The updated event after processing.
+ */
 const handleNativeSignup = async (
   event: PreSignUpTriggerEvent
 ): Promise<PreSignUpTriggerEvent> => {
@@ -60,18 +85,33 @@ const handleNativeSignup = async (
   const existingUsername = existingUser.Username || '';
   const existingProvider = parseProviderFromUsername(existingUsername);
 
-  if (existingProvider === 'Google' || existingProvider === 'Facebook') {
-    throw new Error('An account already exists with this email address, please sign in using Google or Facebook');
+  if (existingProvider === ProviderType.GOOGLE ||
+    existingProvider === ProviderType.FACEBOOK
+  ) {
+    throw new Error(
+      'An account already exists, please sign in using Google or Facebook.'
+    );
   }
 
   return event;
 };
 
+/**
+ * Handles pre sign-up logic for users signing up with external identity providers
+ * (such as Facebook or Google) in Cognito.
+ *
+ * @param event - The PreSignUpTriggerEvent from Cognito, containing user and request details
+ * @returns The updated event after processing external provider sign-up logic
+ */
 const handleExternalProviderSignup = async (
   event: PreSignUpTriggerEvent
 ): Promise<PreSignUpTriggerEvent> => {
-  const { userPoolId, userName, request: { userAttributes: { email } } } = event;
-  const { provider, providerSub } = parseUserDetails(userName);
+  const {
+    userPoolId,
+    userName,
+    request: { userAttributes: { email } }
+  } = event;
+  const { provider, providerSub } = parseProviderInfo(userName);
 
   const existingUser = await checkExistingUser(userPoolId, email);
   if (!existingUser) return event;
@@ -104,7 +144,7 @@ const handleExternalProviderSignup = async (
   const params: AdminLinkProviderForUserRequest = {
     UserPoolId: userPoolId,
     DestinationUser: {
-      ProviderName: 'Cognito',
+      ProviderName: ProviderType.COGNITO,
       ProviderAttributeValue: existingUsername
     },
     SourceUser: {
@@ -114,7 +154,7 @@ const handleExternalProviderSignup = async (
     }
   };
   await cognito.adminLinkProviderForUser(params).promise();
-  console.log(`Linked ${provider} identity ${providerSub} to user ${existingUsername}`);
+  console.log(`Linked ${providerSub} to user ${existingUsername}`);
 
   // Update database
   const column: string = DB_PROVIDER_FIELDS[provider || ''];
@@ -123,7 +163,7 @@ const handleExternalProviderSignup = async (
     `UPDATE public.user SET ${column} = $2 WHERE id = $1`,
     [existingUsername, providerSub]
   );
-  console.log(`Updated user ${existingUsername} with ${provider}_id ${providerSub} in database`);
+  console.log(`Updated user ${existingUsername} in database`);
 
   event.response.autoConfirmUser = true;
   event.response.autoVerifyEmail = true;
@@ -131,6 +171,12 @@ const handleExternalProviderSignup = async (
   return event;
 };
 
+/**
+ * Lambda handler for Cognito Pre Sign-Up trigger.
+ *
+ * @param event - PreSignUpTriggerEvent containing user and request information.
+ * @returns The updated event object, possibly with modified attributes or flags.
+ */
 export const handler: Handler = async (
   event: PreSignUpTriggerEvent
 ): Promise<PreSignUpTriggerEvent> => {
@@ -145,10 +191,10 @@ export const handler: Handler = async (
 
   try {
     switch (triggerSource) {
-      case 'PreSignUp_SignUp':
+      case PreSignUpTrigger.SIGN_UP:
         return await handleNativeSignup(event);
 
-      case 'PreSignUp_ExternalProvider':
+      case PreSignUpTrigger.EXTERNAL_PROVIDER:
         return await handleExternalProviderSignup(event);
 
       default:

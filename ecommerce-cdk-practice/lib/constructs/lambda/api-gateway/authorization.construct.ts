@@ -4,14 +4,22 @@ import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { UserPoolLambdaConstructProps } from '@interface/construct-props.interface';
+import {
+  UserPoolLambdaConstructProps
+} from '@interface/construct-props.interface';
 
+/**
+ * Construct create Lambda function to validates JWT tokens from Cognito User Pool
+ * and create method authorizer for API Gateway
+ */
 export class AuthorizationConstruct extends Construct {
   public readonly lambdaAuthorization: Function;
   public readonly lambdaAuthorizer: RequestAuthorizer;
+
   constructor(scope: Construct, id: string, props: UserPoolLambdaConstructProps) {
     super(scope, id);
 
+    // Create the Lambda function for token validation
     this.lambdaAuthorization = new Function(this, 'LambdaAuthorization', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'lambda-authentication.handler',
@@ -26,6 +34,7 @@ export class AuthorizationConstruct extends Construct {
       },
     });
 
+    // Create the API Gateway authorizer
     this.lambdaAuthorizer = new RequestAuthorizer(this, 'LambdaAuthorizer', {
       authorizerName: 'LambdaAuthorization',
       handler: this.lambdaAuthorization,

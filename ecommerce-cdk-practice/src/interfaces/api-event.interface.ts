@@ -1,4 +1,8 @@
-export interface APIEvent {
+/**
+ * Define an interface for API Gateway events
+ * used by Lambda functions handling list retrieval requests
+ */
+export interface ListAPIEvent {
   page?: string;
   limit?: string;
   requestContext?: {

@@ -3,6 +3,9 @@ import { Construct } from 'constructs';
 
 import { LambdaConstructProps } from '@interface/construct-props.interface';
 
+/**
+ * Construct sets up a Lambda function that implements custom authentication flow
+ */
 export class VerifyAuthChallengeLambdaConstruct extends Construct {
   public readonly verifyAuthChallenge: Function;
 

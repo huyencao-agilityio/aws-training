@@ -5,6 +5,12 @@ import {
   Resource
 } from 'aws-cdk-lib/aws-apigateway';
 
+/**
+ * Configures the GET /health-check endpoint
+ *
+ * @param healthCheckResource - The API resource to attach the method to
+ * @param authorizer - The Cognito authorizer for request validation
+ */
 export const healthCheckMethod = (
   healthCheckResource: Resource,
   authorizer: IAuthorizer

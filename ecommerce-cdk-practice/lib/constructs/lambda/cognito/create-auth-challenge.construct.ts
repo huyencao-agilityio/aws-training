@@ -5,6 +5,9 @@ import 'dotenv/config';
 
 import { LambdaConstructProps } from '@interface/construct-props.interface';
 
+/**
+ * Construct sets up a Lambda function that implements custom authentication flow
+ */
 export class CreateAuthChallengeLambdaConstruct extends Construct {
   public readonly createAuthChallenge: Function;
 
@@ -28,7 +31,7 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
       },
     });
 
-    // Add role policy for Lambda functions
+    // Add IAM policy to allow sending emails via SES
     this.createAuthChallenge.addToRolePolicy(new PolicyStatement({
       actions: ['ses:SendEmail'],
       resources: ['*'],
