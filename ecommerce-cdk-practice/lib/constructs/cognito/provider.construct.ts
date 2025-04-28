@@ -8,7 +8,7 @@ import 'dotenv/config';
 
 import {
   UserPoolLambdaConstructProps
-} from '@interface/construct-props.interface';
+} from '@interfaces/construct-props.interface';
 
 /**
  * Construct for managing social identity providers (Facebook, Google) for Cognito User Pool

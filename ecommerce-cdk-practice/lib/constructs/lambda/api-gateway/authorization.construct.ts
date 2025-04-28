@@ -6,7 +6,7 @@ import 'dotenv/config';
 
 import {
   UserPoolLambdaConstructProps
-} from '@interface/construct-props.interface';
+} from '@interfaces/construct-props.interface';
 
 /**
  * Construct create Lambda function to validates JWT tokens from Cognito User Pool

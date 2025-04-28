@@ -3,7 +3,7 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { LambdaConstructProps } from '@interface/construct-props.interface';
+import { LambdaConstructProps } from '@interfaces/construct-props.interface';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
