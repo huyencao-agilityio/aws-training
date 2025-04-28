@@ -4,7 +4,7 @@ import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import 'dotenv/config';
 
-import { UserPoolLambdaConstructProps } from '@interface/construct-props.interface';
+import { UserPoolLambdaConstructProps } from '@interfaces/construct-props.interface';
 
 /**
  * Construct sets up a Lambda function that

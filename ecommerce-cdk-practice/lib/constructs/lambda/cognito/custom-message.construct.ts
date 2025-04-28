@@ -4,7 +4,7 @@ import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { LambdaConstructProps } from '@interface/construct-props.interface';
+import { LambdaConstructProps } from '@interfaces/construct-props.interface';
 
 /**
  * Construct sets up a Lambda function that

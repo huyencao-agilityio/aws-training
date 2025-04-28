@@ -5,7 +5,7 @@ import 'dotenv/config';
 
 import {
   UserPoolLambdaConstructProps
-} from '@interface/construct-props.interface';
+} from '@interfaces/construct-props.interface';
 
 /**
  * Construct for creating Lambda function to handles GET requests to retrieve products
