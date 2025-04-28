@@ -4,7 +4,7 @@ import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { LambdaConstructProps } from '@interfaces/construct-props.interface';
+import { ConstructProps } from '@interfaces/construct-props.interface';
 
 /**
  * Construct sets up a Lambda function that
@@ -13,7 +13,7 @@ import { LambdaConstructProps } from '@interfaces/construct-props.interface';
 export class CustomMessageLambdaConstruct extends Construct {
   public readonly customMessage: Function;
 
-  constructor(scope: Construct, id: string, props: LambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: ConstructProps) {
     super(scope, id);
 
     // Create the Lambda function for message customization
