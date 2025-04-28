@@ -3,7 +3,9 @@ import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 import { LambdaConstructProps } from '@interface/construct-props.interface';
-
+/**
+ * Construct sets up a Lambda function that implements custom authentication flow
+ */
 export class DefineAuthChallengeLambdaConstruct extends Construct {
   public readonly defineAuthChallenge: Function;
 

@@ -18,11 +18,14 @@ const COGNITO_REGION = process.env.COGNITO_REGION || '';
 
 /**
  * Verify Cognito token
+ *
  * @param token - The token to verify
  * @returns The decoded token
  */
 async function verifyCognitoToken(token: string): Promise<jwt.JwtPayload> {
-  const jwksUrl = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
+  const jwksUrl =
+    `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/` +
+    `${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
   const response = await fetch(jwksUrl);
   const jwks: JwksResponse = await response.json();
 
@@ -48,6 +51,7 @@ async function verifyCognitoToken(token: string): Promise<jwt.JwtPayload> {
 
 /**
  * Generate a policy document
+ *
  * @param principalId - The principal ID
  * @param effect - The effect
  * @param resource - The resource
@@ -58,7 +62,7 @@ function generatePolicy(
   effect: string,
   resource: string,
   context: Record<string, string>
-) {
+): LambdaAuthorizerResponse {
   console.log('generatePolicy', principalId, effect, resource, context);
 
   return {
@@ -78,7 +82,8 @@ function generatePolicy(
 }
 
 /**
- * Lambda Authorizer handler
+ * Implement Lambda Authorizer handler to validate token
+ *
  * @param event - The event
  * @returns The policy document
  */

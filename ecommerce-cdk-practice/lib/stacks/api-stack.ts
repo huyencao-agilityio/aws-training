@@ -10,8 +10,14 @@ import { ApiStackProps } from 'src/interfaces/api-stack.interface';
 import { createProductsApi } from '../constructs/api-gateway/products';
 import { createHealthCheckApi } from '../constructs/api-gateway/health-check';
 import { getLibrariesLayer } from '../../src/utils/layer';
-import { AuthorizationConstruct } from '../constructs/lambda/api-gateway/authorization.construct';
+import {
+  AuthorizationConstruct
+} from '../constructs/lambda/api-gateway/authorization.construct';
 
+/**
+ * ApiStack is responsible for provisioning all API Gateway resources and
+ * related integrations for the application.
+ */
 export class ApiStack extends Stack {
   public readonly api: RestApi;
 
@@ -21,7 +27,7 @@ export class ApiStack extends Stack {
     // Get layer from SSM
     const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
 
-    // Create REST API
+    // Create the API Gateway REST API
     this.api = new RestApi(this, 'EcommerceApi', {
       restApiName: 'Ecommerce API CDK',
       description: 'API for Ecommerce application',
@@ -37,16 +43,32 @@ export class ApiStack extends Stack {
       identitySource: 'method.request.header.Authorization'
     });
 
-    const authorizationConstruct = new AuthorizationConstruct(this, 'AuthorizationConstruct', {
-      librariesLayer: librariesLayer,
-      userPool: props.userPool
-    });
+    // Create a custom lambda authorizer
+    const authorizationConstruct = new AuthorizationConstruct(
+      this,
+      'AuthorizationConstruct',
+      {
+        librariesLayer: librariesLayer,
+        userPool: props.userPool
+      }
+    );
+    const lambdaAuthorizer = authorizationConstruct.lambdaAuthorizer;
 
     // Create API resources
     const apiResource = this.api.root.addResource('api');
     // Create APIs
-    const healthCheck = createHealthCheckApi(apiResource, authorizationConstruct.lambdaAuthorizer, cognitoAuthorizer);
-    const products = createProductsApi(this, apiResource, authorizationConstruct.lambdaAuthorizer, librariesLayer, props.userPool);
+    const healthCheck = createHealthCheckApi(
+      apiResource,
+      lambdaAuthorizer,
+      cognitoAuthorizer
+    );
+    const products = createProductsApi(
+      this,
+      apiResource,
+      lambdaAuthorizer,
+      librariesLayer,
+      props.userPool
+    );
 
     // Output
     new CfnOutput(this, 'API Gateway', {

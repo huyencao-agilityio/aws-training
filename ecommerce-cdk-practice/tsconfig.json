@@ -11,7 +11,9 @@
     "baseUrl": ".",
     "paths": {
       "/opt/nodejs/*": ["../lambda-layer/layer/nodejs/*"],
-      "@interface/*": ["src/interfaces/*"]
+      "@constants/*": ["src/constants/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@enums/*": ["src/enums/*"]
     },
     "declaration": true,
     "strict": true,

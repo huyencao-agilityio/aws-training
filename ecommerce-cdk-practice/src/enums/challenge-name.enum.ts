@@ -1,0 +1,5 @@
+export enum ChallengeName {
+  PASSWORD_VERIFIER = 'PASSWORD_VERIFIER',
+  CUSTOM_CHALLENGE = 'CUSTOM_CHALLENGE',
+  SRP_A = 'SRP_A'
+}
