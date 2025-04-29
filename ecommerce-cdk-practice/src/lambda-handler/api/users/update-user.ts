@@ -3,11 +3,15 @@ import { Handler } from 'aws-lambda';
 import { PgPool } from'/opt/nodejs/index.js';
 
 import { UserGroup } from '@enums/user-group.enum';
-import { UpdateUserEvent } from '@interfaces/update-user-event.interface';
 import { User } from '@interfaces/user.interface';
 import { HttpStatusCode } from '@enums/http-status-code.enum';
+import {
+  APIGatewayEventRequestUserResource
+} from '@interfaces/api-gateway-event.interface';
 
-export const handler: Handler = async (event: UpdateUserEvent): Promise<User> => {
+export const handler: Handler = async (
+  event: APIGatewayEventRequestUserResource<User>
+): Promise<User> => {
   console.log('API Update User Profile', JSON.stringify(event));
 
   const {
@@ -15,8 +19,8 @@ export const handler: Handler = async (event: UpdateUserEvent): Promise<User> =>
     userId = '',
     body: data = {},
   } = event;
-  const { email } = data;
 
+  const { email } = data;
   const isAdmin = group === UserGroup.ADMIN;
 
   if (!isAdmin && currentUserId !== userId) {
@@ -46,8 +50,8 @@ export const handler: Handler = async (event: UpdateUserEvent): Promise<User> =>
     }
 
     const setClause = Object.keys(data)
-        .map((key, index) => `${key} = $${index + 2}`)
-        .join(', ');
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(', ');
     const values = [userId, ...Object.values(data)];
 
     const updateQuery = `

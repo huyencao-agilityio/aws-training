@@ -2,8 +2,8 @@ import { StackProps } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 /**
- * Defines the properties required to initialize the API stack.
+ * Defines interface for the stack that need to related to User Pool
  */
-export interface ApiStackProps extends StackProps {
+export interface UserPoolStackProps extends StackProps {
   userPool: UserPool;
 }

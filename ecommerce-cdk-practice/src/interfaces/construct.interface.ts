@@ -1,0 +1,49 @@
+import {
+  CognitoUserPoolsAuthorizer,
+  RequestAuthorizer,
+  IResource,
+  IRestApi,
+  IModel
+} from 'aws-cdk-lib/aws-apigateway';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+
+import { ApiGatewayModel } from './api-gateway-model';
+
+/**
+ * Defines interface the base construct.
+ */
+export interface BaseConstructProps {
+  librariesLayer: ILayerVersion;
+}
+
+/**
+ * Defines interface for the construct that need to related to User Pool.
+ */
+export interface CognitoEnvContextConstructProps extends BaseConstructProps {
+  region?: string;
+}
+
+/**
+ * Defines interface for the construct that need to related to User Pool.
+ */
+export interface UserPoolConstructProps extends BaseConstructProps {
+  userPool: UserPool;
+}
+
+/**
+ * Defines interface for base API Gateway Construct
+ */
+export interface BaseApiGatewayConstructProps extends BaseConstructProps {
+  resource: IResource;
+  cognitoAuthorizer?: CognitoUserPoolsAuthorizer
+  lambdaAuthorizer?: RequestAuthorizer,
+  models: ApiGatewayModel;
+}
+
+/**
+ * Defines interface for Rest API Model Construct
+ */
+export interface RestApiModelConstructProps {
+  restApi: IRestApi
+}

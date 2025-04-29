@@ -3,12 +3,12 @@ import { Construct } from 'constructs';
 
 import {
   RestApiModelConstructProps
-} from '@interfaces/construct-props.interface';
+} from '@interfaces/construct.interface';
 
 /**
  * Define the construct to new all model related to user
  */
-export class UserProfileConstruct extends Construct {
+export class UserModelConstruct extends Construct {
   public readonly updateUserProfileModel: IModel;
 
   constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {

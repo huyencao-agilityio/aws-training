@@ -1,19 +1,19 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import 'dotenv/config';
 
-import { UserPoolLambdaConstructProps } from '@interfaces/construct-props.interface';
+import { UserPoolConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Construct sets up a Lambda function that
  * handles pre-signup validation in Cognito User Pool
  */
 export class PreSignUpLambdaConstruct extends Construct {
-  public readonly preSignUp: Function;
+  public readonly preSignUp: IFunction;
 
-  constructor(scope: Construct, id: string, props: UserPoolLambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
 
     const dbHost = process.env.DB_HOST || '';

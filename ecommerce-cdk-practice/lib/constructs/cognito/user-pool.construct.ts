@@ -12,9 +12,11 @@ import {
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
-import { UserPoolConstructProps } from '@interfaces/construct-props.interface';
-import { COGNITO } from '../../../src/constants/cognito.constant';
+import {
+  CognitoEnvContextConstructProps
+} from '@interfaces/construct.interface';
 
+import { COGNITO } from '../../../src/constants/cognito.constant';
 import { ProviderConstruct } from './provider.construct';
 import {
   CreateAuthChallengeLambdaConstruct
@@ -48,8 +50,10 @@ export class UserPoolConstruct extends Construct {
   public readonly userPool: UserPool;
   public readonly userPoolClient: UserPoolClient;
 
-  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
+  constructor(scope: Construct, id: string, props: CognitoEnvContextConstructProps) {
     super(scope, id);
+
+    const { region, librariesLayer} = props
 
     /**
      * Create the User Pool with:
@@ -83,7 +87,7 @@ export class UserPoolConstruct extends Construct {
       mfa: Mfa.OFF,
       email: UserPoolEmail.withSES({
         fromEmail: COGNITO.EMAIL.FROM,
-        sesRegion: props.region
+        sesRegion: region
       }),
       removalPolicy: RemovalPolicy.DESTROY,
       userVerification: {
@@ -106,7 +110,7 @@ export class UserPoolConstruct extends Construct {
       this,
       'CreateAuthChallengeLambdaConstruct',
       {
-        librariesLayer: props.librariesLayer
+        librariesLayer: librariesLayer
       }
     );
 
@@ -114,16 +118,13 @@ export class UserPoolConstruct extends Construct {
       this,
       'DefineAuthChallengeLambdaConstruct',
       {
-        librariesLayer: props.librariesLayer
+        librariesLayer: librariesLayer
       }
     );
 
     const verifyAuthChallengeLambda = new VerifyAuthChallengeLambdaConstruct(
       this,
-      'VerifyAuthChallengeLambdaConstruct',
-      {
-        librariesLayer: props.librariesLayer
-      }
+      'VerifyAuthChallengeLambdaConstruct'
     );
 
     // Create Lambda functions for user lifecycle events
@@ -132,7 +133,7 @@ export class UserPoolConstruct extends Construct {
       this,
       'PostConfirmationLambdaConstruct',
       {
-        librariesLayer: props.librariesLayer,
+        librariesLayer: librariesLayer,
         userPool: this.userPool
       }
     );
@@ -141,7 +142,7 @@ export class UserPoolConstruct extends Construct {
       this,
       'PreSignUpLambdaConstruct',
       {
-        librariesLayer: props.librariesLayer,
+        librariesLayer: librariesLayer,
         userPool: this.userPool
       }
     );
@@ -150,7 +151,7 @@ export class UserPoolConstruct extends Construct {
       this,
       'CustomMessageLambdaConstruct',
       {
-        librariesLayer: props.librariesLayer
+        librariesLayer: librariesLayer
       }
     );
 
@@ -248,7 +249,7 @@ export class UserPoolConstruct extends Construct {
       this,
       'ProviderConstruct',
       {
-        librariesLayer: props.librariesLayer,
+        librariesLayer: librariesLayer,
         userPool: this.userPool
       }
     );

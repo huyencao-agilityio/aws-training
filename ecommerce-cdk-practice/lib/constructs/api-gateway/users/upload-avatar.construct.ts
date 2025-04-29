@@ -1,31 +1,29 @@
+import { Construct } from 'constructs';
 import {
   AuthorizationType,
-  IModel,
   IntegrationResponse,
   LambdaIntegration,
   MethodResponse,
-  Model,
-  Resource
+  Model
 } from 'aws-cdk-lib/aws-apigateway';
-import { Construct } from 'constructs';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
 import {
-  UpdateUserLambdaConstruct
-} from '../../lambda/api-gateway/update-user.construct';
+  UploadAvatarLambdaConstruct
+} from '../../lambda/api-gateway/upload-avatar.construct';
 
 /**
- * Define the construct for API PATCH update user detail
+ * Define the construct for API POST upload avatar
  */
-export class UpdateUsersDetailConstruct extends Construct {
+export class UploadAvatarConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
     const { resource, librariesLayer, cognitoAuthorizer, models } = props;
 
     // Create the Lambda function for product retrieval
-    const updateUserLambdaConstruct = new UpdateUserLambdaConstruct(
+    const uploadAvatarLambdaConstruct = new UploadAvatarLambdaConstruct(
       this,
       'GetProductsLambdaConstruct',
       {
@@ -34,7 +32,7 @@ export class UpdateUsersDetailConstruct extends Construct {
     );
 
     // Define the list error code that need to handle in API
-    const errorStatusCodes = [403, 404, 409, 500];
+    const errorStatusCodes = [403, 500];
     // Create integration response for API
     const integrationResponses: IntegrationResponse[] = [
       {
@@ -52,7 +50,7 @@ export class UpdateUsersDetailConstruct extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'application/json': models.updateUserModel,
+          'application/json': models.presignedS3Response,
         },
       },
       ...errorStatusCodes.map(code => ({
@@ -63,10 +61,10 @@ export class UpdateUsersDetailConstruct extends Construct {
       })),
     ];
 
-    // Add the PATCH method to the API resource for updating user
-    // This creates the PATCH /users/{userId} endpoint
-    resource.addMethod('PATCH', new LambdaIntegration(
-      updateUserLambdaConstruct.updateUserLambda,
+    // Add the POST method to the API resource to upload image
+    // This creates the POST /users/{userId}/avatar endpoint
+    resource.addMethod('POST', new LambdaIntegration(
+      uploadAvatarLambdaConstruct.uploadAvatarLambda,
       {
         proxy: false,
         requestTemplates: {
@@ -86,7 +84,7 @@ export class UpdateUsersDetailConstruct extends Construct {
       }
     ), {
       requestModels: {
-        'application/json': models.updateUserModel
+        'application/json': models.uploadAvatarModel
       },
       authorizer: cognitoAuthorizer,
       authorizationScopes: [
@@ -100,5 +98,6 @@ export class UpdateUsersDetailConstruct extends Construct {
       apiKeyRequired: false,
       authorizationType: AuthorizationType.COGNITO
     });
+
   }
 }
