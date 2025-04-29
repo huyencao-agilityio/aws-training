@@ -3,11 +3,13 @@ import { Handler } from 'aws-lambda';
 import { PgPool } from'/opt/nodejs/index.js';
 
 import { UserGroup } from '@enums/user-group.enum';
-import { UpdateUserEvent } from '@interfaces/update-user-event.interface';
 import { User } from '@interfaces/user.interface';
 import { HttpStatusCode } from '@enums/http-status-code.enum';
+import {
+  UserIntegrationRequest
+} from '@interfaces/user-integration-request.interface';
 
-export const handler: Handler = async (event: UpdateUserEvent): Promise<User> => {
+export const handler: Handler = async (event: UserIntegrationRequest): Promise<User> => {
   console.log('API Update User Profile', JSON.stringify(event));
 
   const {

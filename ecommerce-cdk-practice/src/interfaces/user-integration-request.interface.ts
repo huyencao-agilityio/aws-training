@@ -1,11 +1,13 @@
-export interface UpdateUserEvent {
+/**
+ * Define interface for integration request in user API
+ */
+export interface UserIntegrationRequest {
   context: {
     group: string;
     sub: string;
   };
   userId: string;
   body: {
-    email?: string;
     [key: string]: any;
   };
 }

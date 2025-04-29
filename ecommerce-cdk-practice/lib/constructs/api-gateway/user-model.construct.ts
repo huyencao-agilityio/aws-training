@@ -8,7 +8,7 @@ import {
 /**
  * Define the construct to new all model related to user
  */
-export class UserProfileConstruct extends Construct {
+export class UserModelConstruct extends Construct {
   public readonly updateUserProfileModel: IModel;
 
   constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {

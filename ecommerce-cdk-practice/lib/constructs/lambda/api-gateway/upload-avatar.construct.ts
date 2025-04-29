@@ -1,0 +1,33 @@
+import { Duration } from 'aws-cdk-lib';
+import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
+
+import { ConstructProps } from '@interfaces/construct-props.interface';
+
+/**
+ * Construct for creating Lambda function
+ * to handles GET requests to get presigned avatar
+ */
+export class UploadAvatarLambdaConstruct extends Construct {
+  public readonly uploadAvatarLambda: Function;
+
+  constructor(scope: Construct, id: string, props: ConstructProps) {
+    super(scope, id);
+
+    const bucketName = process.env.BUCKET_NAME || '';
+
+    // Create the Lambda function for product retrieval
+    this.uploadAvatarLambda = new Function(this, 'UploadAvatar', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'upload-avatar.handler',
+      code: Code.fromAsset('dist/src/lambda-handler/api/users/', {
+        exclude: ['**/*', '!upload-avatar.js'],
+      }),
+      layers: [props.librariesLayer],
+      timeout: Duration.seconds(3),
+      environment: {
+        BUCKET_NAME: bucketName
+      },
+    });
+  }
+}

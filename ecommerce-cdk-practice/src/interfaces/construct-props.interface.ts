@@ -2,7 +2,9 @@ import {
   CognitoUserPoolsAuthorizer,
   RequestAuthorizer,
   IResource,
-  IRestApi
+  IRestApi,
+  Model,
+  IModel
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
@@ -32,11 +34,26 @@ export interface UserPoolConstructProps extends ConstructProps {
 /**
  * Defines interface for Rest API Resource Construct
  */
-export interface RestApiResourceConstructProps<T> extends ConstructProps {
+export interface BaseRestApiConstructProps extends ConstructProps {
   resource: IResource;
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
   lambdaAuthorizer?: RequestAuthorizer,
-  model: T
+}
+
+/**
+ * Define interface for resource in rest api
+ */
+export interface RestApiResourceConstructProps extends BaseRestApiConstructProps {
+  models: {
+    [key: string]: IModel;
+  };
+}
+
+/**
+ * Define interface for the resource contain model in request and response
+ */
+export interface ModelConstructProps extends BaseRestApiConstructProps {
+  model: IModel;
 }
 
 /**

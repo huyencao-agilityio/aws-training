@@ -9,6 +9,7 @@ import { Construct } from 'constructs';
 import {
   UserPoolLambdaConstructProps
 } from '@interfaces/construct-props.interface';
+import { RestAPIModel } from '@interfaces/api-model.interface';
 
 import {
   AuthorizationConstruct
@@ -16,7 +17,9 @@ import {
 import { createHealthCheckApi } from './health-check';
 import { createProductsApi } from './products';
 import { UsersResourceConstruct } from './users';
-import { UserProfileConstruct } from './user-model.construct';
+import { UserModelConstruct } from './user-model.construct';
+import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
+
 
 /**
  * Define the construct to new a REST API
@@ -58,9 +61,23 @@ export class RestApiConstruct extends Construct {
     const apiResource = this.restApi.root.addResource('api');
 
     // Create user model to using in API
-    const userModelConstruct = new UserProfileConstruct(this, 'UserProfileConstruct', {
+    const userModelConstruct = new UserModelConstruct(this, 'UserModelConstruct', {
       restApi: this.restApi
-    })
+    });
+    // Create model for upload avatar to using in API
+    const uploadAvatarModelConstruct = new UploadAvatarModelConstruct(
+      this,
+      'UploadAvatarModelConstruct',
+      {
+        restApi: this.restApi
+      }
+    );
+
+    const restApiModel: RestAPIModel = {
+      updateUserModel: userModelConstruct.updateUserProfileModel,
+      uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
+      presignedS3Response: uploadAvatarModelConstruct.presignedS3Response
+    };
 
     // Create APIs
     const healthCheck = createHealthCheckApi(
@@ -80,8 +97,8 @@ export class RestApiConstruct extends Construct {
       resource: apiResource,
       librariesLayer: props.librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
-      model: userModelConstruct
-    })
+      models: restApiModel
+    });
 
   }
 }
