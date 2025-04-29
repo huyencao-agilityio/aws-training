@@ -52,6 +52,11 @@ export interface APIGatewayEventRequestUserResource<T>
   body: T;
 }
 
+export interface APIGatewayEventRequestOrderResource<T>
+  extends APIGatewayEventRequestWithCognitoAuthorizer {
+  body: T;
+}
+
 export interface APIGatewayModel {
   [key: string]: IModel;
 }
