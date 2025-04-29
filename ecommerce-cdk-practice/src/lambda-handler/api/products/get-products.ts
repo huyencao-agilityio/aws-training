@@ -2,8 +2,10 @@ import { Handler } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
-import { ListAPIEvent } from '@interfaces/api-event.interface';
-import { APIGatewayResponse } from '@interfaces/api-response.interface';
+import { PaginationResponse } from '@interfaces/pagination.interface';
+import {
+  APIGatewayEventRequestWithLambdaAuthorizer
+ } from '@interfaces/api-gateway-event.interface';
 
 /**
  * Lambda handler for retrieving all products.
@@ -11,8 +13,8 @@ import { APIGatewayResponse } from '@interfaces/api-response.interface';
  *  @param event - ListAPIEvent containing pagination and authorization info.
  */
 export const handler: Handler = async (
-  event: ListAPIEvent
-): Promise<APIGatewayResponse | void> => {
+  event: APIGatewayEventRequestWithLambdaAuthorizer
+): Promise<PaginationResponse | void> => {
   console.log('API Get All Product', JSON.stringify(event));
 
   const page = parseInt(event.page || '1');
@@ -40,7 +42,7 @@ export const handler: Handler = async (
         totalItems: totalItems,
         itemsPerPage: limit
       },
-      data: res.rows
+      items: res.rows
     };
   } catch (error: any) {
     console.error('Error when getting all products:', error);

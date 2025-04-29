@@ -1,9 +1,9 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import 'dotenv/config';
 
-import { UserPoolLambdaConstructProps } from '@interfaces/construct-props.interface';
+import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 /**
@@ -11,9 +11,9 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
  * handles post-confirmation events from Cognito User Pool
  */
 export class PostConfirmationLambdaConstruct extends Construct {
-  public readonly postConfirmation: Function;
+  public readonly postConfirmation: IFunction;
 
-  constructor(scope: Construct, id: string, props: UserPoolLambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
 
     const dbHost = process.env.DB_HOST || '';

@@ -4,8 +4,8 @@ import { Construct } from 'constructs';
 import 'dotenv/config';
 
 import {
-  ConstructProps
-} from '@interfaces/construct-props.interface';
+  BaseConstructProps
+} from '@interfaces/construct.interface';
 
 /**
  * Construct for creating Lambda function to handles PATCH requests to update user profile
@@ -13,7 +13,7 @@ import {
 export class UpdateUserLambdaConstruct extends Construct {
   public readonly updateUserLambda: Function;
 
-  constructor(scope: Construct, id: string, props: ConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
     const dbHost = process.env.DB_HOST || '';

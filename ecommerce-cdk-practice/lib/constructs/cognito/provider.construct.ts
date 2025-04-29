@@ -7,8 +7,8 @@ import {
 import 'dotenv/config';
 
 import {
-  UserPoolLambdaConstructProps
-} from '@interfaces/construct-props.interface';
+  UserPoolConstructProps
+} from '@interfaces/construct.interface';
 
 /**
  * Construct for managing social identity providers (Facebook, Google) for Cognito User Pool
@@ -17,8 +17,10 @@ export class ProviderConstruct extends Construct {
   public readonly facebookProvider: UserPoolIdentityProviderFacebook;
   public readonly googleProvider: UserPoolIdentityProviderGoogle;
 
-  constructor(scope: Construct, id: string, props: UserPoolLambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
+
+    const { userPool } = props;
 
     // Get client credentials from environment variables
     const fbClientId = process.env.FB_CLIENT_ID || '';
@@ -35,7 +37,7 @@ export class ProviderConstruct extends Construct {
       {
         clientId: fbClientId,
         clientSecret: fbClientSecret,
-        userPool: props.userPool,
+        userPool: userPool,
         scopes: ['public_profile', 'email'],
         attributeMapping: {
           email: ProviderAttribute.FACEBOOK_EMAIL,
@@ -53,7 +55,7 @@ export class ProviderConstruct extends Construct {
       {
         clientId: googleClientId,
         clientSecret: googleClientSecret,
-        userPool: props.userPool,
+        userPool: userPool,
         scopes: ['profile', 'email', 'openid'],
         attributeMapping: {
           email: ProviderAttribute.GOOGLE_EMAIL,

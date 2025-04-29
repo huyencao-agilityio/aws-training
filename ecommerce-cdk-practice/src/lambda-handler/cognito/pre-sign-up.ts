@@ -7,7 +7,7 @@ import { PreSignUpTriggerEvent } from 'aws-lambda';
 import { Handler } from 'aws-cdk-lib/aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
-import { ParseProviderInfo } from '@interfaces/cognito.interface';
+import { CognitoProviderInfo } from '@interfaces/cognito.interface';
 import { DB_PROVIDER_FIELDS, PROVIDER_MAP } from '@constants/cognito.constant';
 import { PreSignUpTrigger } from '@enums/pre-signup-trigger.enum';
 import { ProviderType } from '@enums/provider-type.enum';
@@ -33,7 +33,7 @@ const parseProviderFromUsername = (username: string): string | null => {
  * @param username - The Cognito username.
  * @returns An object with 'provider' and 'providerSub' properties.
  */
-const parseProviderInfo = (username: string): ParseProviderInfo => {
+const parseProviderInfo = (username: string): CognitoProviderInfo => {
   if (!username || !username.includes('_')) {
     return { provider: '', providerSub: '' };
   }

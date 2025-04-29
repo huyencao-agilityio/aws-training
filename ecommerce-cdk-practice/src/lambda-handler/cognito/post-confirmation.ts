@@ -4,7 +4,7 @@ import 'dotenv/config';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
-import { CognitoIdentity } from '@interfaces/cognito.interface';
+import { CognitoIdentityProvider } from '@interfaces/cognito.interface';
 import { ProviderType } from '@enums/provider-type.enum';
 import { UserGroup } from '@enums/user-group.enum';
 
@@ -36,7 +36,7 @@ export const handler: Handler = async (
     UserPoolId: userPoolId,
     Username: userSub
   };
-  const identities: CognitoIdentity[] = JSON.parse(identitiesStr) || [];
+  const identities: CognitoIdentityProvider[] = JSON.parse(identitiesStr) || [];
   const facebookUserId = identities.find(
     id => id.providerName === ProviderType.FACEBOOK
   )?.userId || null;

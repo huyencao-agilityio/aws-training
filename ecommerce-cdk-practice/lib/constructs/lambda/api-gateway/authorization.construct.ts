@@ -5,8 +5,8 @@ import { Construct } from 'constructs';
 import 'dotenv/config';
 
 import {
-  UserPoolLambdaConstructProps
-} from '@interfaces/construct-props.interface';
+  UserPoolConstructProps
+} from '@interfaces/construct.interface';
 
 /**
  * Construct create Lambda function to validates JWT tokens from Cognito User Pool
@@ -16,8 +16,10 @@ export class AuthorizationConstruct extends Construct {
   public readonly lambdaAuthorization: Function;
   public readonly lambdaAuthorizer: RequestAuthorizer;
 
-  constructor(scope: Construct, id: string, props: UserPoolLambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
+
+    const { librariesLayer, userPool } = props;
 
     // Create the Lambda function for token validation
     this.lambdaAuthorization = new Function(this, 'LambdaAuthorization', {
@@ -26,11 +28,11 @@ export class AuthorizationConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/api/auth/', {
         exclude: ['**/*', '!lambda-authentication.js'],
       }),
-      layers: [props.librariesLayer],
+      layers: [librariesLayer],
       timeout: Duration.seconds(10),
       environment: {
-        COGNITO_USER_POOL_ID: props.userPool.userPoolId,
-        COGNITO_REGION: props.userPool.env.region
+        COGNITO_USER_POOL_ID: userPool.userPoolId,
+        COGNITO_REGION: userPool.env.region
       },
     });
 

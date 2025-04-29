@@ -9,18 +9,20 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
+import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import { ModelConstructProps } from '@interfaces/construct-props.interface';
-import { UpdateUserLambdaConstruct } from '../../lambda/api-gateway/update-user.construct';
+import {
+  UpdateUserLambdaConstruct
+} from '../../lambda/api-gateway/update-user.construct';
 
 /**
  * Define the construct for API PATCH update user detail
  */
 export class UpdateUsersDetailConstruct extends Construct {
-  constructor(scope: Construct, id: string, props: ModelConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, model } = props;
+    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
 
     // Create the Lambda function for product retrieval
     const updateUserLambdaConstruct = new UpdateUserLambdaConstruct(
@@ -50,7 +52,7 @@ export class UpdateUsersDetailConstruct extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'application/json': model,
+          'application/json': models.updateUserModel,
         },
       },
       ...errorStatusCodes.map(code => ({
@@ -84,7 +86,7 @@ export class UpdateUsersDetailConstruct extends Construct {
       }
     ), {
       requestModels: {
-        'application/json': model
+        'application/json': models.updateUserModel
       },
       authorizer: cognitoAuthorizer,
       authorizationScopes: [

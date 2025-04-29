@@ -7,16 +7,17 @@ import {
   Model
 } from 'aws-cdk-lib/aws-apigateway';
 
+import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
+
 import {
   UploadAvatarLambdaConstruct
 } from '../../lambda/api-gateway/upload-avatar.construct';
-import { RestApiResourceConstructProps } from '@interfaces/construct-props.interface';
 
 /**
  * Define the construct for API POST upload avatar
  */
 export class UploadAvatarConstruct extends Construct {
-  constructor(scope: Construct, id: string, props: RestApiResourceConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
     const { resource, librariesLayer, cognitoAuthorizer, models } = props;

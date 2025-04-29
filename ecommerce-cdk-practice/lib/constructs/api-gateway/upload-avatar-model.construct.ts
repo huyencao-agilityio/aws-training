@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 
 import {
   RestApiModelConstructProps
-} from '@interfaces/construct-props.interface';
+} from '@interfaces/construct.interface';
 
 /**
  * Define the construct to new all model related to user

@@ -8,10 +8,8 @@ import { Handler } from 'aws-cdk-lib/aws-lambda';
 
 import { HttpStatusCode } from '@enums/http-status-code.enum';
 import { UserGroup } from '@enums/user-group.enum';
-import { UploadImage } from '@interfaces/upload-image.interface';
-import {
-  UserIntegrationRequest
-} from '@interfaces/user-integration-request.interface';
+import { UploadAvatar } from '@interfaces/upload-image.interface';
+import { APIGatewayEventRequestUserResource } from '@interfaces/api-gateway-event.interface';
 
 const s3Client = new S3Client({ region: 'us-east-1' });
 
@@ -44,7 +42,7 @@ const generateKey = (contentType: string, userId: string): string => {
  * @returns - A PresignedPost containing the upload URL and fields
  */
 export const handler: Handler = async (
-  event: UserIntegrationRequest
+  event: APIGatewayEventRequestUserResource<UploadAvatar>
 ): Promise<PresignedPost> => {
   console.log('API Upload Avatar', JSON.stringify(event));
 
@@ -54,7 +52,7 @@ export const handler: Handler = async (
     userId = '',
     body,
   } = event;
-  const { contentType } = (body as UploadImage) || {};
+  const { contentType } = body;
   const key = generateKey(contentType, userId);
 
   const isAdmin = group === UserGroup.ADMIN;

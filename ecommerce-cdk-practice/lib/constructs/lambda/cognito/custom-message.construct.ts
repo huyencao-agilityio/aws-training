@@ -1,19 +1,18 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { ConstructProps } from '@interfaces/construct-props.interface';
+import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Construct sets up a Lambda function that
  * customizes messages sent by Cognito during user lifecycle events
  */
 export class CustomMessageLambdaConstruct extends Construct {
-  public readonly customMessage: Function;
+  public readonly customMessage: IFunction;
 
-  constructor(scope: Construct, id: string, props: ConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
     // Create the Lambda function for message customization

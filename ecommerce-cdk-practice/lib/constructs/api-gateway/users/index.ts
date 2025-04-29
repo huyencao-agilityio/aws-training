@@ -1,7 +1,7 @@
 import { Resource } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
-import { RestApiResourceConstructProps } from '@interfaces/construct-props.interface';
+import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
 import { UpdateUsersDetailConstruct } from './update-user.construct';
 import { UploadAvatarConstruct } from './upload-avatar.construct';
@@ -14,7 +14,7 @@ export class UsersResourceConstruct extends Construct {
   public readonly userIdResource: Resource;
   public readonly uploadAvatarResource: Resource;
 
-  constructor(scope: Construct, id: string, props: RestApiResourceConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
     const { resource, librariesLayer, cognitoAuthorizer, models } = props;
@@ -27,7 +27,9 @@ export class UsersResourceConstruct extends Construct {
       resource: this.userIdResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
-      model: models.updateUserModel
+      models: {
+        updateUserModel: models.updateUserModel
+      }
     });
 
     this.uploadAvatarResource = this.userIdResource.addResource('avatar');

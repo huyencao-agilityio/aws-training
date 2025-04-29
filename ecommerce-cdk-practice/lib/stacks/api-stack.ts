@@ -3,7 +3,8 @@ import { Construct } from 'constructs';
 import {
   RestApi
 } from 'aws-cdk-lib/aws-apigateway';
-import { ApiStackProps } from '@interfaces/api-stack.interface';
+
+import { UserPoolStackProps } from '@interfaces/stack.interface';
 
 import { getLibrariesLayer } from '../../src/utils/layer';
 import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
@@ -15,7 +16,7 @@ import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
 export class ApiStack extends Stack {
   public readonly api: RestApi;
 
-  constructor(scope: Construct, id: string, props: ApiStackProps) {
+  constructor(scope: Construct, id: string, props: UserPoolStackProps) {
     super(scope, id, props);
 
     // Get layer from SSM

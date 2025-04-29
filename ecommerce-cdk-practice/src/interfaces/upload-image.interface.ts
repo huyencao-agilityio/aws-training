@@ -1,6 +1,6 @@
 /**
- * Define interface for upload image
+ * Define interface for upload image API
  */
-export interface UploadImage {
+export interface UploadAvatar {
   contentType: string;
 }

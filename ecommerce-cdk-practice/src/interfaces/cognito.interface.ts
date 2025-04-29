@@ -1,7 +1,7 @@
 /**
- * Defines interface for Cognito identity information.
+ * Defines interface for Cognito identity provider information.
  */
-export interface CognitoIdentity {
+export interface CognitoIdentityProvider {
   providerName: string;
   userId: string;
 }
@@ -9,7 +9,7 @@ export interface CognitoIdentity {
 /**
  * Defines interface to parse provider info when register with social.
  */
-export interface ParseProviderInfo {
+export interface CognitoProviderInfo {
   provider: string;
   providerSub: string;
 }

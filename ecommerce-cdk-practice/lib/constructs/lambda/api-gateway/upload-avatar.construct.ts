@@ -1,17 +1,17 @@
 import { Duration } from 'aws-cdk-lib';
-import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
-import { ConstructProps } from '@interfaces/construct-props.interface';
+import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Construct for creating Lambda function
  * to handles GET requests to get presigned avatar
  */
 export class UploadAvatarLambdaConstruct extends Construct {
-  public readonly uploadAvatarLambda: Function;
+  public readonly uploadAvatarLambda: IFunction;
 
-  constructor(scope: Construct, id: string, props: ConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
     const bucketName = process.env.BUCKET_NAME || '';

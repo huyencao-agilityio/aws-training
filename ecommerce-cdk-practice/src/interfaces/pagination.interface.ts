@@ -14,7 +14,7 @@ export interface Pagination {
  *
  * @template T - The type of items in the data array.
  */
-export interface APIGatewayResponse<T = any> {
+export interface PaginationResponse<T = any> {
   pagination?: Pagination;
-  data: T[];
+  items: T[];
 }

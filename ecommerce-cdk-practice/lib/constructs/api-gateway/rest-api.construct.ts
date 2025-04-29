@@ -1,15 +1,15 @@
 import {
   CognitoUserPoolsAuthorizer,
   EndpointType,
-  Model,
+  IRestApi,
   RestApi
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import {
-  UserPoolLambdaConstructProps
-} from '@interfaces/construct-props.interface';
-import { RestAPIModel } from '@interfaces/api-model.interface';
+  UserPoolConstructProps
+} from '@interfaces/construct.interface';
+import { ApiGatewayModel } from '@interfaces/api-gateway-model';
 
 import {
   AuthorizationConstruct
@@ -20,15 +20,16 @@ import { UsersResourceConstruct } from './users';
 import { UserModelConstruct } from './user-model.construct';
 import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
 
-
 /**
  * Define the construct to new a REST API
  */
 export class RestApiConstruct extends Construct {
   public readonly restApi: RestApi;
 
-  constructor(scope: Construct, id: string, props: UserPoolLambdaConstructProps) {
+  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
+
+    const { userPool, librariesLayer } = props;
 
     // Create the API Gateway REST API
     this.restApi = new RestApi(this, 'EcommerceApi', {
@@ -42,7 +43,7 @@ export class RestApiConstruct extends Construct {
     // Create Cognito Authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'CognitoAuthorizer', {
       authorizerName: 'CognitoAuthorization',
-      cognitoUserPools: [props.userPool],
+      cognitoUserPools: [userPool],
       identitySource: 'method.request.header.Authorization'
     });
 
@@ -51,8 +52,8 @@ export class RestApiConstruct extends Construct {
       this,
       'AuthorizationConstruct',
       {
-        librariesLayer: props.librariesLayer,
-        userPool: props.userPool
+        librariesLayer: librariesLayer,
+        userPool: userPool
       }
     );
     const lambdaAuthorizer = authorizationConstruct.lambdaAuthorizer;
@@ -73,7 +74,7 @@ export class RestApiConstruct extends Construct {
       }
     );
 
-    const restApiModel: RestAPIModel = {
+    const restApiModel: ApiGatewayModel = {
       updateUserModel: userModelConstruct.updateUserProfileModel,
       uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
       presignedS3Response: uploadAvatarModelConstruct.presignedS3Response
@@ -89,13 +90,13 @@ export class RestApiConstruct extends Construct {
       this,
       apiResource,
       lambdaAuthorizer,
-      props.librariesLayer,
-      props.userPool
+      librariesLayer,
+      userPool
     );
 
     new UsersResourceConstruct(this, 'UsersResourceConstruct', {
       resource: apiResource,
-      librariesLayer: props.librariesLayer,
+      librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
       models: restApiModel
     });

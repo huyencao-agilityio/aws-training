@@ -6,10 +6,12 @@ import { UserGroup } from '@enums/user-group.enum';
 import { User } from '@interfaces/user.interface';
 import { HttpStatusCode } from '@enums/http-status-code.enum';
 import {
-  UserIntegrationRequest
-} from '@interfaces/user-integration-request.interface';
+  APIGatewayEventRequestUserResource
+} from '@interfaces/api-gateway-event.interface';
 
-export const handler: Handler = async (event: UserIntegrationRequest): Promise<User> => {
+export const handler: Handler = async (
+  event: APIGatewayEventRequestUserResource<User>
+): Promise<User> => {
   console.log('API Update User Profile', JSON.stringify(event));
 
   const {
@@ -17,8 +19,8 @@ export const handler: Handler = async (event: UserIntegrationRequest): Promise<U
     userId = '',
     body: data = {},
   } = event;
-  const { email } = data;
 
+  const { email } = data;
   const isAdmin = group === UserGroup.ADMIN;
 
   if (!isAdmin && currentUserId !== userId) {
@@ -48,8 +50,8 @@ export const handler: Handler = async (event: UserIntegrationRequest): Promise<U
     }
 
     const setClause = Object.keys(data)
-        .map((key, index) => `${key} = $${index + 2}`)
-        .join(', ');
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(', ');
     const values = [userId, ...Object.values(data)];
 
     const updateQuery = `

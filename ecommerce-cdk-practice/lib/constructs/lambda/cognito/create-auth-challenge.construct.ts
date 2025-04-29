@@ -1,17 +1,17 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-import { ConstructProps } from '@interfaces/construct-props.interface';
+import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
  */
 export class CreateAuthChallengeLambdaConstruct extends Construct {
-  public readonly createAuthChallenge: Function;
+  public readonly createAuthChallenge: IFunction;
 
-  constructor(scope: Construct, id: string, props: ConstructProps) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
     const defaultEmail = process.env.DEFAULT_EMAIL || '';
