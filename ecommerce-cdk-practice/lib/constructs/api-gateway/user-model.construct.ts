@@ -14,9 +14,11 @@ export class UserModelConstruct extends Construct {
   constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
     super(scope, id);
 
+    const { restApi } = props;
+
     // Create model to defines the fields to update a user
     this.updateUserProfileModel = new Model(this, 'UpdateUserProfileModel', {
-      restApi: props.restApi,
+      restApi: restApi,
       contentType: 'application/json',
       modelName: 'UpdateUserProfileModel',
       description: 'This model defines the fields to a user',
