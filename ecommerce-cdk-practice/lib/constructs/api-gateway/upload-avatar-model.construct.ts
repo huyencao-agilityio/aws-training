@@ -15,7 +15,8 @@ export class UploadAvatarModelConstruct extends Construct {
   constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
     super(scope, id);
 
-    const { restApi } = props
+    const { restApi } = props;
+
     // Create model to defines the fields to upload avatar
     this.uploadAvatarModel = new Model(this, 'UploadAvatarModel', {
       restApi: restApi,
