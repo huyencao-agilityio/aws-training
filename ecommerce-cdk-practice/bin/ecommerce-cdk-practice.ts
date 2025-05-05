@@ -90,6 +90,10 @@ const app = new App();
 //   env: { account: '149379632015', region: 'us-east-1' }
 // });
 
-new AppStage(app, 'StagingApp', {
+new AppStage(app, 'AppStage', {
+  env: { account: '149379632015', region: 'us-east-1' }
+});
+
+new CoreStage(app, 'CoreStage', {
   env: { account: '149379632015', region: 'us-east-1' }
 });

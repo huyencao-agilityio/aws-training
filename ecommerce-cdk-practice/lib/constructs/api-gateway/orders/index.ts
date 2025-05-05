@@ -39,7 +39,7 @@ export class OrderProductResourceConstruct extends Construct {
 
     // Add construct to define API accept order
     new AcceptOrderApiConstruct(this, 'AcceptOrderApiConstruct', {
-      resource: this.ordersResource,
+      resource: this.acceptOrderResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
       models: {
@@ -50,7 +50,7 @@ export class OrderProductResourceConstruct extends Construct {
     this.rejectOrderResource = this.orderIdResource.addResource('reject');
     // Add construct to define API reject order
     new RejectOrderApiConstruct(this, 'RejectOrderApiConstruct', {
-      resource: this.ordersResource,
+      resource: this.rejectOrderResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
       models: {

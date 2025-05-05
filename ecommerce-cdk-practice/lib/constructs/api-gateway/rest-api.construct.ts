@@ -107,7 +107,7 @@ export class RestApiConstruct extends Construct {
       uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
       presignedS3Response: uploadAvatarModelConstruct.presignedS3Response,
       orderModel: orderModelConstruct.orderProductRequestModel,
-      productsModel: productModelConstruct.productsResponseModel,
+      productModel: productModelConstruct.productsResponseModel,
       commonResponseModel: commonResponseModelConstruct.commonResponseModel
     };
 
@@ -120,7 +120,7 @@ export class RestApiConstruct extends Construct {
       resource: apiResource,
       userPool: userPool,
       librariesLayer: librariesLayer,
-      cognitoAuthorizer: cognitoAuthorizer,
+      lambdaAuthorizer: lambdaAuthorizer,
       models: restApiModel
     });
 
