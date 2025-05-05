@@ -5,8 +5,9 @@ import { Construct } from 'constructs';
 /**
  * Construct for creating Lambda function for API order
  */
-export class OrderProductLambdaConstruct extends Construct {
+export class OrderLambdaConstruct extends Construct {
   public readonly orderProductLambda: IFunction;
+  public readonly acceptOrderLambda: IFunction;
 
   constructor(scope: Construct, id: string, props: any) {
     super(scope, id);
@@ -15,9 +16,10 @@ export class OrderProductLambdaConstruct extends Construct {
     const dbName = process.env.DB_NAME || '';
     const dbPassword = process.env.DB_PASSWORD || '';
     const dbUser= process.env.DB_USER || '';
-    const queue = process.env.QUEUE_URL || '';
+    const orderQueue = process.env.ORDER_QUEUE_URL || '';
+    const acceptQueue = process.env.ACCEPT_QUEUE_URL || '';
 
-    // Create the Lambda function for product retrieval
+    // Create the Lambda function for order product
     this.orderProductLambda = new Function(this, 'OrderProduct', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'order-product.handler',
@@ -31,7 +33,24 @@ export class OrderProductLambdaConstruct extends Construct {
         DB_NAME: dbName,
         DB_PASSWORD: dbPassword,
         DB_USER: dbUser,
-        QUEUE_URL: queue
+        QUEUE_URL: orderQueue
+      },
+    });
+
+    // Create the Lambda function for accept order
+    this.acceptOrderLambda = new Function(this, 'AcceptOrder', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'accept-order.handler',
+      code: Code.fromAsset('dist/src/lambda-handler/api/orders/', {
+        exclude: ['**/*', '!accept-order.js'],
+      }),
+      layers: [props.librariesLayer],
+      environment: {
+        DB_HOST: dbHost,
+        DB_NAME: dbName,
+        DB_PASSWORD: dbPassword,
+        DB_USER: dbUser,
+        QUEUE_URL: acceptQueue
       },
     });
   }
