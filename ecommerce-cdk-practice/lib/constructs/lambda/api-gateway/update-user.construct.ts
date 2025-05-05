@@ -8,7 +8,7 @@ import {
 } from '@interfaces/construct.interface';
 
 /**
- * Construct for creating Lambda function to handles PATCH requests to update user profile
+ * Construct for creating Lambda function for API update user profile
  */
 export class UpdateUserLambdaConstruct extends Construct {
   public readonly updateUserLambda: Function;

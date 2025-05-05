@@ -18,7 +18,7 @@ import {
 /**
  * Define the construct for API PATCH update user detail
  */
-export class UpdateUsersDetailConstruct extends Construct {
+export class UpdateUsersDetailApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
@@ -52,7 +52,7 @@ export class UpdateUsersDetailConstruct extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'application/json': models.updateUserModel,
+          'application/json': models!.updateUserModel,
         },
       },
       ...errorStatusCodes.map(code => ({
@@ -86,7 +86,7 @@ export class UpdateUsersDetailConstruct extends Construct {
       }
     ), {
       requestModels: {
-        'application/json': models.updateUserModel
+        'application/json': models!.updateUserModel
       },
       authorizer: cognitoAuthorizer,
       authorizationScopes: [

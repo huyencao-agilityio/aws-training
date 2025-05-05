@@ -16,7 +16,7 @@ import {
 /**
  * Define the construct for API POST upload avatar
  */
-export class UploadAvatarConstruct extends Construct {
+export class UploadAvatarApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
@@ -50,7 +50,7 @@ export class UploadAvatarConstruct extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'application/json': models.presignedS3Response,
+          'application/json': models!.presignedS3Response,
         },
       },
       ...errorStatusCodes.map(code => ({
@@ -84,7 +84,7 @@ export class UploadAvatarConstruct extends Construct {
       }
     ), {
       requestModels: {
-        'application/json': models.uploadAvatarModel
+        'application/json': models!.uploadAvatarModel
       },
       authorizer: cognitoAuthorizer,
       authorizationScopes: [
