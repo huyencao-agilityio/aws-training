@@ -54,3 +54,10 @@ export interface HealthCheckApiConstructProps {
 export interface RestApiModelConstructProps {
   restApi: IRestApi
 }
+
+/**
+ * Defines interface for the storage bucket Construct
+ */
+export interface StorageBucketConstructProps {
+  bucketName: string;
+}

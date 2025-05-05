@@ -25,9 +25,9 @@ export class CoreStage extends Stage {
     //   stackName: props.stageName,
     // });
 
-    // this.storageStack = new StorageStack(this, 'StorageStack', {
-    //   stackName: props.stageName,
-    // });
+    this.storageStack = new StorageStack(this, 'StorageStack', {
+      stackName: props.stageName,
+    });
 
     // this.vpcStack = new VPCStack(this, 'VPCStack', {
     //   stackName: props.stageName,
