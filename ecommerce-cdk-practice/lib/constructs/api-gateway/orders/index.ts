@@ -4,7 +4,8 @@ import { Construct } from 'constructs';
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
 import { OrderProductApiConstruct } from './order-product.construct';
-import { AcceptOrderApiConstruct } from './accept-order.contruct';
+import { AcceptOrderApiConstruct } from './accept-order.construct';
+import { RejectOrderApiConstruct } from './reject-order.construct';
 
 /**
  * Define the construct for the resource orders
@@ -13,6 +14,7 @@ export class OrderProductResourceConstruct extends Construct {
   public readonly ordersResource: IResource;
   public readonly orderIdResource: IResource;
   public readonly acceptOrderResource: IResource;
+  public readonly rejectOrderResource: IResource;
 
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
@@ -41,7 +43,17 @@ export class OrderProductResourceConstruct extends Construct {
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
       models: {
-        orderModel: models!.orderModel,
+        commonResponseModel: models!.commonResponseModel
+      }
+    });
+
+    this.rejectOrderResource = this.orderIdResource.addResource('reject');
+    // Add construct to define API reject order
+    new RejectOrderApiConstruct(this, 'RejectOrderApiConstruct', {
+      resource: this.ordersResource,
+      librariesLayer: librariesLayer,
+      cognitoAuthorizer: cognitoAuthorizer,
+      models: {
         commonResponseModel: models!.commonResponseModel
       }
     });
