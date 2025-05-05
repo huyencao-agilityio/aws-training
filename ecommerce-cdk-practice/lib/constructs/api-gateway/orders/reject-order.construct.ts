@@ -14,25 +14,25 @@ import {
 } from '../../lambda/api-gateway/orders.construct';
 
 /**
- * Define the construct for API POST accept order
+ * Define the construct for API POST reject order
  */
-export class AcceptOrderApiConstruct extends Construct {
+export class RejectOrderApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
+    const { resource, librariesLayer, cognitoAuthorizer } = props;
 
-    // Create the Lambda function for accept order
-    const acceptOrderLambdaConstruct = new OrderLambdaConstruct(
+    // Create the Lambda function for reject order
+    const rejectOrderLambdaConstruct = new OrderLambdaConstruct(
       this,
-      'AcceptOrderLambdaConstruct',
+      'RejectOrderLambdaConstruct',
       {
         librariesLayer: librariesLayer
       }
     );
 
     // Define the list error code that need to handle in API
-    const errorStatusCodes = [403, 404, 400, 500];
+    const errorStatusCodes = [404, 400, 403, 500];
     // Create integration response for API
     const integrationResponses: IntegrationResponse[] = [
       {
@@ -61,22 +61,23 @@ export class AcceptOrderApiConstruct extends Construct {
       })),
     ];
 
-    // Add the POST method to the API resource to order product
-    // This creates the POST /orders endpoint
+    // Add the POST method to the API resource to reject order
+    // This creates the POST /orders/{orderId}/reject endpoint
     resource.addMethod('POST', new LambdaIntegration(
-      acceptOrderLambdaConstruct.acceptOrderLambda,
+      rejectOrderLambdaConstruct.rejectOrderLambda,
       {
         proxy: false,
         requestTemplates: {
           'application/json': `{
-            "orderId": "$input.params('orderId')",
-            "body": $input.json('$'),
-            "context" : {
-              "sub" : "$context.authorizer.claims.sub",
-              "email" : "$context.authorizer.claims.email",
-              "group": "$context.authorizer.claims['cognito:groups']"
+            {
+              "orderId": "$input.params('orderId')",
+              "context" : {
+                "sub" : "$context.authorizer.claims.sub",
+                "email" : "$context.authorizer.claims.email",
+                "group": "$context.authorizer.claims['cognito:groups']"
+              }
             }
-        }`
+          }`
         },
         integrationResponses: integrationResponses
       }
@@ -87,7 +88,6 @@ export class AcceptOrderApiConstruct extends Construct {
       ],
       methodResponses: methodResponses,
       requestParameters: {
-        'method.request.path.orderId': true,
         'method.request.header.Authorization': true
       },
       apiKeyRequired: false,

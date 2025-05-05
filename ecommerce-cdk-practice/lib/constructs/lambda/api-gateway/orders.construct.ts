@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 export class OrderLambdaConstruct extends Construct {
   public readonly orderProductLambda: IFunction;
   public readonly acceptOrderLambda: IFunction;
+  public readonly rejectOrderLambda: IFunction;
 
   constructor(scope: Construct, id: string, props: any) {
     super(scope, id);
@@ -18,6 +19,7 @@ export class OrderLambdaConstruct extends Construct {
     const dbUser= process.env.DB_USER || '';
     const orderQueue = process.env.ORDER_QUEUE_URL || '';
     const acceptQueue = process.env.ACCEPT_QUEUE_URL || '';
+    const rejectQueue = process.env.REJECT_QUEUE_URL || '';
 
     // Create the Lambda function for order product
     this.orderProductLambda = new Function(this, 'OrderProduct', {
@@ -51,6 +53,23 @@ export class OrderLambdaConstruct extends Construct {
         DB_PASSWORD: dbPassword,
         DB_USER: dbUser,
         QUEUE_URL: acceptQueue
+      },
+    });
+
+    // Create the Lambda function for reject order
+    this.rejectOrderLambda = new Function(this, 'RejectOrder', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'reject-order.handler',
+      code: Code.fromAsset('dist/src/lambda-handler/api/orders/', {
+        exclude: ['**/*', '!reject-order.js'],
+      }),
+      layers: [props.librariesLayer],
+      environment: {
+        DB_HOST: dbHost,
+        DB_NAME: dbName,
+        DB_PASSWORD: dbPassword,
+        DB_USER: dbUser,
+        QUEUE_URL: rejectQueue
       },
     });
   }
