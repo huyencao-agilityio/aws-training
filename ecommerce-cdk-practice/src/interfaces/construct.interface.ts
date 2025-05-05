@@ -7,7 +7,7 @@ import {
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 
-import { ApiGatewayModel } from './api-gateway-model';
+import { ApiGatewayModel } from './api-gateway-model.interface';
 
 /**
  * Defines interface the base construct.

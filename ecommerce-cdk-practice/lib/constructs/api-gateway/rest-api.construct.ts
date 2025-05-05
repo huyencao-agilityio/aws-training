@@ -8,12 +8,12 @@ import { Construct } from 'constructs';
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
-import { ApiGatewayModel } from '@interfaces/api-gateway-model';
+import { ApiGatewayModel } from '@interfaces/api-gateway-model.interface';
 
 import {
   AuthorizationConstruct
 } from '../lambda/api-gateway/authorization.construct';
-import { createHealthCheckApi, HealthCheckResourceConstruct } from './health-check';
+import { HealthCheckResourceConstruct } from './health-check';
 import { UsersResourceConstruct } from './users';
 import { UserModelConstruct } from './user-model.construct';
 import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
@@ -21,6 +21,7 @@ import { OrderModelConstruct } from './order-model.construct';
 import { ProductModelConstruct } from './product-model.construct';
 import { CommonResponseModelConstruct } from './common-response-model.construct';
 import { ProductsResourceConstruct } from './products';
+import { OrderProductResourceConstruct } from './orders';
 
 /**
  * Define the construct to new a REST API
@@ -124,6 +125,13 @@ export class RestApiConstruct extends Construct {
     });
 
     new UsersResourceConstruct(this, 'UsersResourceConstruct', {
+      resource: apiResource,
+      librariesLayer: librariesLayer,
+      cognitoAuthorizer: cognitoAuthorizer,
+      models: restApiModel
+    });
+
+    new OrderProductResourceConstruct(this, 'OrderProductResourceConstruct', {
       resource: apiResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,

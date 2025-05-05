@@ -5,14 +5,14 @@ import { PoolClient } from 'pg';
 import { PgPool } from '/opt/nodejs/index.js';
 
 import { HttpStatusCode } from '@enums/http-status-code.enum';
-
 import {
   APIGatewayEventRequestOrderResource
 } from '@interfaces/api-gateway-event.interface';
-import { Order, OrderProduct } from '@interfaces/order-product.interface';
+import { OrderProduct } from '@interfaces/order.interface';
 import { CartItemAndProduct } from '@interfaces/cart.interface';
+import { ApiResponseCommon } from '@interfaces/common-response.interface';
 
-const sqs = new AWS.SQS({ region: 'us-east-1' });
+const sqs = new AWS.SQS({});
 
 /**
  * Get cart detail by id
@@ -100,7 +100,7 @@ async function sendOrderMessage(
  */
 export const handler: Handler = async (
   event: APIGatewayEventRequestOrderResource<OrderProduct>
-): Promise<Order> => {
+): Promise<ApiResponseCommon> => {
   const client = await PgPool.connect();
 
   try {
@@ -176,7 +176,10 @@ export const handler: Handler = async (
 
     await client.query('COMMIT');
 
-    return orderResult.rows[0];
+    return {
+      statusCode: HttpStatusCode.SUCCESS,
+      message: 'Order created successfully',
+    };
   } catch (error: any) {
     await client.query('ROLLBACK');
 
