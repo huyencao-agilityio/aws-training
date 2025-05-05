@@ -52,9 +52,20 @@ export interface APIGatewayEventRequestUserResource<T>
   body: T;
 }
 
+/**
+ * Define interface for event request for order resource
+ */
 export interface APIGatewayEventRequestOrderResource<T>
   extends APIGatewayEventRequestWithCognitoAuthorizer {
   body: T;
+}
+
+/**
+ * Define interface for event request for all nested resource order resource
+ */
+export interface APIGatewayEventRequestOrderDetailResource
+  extends APIGatewayEventRequestWithCognitoAuthorizer {
+  orderId: string;
 }
 
 export interface APIGatewayModel {
