@@ -1,4 +1,5 @@
 import { Duration } from 'aws-cdk-lib';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { IFunction, Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -38,6 +39,15 @@ export class OrderLambdaConstruct extends Construct {
         QUEUE_URL: orderQueue
       },
     });
+    // Add IAM policy to allow Lambda access to SQS
+    this.orderProductLambda.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'sqs:SendMessage'
+      ],
+      // TODO: Update resource here after creating queue by CDK
+      resources: ['arn:aws:sqs:us-east-1:149379632015:OrderNotificationQueue'],
+      effect: Effect.ALLOW
+    }));
 
     // Create the Lambda function for accept order
     this.acceptOrderLambda = new Function(this, 'AcceptOrder', {
@@ -55,6 +65,15 @@ export class OrderLambdaConstruct extends Construct {
         QUEUE_URL: acceptQueue
       },
     });
+    // Add IAM policy to allow Lambda access to SQS
+    this.acceptOrderLambda.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'sqs:SendMessage'
+      ],
+      // TODO: Update resource here after creating queue by CDK
+      resources: ['arn:aws:sqs:us-east-1:149379632015:AcceptOrderNotificationQueue'],
+      effect: Effect.ALLOW
+    }));
 
     // Create the Lambda function for reject order
     this.rejectOrderLambda = new Function(this, 'RejectOrder', {
@@ -72,5 +91,14 @@ export class OrderLambdaConstruct extends Construct {
         QUEUE_URL: rejectQueue
       },
     });
+    // Add IAM policy to allow Lambda access to SQS
+    this.rejectOrderLambda.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'sqs:SendMessage'
+      ],
+      // TODO: Update resource here after creating queue by CDK
+      resources: ['arn:aws:sqs:us-east-1:149379632015:RejectOrderNotificationQueue'],
+      effect: Effect.ALLOW
+    }));
   }
 }
