@@ -1,4 +1,4 @@
-import { Pool, PoolConfig } from 'pg';
+import { Pool, PoolClient, PoolConfig } from 'pg';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -9,6 +9,9 @@ export class PgPool {
 
   private constructor() {}
 
+  /**
+   * Get instance from Pool
+   */
   public static getInstance(): Pool {
     if (!PgPool.instance) {
       const config: PoolConfig = {
@@ -29,9 +32,20 @@ export class PgPool {
     return PgPool.instance;
   }
 
+  /**
+   * Query data in database
+   */
   static async query(text: string, params?: any[]) {
     const pool = PgPool.getInstance();
 
     return pool.query(text, params);
+  }
+
+  /**
+   * Connect to Pool
+   */
+  static async connect(): Promise<PoolClient> {
+    const pool = PgPool.getInstance();
+    return pool.connect();
   }
 }
