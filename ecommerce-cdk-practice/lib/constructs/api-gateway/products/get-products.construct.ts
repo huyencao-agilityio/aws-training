@@ -54,7 +54,7 @@ export class GetProductsApiConstruct extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'application/json': models.productsModel,
+          'application/json': models!.productsModel,
         },
       },
       ...errorStatusCodes.map(code => ({
@@ -88,7 +88,7 @@ export class GetProductsApiConstruct extends Construct {
       }
     ), {
       requestModels: {
-        'application/json': models.productsModel
+        'application/json': models!.productsModel
       },
       authorizer: lambdaAuthorizer,
       authorizationScopes: [

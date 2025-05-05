@@ -1,28 +1,27 @@
 import { IResource } from 'aws-cdk-lib/aws-apigateway';
-import { IAuthorizer } from 'aws-cdk-lib/aws-apigateway';
+import { Construct } from 'constructs';
 
-import { healthCheckMethod } from './health-check';
-import { healthCheckLambdaMethod } from './health-check-lambda';
+import { HealthCheckApiConstructProps } from '@interfaces/construct.interface';
+
+import { HealthCheckApiConstruct } from './health-check.construct';
 
 /**
- * Creates the Health Check API resource and its associated methods
- *
- * @param apiResource - The parent API resource to attach to
- * @param authorizerLambda - The Lambda authorizer for request validation
- * @param authorizerCognito - The Cognito authorizer for request validation
+ * Define the construct for the resource health-check
  */
-export const createHealthCheckApi = (
-  apiResource: IResource,
-  authorizerLambda: IAuthorizer,
-  authorizerCognito: IAuthorizer
-): IResource => {
-  // Create the health-check resource
-  const healthCheck = apiResource.addResource('health-check');
-  const healthCheckLambda = apiResource.addResource('health-check-lambda');
+export class HealthCheckResourceConstruct extends Construct {
+  public readonly healthCheckResource: IResource;
 
-  // Add all methods for health status resource
-  healthCheckMethod(healthCheck, authorizerCognito);
-  healthCheckLambdaMethod(healthCheckLambda, authorizerLambda);
+  constructor(scope: Construct, id: string, props: HealthCheckApiConstructProps) {
+    super(scope, id);
 
-  return healthCheck;
-};
+    const { resource } = props;
+
+    // Create the health-check resource
+    this.healthCheckResource = resource.addResource('health-check');
+
+    // Add construct to define API health-check
+    new HealthCheckApiConstruct(this, 'HealCheckApiConstruct', {
+      resource: this.healthCheckResource
+    });
+  }
+}

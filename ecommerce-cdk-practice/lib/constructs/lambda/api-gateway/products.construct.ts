@@ -33,8 +33,8 @@ export class ProductsLambdaConstruct extends Construct {
       layers: [librariesLayer],
       timeout: Duration.seconds(30),
       environment: {
-        COGNITO_USER_POOL_ID: userPool?.userPoolId,
-        COGNITO_REGION: userPool?.env.region,
+        COGNITO_USER_POOL_ID: userPool.userPoolId,
+        COGNITO_REGION: userPool.env.region,
         DB_HOST: dbHost,
         DB_NAME: dbName,
         DB_USER: dbUser,

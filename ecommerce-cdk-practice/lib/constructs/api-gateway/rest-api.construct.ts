@@ -13,7 +13,7 @@ import { ApiGatewayModel } from '@interfaces/api-gateway-model';
 import {
   AuthorizationConstruct
 } from '../lambda/api-gateway/authorization.construct';
-import { createHealthCheckApi } from './health-check';
+import { createHealthCheckApi, HealthCheckResourceConstruct } from './health-check';
 import { UsersResourceConstruct } from './users';
 import { UserModelConstruct } from './user-model.construct';
 import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
@@ -110,12 +110,10 @@ export class RestApiConstruct extends Construct {
       commonResponseModel: commonResponseModelConstruct.commonResponseModel
     };
 
-    // Create APIs
-    const healthCheck = createHealthCheckApi(
-      apiResource,
-      lambdaAuthorizer,
-      cognitoAuthorizer
-    );
+    // Create APIs for app
+    new HealthCheckResourceConstruct(this, 'HealthCheckResourceConstruct', {
+      resource: apiResource
+    });
 
     new ProductsResourceConstruct(this, 'ProductsResourceConstruct', {
       resource: apiResource,
