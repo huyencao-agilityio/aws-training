@@ -6,7 +6,7 @@ import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Construct for creating Lambda function
- * to handles GET requests to get presigned avatar
+ * for API upload avatar
  */
 export class UploadAvatarLambdaConstruct extends Construct {
   public readonly uploadAvatarLambda: IFunction;
