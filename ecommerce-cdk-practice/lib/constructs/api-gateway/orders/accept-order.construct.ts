@@ -20,7 +20,7 @@ export class AcceptOrderApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer } = props;
+    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
 
     // Create the Lambda function for accept order
     const acceptOrderLambdaConstruct = new OrderLambdaConstruct(
