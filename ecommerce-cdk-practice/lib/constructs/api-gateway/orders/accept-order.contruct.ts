@@ -14,25 +14,25 @@ import {
 } from '../../lambda/api-gateway/orders.construct';
 
 /**
- * Define the construct for API POST order product
+ * Define the construct for API POST accept order
  */
-export class OrderProductApiConstruct extends Construct {
+export class AcceptOrderApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
     const { resource, librariesLayer, cognitoAuthorizer, models } = props;
 
-    // Create the Lambda function for order product
-    const orderProductLambdaConstruct = new OrderLambdaConstruct(
+    // Create the Lambda function for accept order
+    const acceptOrderLambdaConstruct = new OrderLambdaConstruct(
       this,
-      'OrderProductLambdaConstruct',
+      'AcceptOrderLambdaConstruct',
       {
         librariesLayer: librariesLayer
       }
     );
 
     // Define the list error code that need to handle in API
-    const errorStatusCodes = [404, 400, 500];
+    const errorStatusCodes = [403, 404, 400, 500];
     // Create integration response for API
     const integrationResponses: IntegrationResponse[] = [
       {
@@ -64,33 +64,30 @@ export class OrderProductApiConstruct extends Construct {
     // Add the POST method to the API resource to order product
     // This creates the POST /orders endpoint
     resource.addMethod('POST', new LambdaIntegration(
-      orderProductLambdaConstruct.orderProductLambda,
+      acceptOrderLambdaConstruct.acceptOrderLambda,
       {
         proxy: false,
         requestTemplates: {
           'application/json': `{
-            {
-              "body": $input.json('$'),
-              "context" : {
-                "sub" : "$context.authorizer.claims.sub",
-                "email" : "$context.authorizer.claims.email",
-                "group": "$context.authorizer.claims['cognito:groups']"
-              }
+            "orderId": "$input.params('orderId')",
+            "body": $input.json('$'),
+            "context" : {
+              "sub" : "$context.authorizer.claims.sub",
+              "email" : "$context.authorizer.claims.email",
+              "group": "$context.authorizer.claims['cognito:groups']"
             }
-          }`
+        }`
         },
         integrationResponses: integrationResponses
       }
     ), {
-      requestModels: {
-        'application/json': models!.orderModel
-      },
       authorizer: cognitoAuthorizer,
       authorizationScopes: [
         'aws.cognito.signin.user.admin',
       ],
       methodResponses: methodResponses,
       requestParameters: {
+        'method.request.path.orderId': true,
         'method.request.header.Authorization': true
       },
       apiKeyRequired: false,

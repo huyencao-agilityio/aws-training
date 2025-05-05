@@ -1,4 +1,6 @@
 export enum OrderStatus {
   REJECTED = 'REJECTED',
-  COMPLETED = 'COMPLETED'
+  COMPLETED = 'COMPLETED',
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED'
 }
