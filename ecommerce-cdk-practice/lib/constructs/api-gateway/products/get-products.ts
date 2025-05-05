@@ -1,123 +1,108 @@
 import {
   AuthorizationType,
-  IAuthorizer,
+  IntegrationResponse,
   LambdaIntegration,
-  Model,
-  Resource
+  MethodResponse,
+  Model
 } from 'aws-cdk-lib/aws-apigateway';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
-import {
-  GetProductsLambdaConstruct
-} from '../../lambda/api-gateway/get-products.construct';
+import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
+
+import { ProductsLambdaConstruct } from '../../lambda/api-gateway/products.construct';
 
 /**
- * Configures the GET /products endpoint
- *
- * @param scope - The CDK construct scope
- * @param productsResource - The API resource to attach the method to
- * @param authorizer - The Lambda authorizer for request validation
- * @param librariesLayer - The Lambda layer containing shared libraries
- * @param userPool - The Cognito User Pool
+ * Define the construct for API POST order product
  */
-export const getProductsMethod = (
-  scope: Construct,
-  productsResource: Resource,
-  authorizer: IAuthorizer,
-  librariesLayer: ILayerVersion,
-  userPool: UserPool
-): void => {
-  // Create the Lambda function for product retrieval
-  const getProductsLambdaConstruct = new GetProductsLambdaConstruct(
-    scope, 'GetProductsLambdaConstruct',
-    {
-      librariesLayer: librariesLayer,
-      userPool: userPool
-    }
-  );
+export class GetProductsApiConstruct extends Construct {
+  constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
+    super(scope, id);
 
-  // Add the GET method to the API resource
-  // This creates the GET /products endpoint
-  productsResource.addMethod('GET', new LambdaIntegration(
-    getProductsLambdaConstruct.getProductsLambda,
-    {
-      proxy: false,
-      requestTemplates: {
-        'application/json': `{
-          "requestContext": {
-            "authorizer": {
-              "role": "$util.escapeJavaScript($context.authorizer.role)",
-              "principalId": "$util.escapeJavaScript($context.authorizer.principalId)",
-              "user": "$util.escapeJavaScript($context.authorizer.user)"
-            }
-          },
-          "page": "$util.escapeJavaScript($input.params('page'))",
-          "limit": "$util.escapeJavaScript($input.params('limit'))"
-        }`
+    const {
+      resource,
+      userPool,
+      librariesLayer,
+      lambdaAuthorizer,
+      models
+    } = props;
+
+    // Create the Lambda function for product retrieval
+    const productsLambdaConstruct = new ProductsLambdaConstruct(
+      scope, 'GetProductsLambdaConstruct',
+      {
+        librariesLayer: librariesLayer,
+        userPool: userPool!
+      }
+    );
+
+    // Define the list error code that need to handle in API
+    const errorStatusCodes = [401, 400, 500];
+    // Create integration response for API
+    const integrationResponses: IntegrationResponse[] = [
+      {
+        statusCode: '200',
       },
-      integrationResponses: [
-        {
-          statusCode: '200'
-        },
-        {
-          selectionPattern: '.*"statusCode":400.*',
-          statusCode: '400',
-          responseTemplates: {
-            'application/json': '#set($inputRoot = $input.path("$"))\n$inputRoot.errorMessage'
-          }
-        },
-        {
-          selectionPattern: '.*"statusCode":401.*',
-          statusCode: '401',
-          responseTemplates: {
-            'application/json': '#set($inputRoot = $input.path("$"))\n$inputRoot.errorMessage'
-          }
-        },
-        {
-          selectionPattern: '.*"statusCode":500.*',
-          statusCode: '500',
-          responseTemplates: {
-            'application/json': '#set($inputRoot = $input.path("$"))\n$inputRoot.errorMessage'
-          }
+      ...errorStatusCodes.map(code => ({
+        selectionPattern: `.*"statusCode":${code}.*`,
+        statusCode: `${code}`,
+        responseTemplates: {
+          'application/json': '#set($inputRoot = $input.path("$"))\n$inputRoot.errorMessage'
         }
-      ]
-    }
-  ), {
-    authorizer: authorizer,
-    methodResponses: [
+      })),
+    ];
+    const methodResponses: MethodResponse[] = [
       {
         statusCode: '200',
         responseModels: {
-          'application/json': Model.EMPTY_MODEL
-        }
+          'application/json': models.productsModel,
+        },
       },
-      {
-        statusCode: '400',
+      ...errorStatusCodes.map(code => ({
+        statusCode: `${code}`,
         responseModels: {
-          'application/json': Model.ERROR_MODEL
-        }
-      },
+          'application/json': Model.ERROR_MODEL,
+        },
+      })),
+    ];
+
+    // Add the GET method to the API resource to get all products
+    // This creates the GET /products endpoint
+    resource.addMethod('GET', new LambdaIntegration(
+      productsLambdaConstruct.getProductsLambda,
       {
-        statusCode: '401',
-        responseModels: {
-          'application/json': Model.ERROR_MODEL
-        }
-      },
-      {
-        statusCode: '500',
-        responseModels: {
-          'application/json': Model.ERROR_MODEL
-        }
+        proxy: false,
+        requestTemplates: {
+          'application/json': `{
+            "requestContext": {
+              "authorizer": {
+                "role": "$util.escapeJavaScript($context.authorizer.role)",
+                "principalId": "$util.escapeJavaScript($context.authorizer.principalId)",
+                "user": "$util.escapeJavaScript($context.authorizer.user)"
+              }
+            },
+            "page": "$util.escapeJavaScript($input.params('page'))",
+            "limit": "$util.escapeJavaScript($input.params('limit'))"
+          }`
+        },
+        integrationResponses: integrationResponses
       }
-    ],
-    requestParameters: {
-      'method.request.querystring.limit': false,
-      'method.request.querystring.page': false,
-      'method.request.header.Authorization': true
-    },
-    apiKeyRequired: false,
-    authorizationType: AuthorizationType.CUSTOM
-  });
-};
+    ), {
+      requestModels: {
+        'application/json': models.productsModel
+      },
+      authorizer: lambdaAuthorizer,
+      authorizationScopes: [
+        'aws.cognito.signin.user.admin',
+      ],
+      methodResponses: methodResponses,
+      requestParameters: {
+        'method.request.querystring.limit': false,
+        'method.request.querystring.page': false,
+        'method.request.header.Authorization': true
+      },
+      apiKeyRequired: false,
+      authorizationType: AuthorizationType.CUSTOM
+    });
+
+  }
+}

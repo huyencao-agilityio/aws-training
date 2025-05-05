@@ -1,33 +1,32 @@
 import { Construct } from 'constructs';
-import { IResource, IAuthorizer } from 'aws-cdk-lib/aws-apigateway';
-import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IResource } from 'aws-cdk-lib/aws-apigateway';
 
-import { getProductsMethod } from './get-products';
+import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
+
+import { GetProductsApiConstruct } from './get-products';
 
 /**
- * Creates the Products API resource and its associated methods
- *
- * @param scope - The CDK construct scope
- * @param apiResource - The parent API resource to attach to
- * @param authorizerLambda - The Lambda authorizer for request validation
- * @param librariesLayer - The Lambda layer containing shared libraries
- * @param userPool - The Cognito User Pool
- * @returns The created products API resource
+ * Define the construct for the resource products
  */
-export const createProductsApi = (
-  scope: Construct,
-  apiResource: IResource,
-  authorizerLambda: IAuthorizer,
-  librariesLayer: ILayerVersion,
-  userPool: UserPool
-): IResource => {
-  // Create the products resource
-  const products = apiResource.addResource('products');
+export class ProductsResourceConstruct extends Construct {
+  public readonly productsResource: IResource;
 
-  // Configure all HTTP methods for the products resource
-  // Retrieve all products
-  getProductsMethod(scope, products, authorizerLambda, librariesLayer, userPool);
+  constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
+    super(scope, id);
 
-  return products;
-};
+    const { resource, userPool, librariesLayer, lambdaAuthorizer, models } = props;
+
+    this.productsResource = resource.addResource('products');
+
+    // Add construct to define API get products
+    new GetProductsApiConstruct(this, 'GetProductsApiConstruct', {
+      resource: this.productsResource,
+      userPool: userPool,
+      librariesLayer: librariesLayer,
+      lambdaAuthorizer: lambdaAuthorizer,
+      models: {
+        productModel: models.productModel
+      }
+    });
+  }
+}

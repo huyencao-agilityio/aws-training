@@ -1,7 +1,6 @@
 import {
   CognitoUserPoolsAuthorizer,
   EndpointType,
-  IRestApi,
   RestApi
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
@@ -15,10 +14,13 @@ import {
   AuthorizationConstruct
 } from '../lambda/api-gateway/authorization.construct';
 import { createHealthCheckApi } from './health-check';
-import { createProductsApi } from './products';
 import { UsersResourceConstruct } from './users';
 import { UserModelConstruct } from './user-model.construct';
 import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
+import { OrderModelConstruct } from './order-model.construct';
+import { ProductModelConstruct } from './product-model.construct';
+import { CommonResponseModelConstruct } from './common-response-model.construct';
+import { ProductsResourceConstruct } from './products';
 
 /**
  * Define the construct to new a REST API
@@ -65,7 +67,7 @@ export class RestApiConstruct extends Construct {
     const userModelConstruct = new UserModelConstruct(this, 'UserModelConstruct', {
       restApi: this.restApi
     });
-    // Create model for upload avatar to using in API
+    // Create upload avatar model
     const uploadAvatarModelConstruct = new UploadAvatarModelConstruct(
       this,
       'UploadAvatarModelConstruct',
@@ -73,11 +75,39 @@ export class RestApiConstruct extends Construct {
         restApi: this.restApi
       }
     );
+    // Create order model
+    const orderModelConstruct = new OrderModelConstruct(
+      this,
+      'OrderModelConstruct',
+      {
+        restApi: this.restApi
+      }
+    );
+    // Create product model
+    const productModelConstruct = new ProductModelConstruct(
+      this,
+      'ProductModelConstruct',
+      {
+        restApi: this.restApi
+      }
+    );
+    // Create common response
+    const commonResponseModelConstruct = new CommonResponseModelConstruct(
+      this,
+      'CommonResponseModelConstruct',
+      {
+        restApi: this.restApi
+      }
+    );
 
+    // Define all model in API Gateway
     const restApiModel: ApiGatewayModel = {
       updateUserModel: userModelConstruct.updateUserProfileModel,
       uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
-      presignedS3Response: uploadAvatarModelConstruct.presignedS3Response
+      presignedS3Response: uploadAvatarModelConstruct.presignedS3Response,
+      orderModel: orderModelConstruct.orderProductRequestModel,
+      productsModel: productModelConstruct.productsResponseModel,
+      commonResponseModel: commonResponseModelConstruct.commonResponseModel
     };
 
     // Create APIs
@@ -86,13 +116,14 @@ export class RestApiConstruct extends Construct {
       lambdaAuthorizer,
       cognitoAuthorizer
     );
-    const products = createProductsApi(
-      this,
-      apiResource,
-      lambdaAuthorizer,
-      librariesLayer,
-      userPool
-    );
+
+    new ProductsResourceConstruct(this, 'ProductsResourceConstruct', {
+      resource: apiResource,
+      userPool: userPool,
+      librariesLayer: librariesLayer,
+      cognitoAuthorizer: cognitoAuthorizer,
+      models: restApiModel
+    });
 
     new UsersResourceConstruct(this, 'UsersResourceConstruct', {
       resource: apiResource,
@@ -100,6 +131,5 @@ export class RestApiConstruct extends Construct {
       cognitoAuthorizer: cognitoAuthorizer,
       models: restApiModel
     });
-
   }
 }

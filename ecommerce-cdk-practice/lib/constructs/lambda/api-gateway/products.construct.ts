@@ -8,9 +8,9 @@ import {
 } from '@interfaces/construct.interface';
 
 /**
- * Construct for creating Lambda function to handles GET requests to retrieve products
+ * Construct for creating Lambda function for API products
  */
-export class GetProductsLambdaConstruct extends Construct {
+export class ProductsLambdaConstruct extends Construct {
   public readonly getProductsLambda: IFunction;
 
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
@@ -33,8 +33,8 @@ export class GetProductsLambdaConstruct extends Construct {
       layers: [librariesLayer],
       timeout: Duration.seconds(30),
       environment: {
-        COGNITO_USER_POOL_ID: userPool.userPoolId,
-        COGNITO_REGION: userPool.env.region,
+        COGNITO_USER_POOL_ID: userPool?.userPoolId,
+        COGNITO_REGION: userPool?.env.region,
         DB_HOST: dbHost,
         DB_NAME: dbName,
         DB_USER: dbUser,
