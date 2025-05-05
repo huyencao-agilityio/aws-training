@@ -38,7 +38,14 @@ export interface BaseApiGatewayConstructProps extends BaseConstructProps {
   userPool?: UserPool;
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
   lambdaAuthorizer?: RequestAuthorizer,
-  models: ApiGatewayModel;
+  models?: ApiGatewayModel;
+}
+
+/**
+ * Defines interface for health check API Construct
+ */
+export interface HealthCheckApiConstructProps {
+  resource: IResource;
 }
 
 /**

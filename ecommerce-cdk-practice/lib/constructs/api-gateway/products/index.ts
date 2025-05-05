@@ -3,7 +3,7 @@ import { IResource } from 'aws-cdk-lib/aws-apigateway';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import { GetProductsApiConstruct } from './get-products';
+import { GetProductsApiConstruct } from './get-products.construct';
 
 /**
  * Define the construct for the resource products
@@ -25,7 +25,7 @@ export class ProductsResourceConstruct extends Construct {
       librariesLayer: librariesLayer,
       lambdaAuthorizer: lambdaAuthorizer,
       models: {
-        productModel: models.productModel
+        productModel: models!.productModel
       }
     });
   }
