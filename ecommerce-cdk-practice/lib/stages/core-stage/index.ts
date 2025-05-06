@@ -1,10 +1,10 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { RDSStack } from '../../stacks/rds-stack';
+import { RDSStack } from '../../stacks/rds.stack';
 import { StorageStack } from '../../stacks/storage.stack';
-import { VPCStack } from '../../stacks/vpc-stack';
-import { Route53Stack } from '../../stacks/route53-stack';
+import { VPCStack } from '../../stacks/vpc.stack';
+import { Route53Stack } from '../../stacks/route53.stack';
 import { CloudFrontStack } from '../../stacks/cloudfront.stack';
 
 export class CoreStage extends Stage {
