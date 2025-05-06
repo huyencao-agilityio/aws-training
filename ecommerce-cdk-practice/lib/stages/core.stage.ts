@@ -1,12 +1,16 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { RDSStack } from '../../stacks/rds.stack';
-import { StorageStack } from '../../stacks/storage.stack';
-import { VPCStack } from '../../stacks/vpc.stack';
-import { Route53Stack } from '../../stacks/route53.stack';
-import { CloudFrontStack } from '../../stacks/cloudfront.stack';
+import { RDSStack } from '../stacks/rds.stack';
+import { StorageStack } from '../stacks/storage.stack';
+import { VPCStack } from '../stacks/vpc.stack';
+import { Route53Stack } from '../stacks/route53.stack';
+import { CloudFrontStack } from '../stacks/cloudfront.stack';
 
+/**
+ * CoreStage is responsible for grouping and deploying all application stacks
+ * such as S3, RDS, Route 53.
+ */
 export class CoreStage extends Stage {
   public readonly rdsStack: RDSStack;
   public readonly storageStack: StorageStack;
