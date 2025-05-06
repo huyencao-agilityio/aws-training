@@ -13,7 +13,8 @@
       "/opt/nodejs/*": ["../lambda-layer/layer/nodejs/*"],
       "@constants/*": ["src/constants/*"],
       "@interfaces/*": ["src/interfaces/*"],
-      "@enums/*": ["src/enums/*"]
+      "@enums/*": ["src/enums/*"],
+      "@app-types/*": ["src/types/*"]
     },
     "declaration": true,
     "strict": true,
@@ -25,6 +26,7 @@
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
     "inlineSourceMap": true,
     "inlineSources": true,
     "experimentalDecorators": true,

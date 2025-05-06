@@ -10,7 +10,7 @@ import { Construct } from 'constructs';
 import { StorageBucketConstructProps } from '@interfaces/construct.interface';
 
 export class StorageConstruct extends Construct {
-  public readonly storageBucket: Bucket;
+  public readonly bucket: Bucket;
 
   constructor(scope: Construct, id: string, props: StorageBucketConstructProps) {
     super(scope, id);
@@ -31,7 +31,7 @@ export class StorageConstruct extends Construct {
     ];
 
     // Create new bucket on S3
-    this.storageBucket = new Bucket(this, 'StorageBucket', {
+    this.bucket = new Bucket(this, 'StorageBucket', {
       bucketName: props.bucketName,
       encryption: BucketEncryption.S3_MANAGED,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,

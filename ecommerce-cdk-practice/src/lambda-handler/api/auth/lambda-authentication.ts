@@ -1,6 +1,6 @@
 import { Handler } from 'aws-lambda';
 import * as jwt from 'jsonwebtoken';
-import * as jwkToPem from 'jwk-to-pem';
+import jwkToPem from 'jwk-to-pem';
 
 import {
   JwksResponse,
