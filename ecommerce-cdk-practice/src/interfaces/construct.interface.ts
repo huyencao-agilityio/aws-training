@@ -5,7 +5,7 @@ import {
   IRestApi
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Function, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 import { ApiGatewayModel } from './api-gateway-model.interface';
 
@@ -13,7 +13,8 @@ import { ApiGatewayModel } from './api-gateway-model.interface';
  * Defines interface the base construct.
  */
 export interface BaseConstructProps {
-  librariesLayer: ILayerVersion;
+  librariesLayer?: ILayerVersion;
+  lambdaFunction?: Function
 }
 
 /**

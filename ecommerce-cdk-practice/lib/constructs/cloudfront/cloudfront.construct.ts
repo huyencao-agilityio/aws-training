@@ -10,8 +10,8 @@ import {
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
-import { ResizeImageLambdaConstruct } from '../lambda/cloudfront/resize-image.construct';
 import { BUCKET_NAME } from '../../../src/constants/bucket.constant';
+import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Define the construct to create new CloudFront
@@ -19,18 +19,13 @@ import { BUCKET_NAME } from '../../../src/constants/bucket.constant';
 export class CloudFrontConstruct extends Construct {
   public readonly distribution: Distribution;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
-    // Create the Lambda function for resize image
-    const resizeLambdaConstruct = new ResizeImageLambdaConstruct(
-      this,
-      'ResizeImageLambdaConstruct'
-    );
-
+    const { lambdaFunction } = props;
     const bucket = Bucket.fromBucketName(this, 'FromBucketName', BUCKET_NAME);
 
-    // Create Origin Access Control (OAC
+    // Create Origin Access Control (OAC)
     const oac = new CfnOriginAccessControl(this, 'OAC', {
       originAccessControlConfig: {
         name: `${BUCKET_NAME}-OAC`,
@@ -42,14 +37,14 @@ export class CloudFrontConstruct extends Construct {
     });
 
     // Create new a distribution in CloudFront
-    this.distribution = new Distribution(this, 'CloudFrontDist', {
+    this.distribution = new Distribution(this, 'CloudFrontDistribution', {
       defaultBehavior: {
         origin: S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
         edgeLambdas: [
           {
-            functionVersion: resizeLambdaConstruct.currentVersion,
+            functionVersion: lambdaFunction!.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
           },
         ],
