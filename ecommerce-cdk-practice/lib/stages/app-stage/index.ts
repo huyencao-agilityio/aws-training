@@ -1,8 +1,8 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { ApiStack } from '../../stacks/api-stack';
-import { AuthStack } from '../../stacks/auth-stack';
+import { ApiStack } from '../../stacks/api.stack';
+import { AuthStack } from '../../stacks/auth.stack';
 
 /**
  * AppStage is responsible for grouping and deploying all application stacks
