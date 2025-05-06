@@ -18,6 +18,7 @@ export class StorageConstruct extends Construct {
   constructor(scope: Construct, id: string, props: StorageBucketConstructProps) {
     super(scope, id);
 
+    const { bucketName } = props;
     // Define CORS rule
     const corsRules: CorsRule[] = [
       {
@@ -35,7 +36,7 @@ export class StorageConstruct extends Construct {
 
     // Create new bucket on S3
     this.bucket = new Bucket(this, 'S3Bucket', {
-      bucketName: props.bucketName,
+      bucketName: bucketName,
       encryption: BucketEncryption.S3_MANAGED,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       cors: corsRules,

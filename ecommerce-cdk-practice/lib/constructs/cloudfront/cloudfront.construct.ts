@@ -22,6 +22,7 @@ export class CloudFrontConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
+    const { lambdaFunction } = props;
     const bucket = Bucket.fromBucketName(this, 'FromBucketName', BUCKET_NAME);
 
     // Create Origin Access Control (OAC)
@@ -43,7 +44,7 @@ export class CloudFrontConstruct extends Construct {
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
         edgeLambdas: [
           {
-            functionVersion: props!.lambdaFunction!.currentVersion,
+            functionVersion: lambdaFunction!.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
           },
         ],
