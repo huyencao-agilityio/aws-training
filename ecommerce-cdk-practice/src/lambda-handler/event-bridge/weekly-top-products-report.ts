@@ -73,6 +73,6 @@ export const handler: Handler = async (
   } catch (error: any) {
     console.error('Error generating report:', error);
 
-    return error;
+    throw error;
   }
 };
