@@ -6,9 +6,11 @@ import {
 
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { Function, IFunction, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, ILayerVersion, LayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 import { ApiGatewayModel } from './api-gateway-model.interface';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { Duration } from 'aws-cdk-lib';
 
 /**
  * Defines interface the base construct.
@@ -41,6 +43,29 @@ export interface BaseApiGatewayConstructProps extends BaseConstructProps {
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
   lambdaAuthorizer?: RequestAuthorizer,
   models?: ApiGatewayModel;
+}
+
+/**
+ * Defines interface for Queue Construct
+ */
+export interface QueueConstructProps extends BaseConstructProps {
+  queue?: Queue;
+  baseName?: string;
+  maxReceiveCount?: number;
+  isFifo?: boolean;
+}
+
+/**
+ * Defines interface for Queue Lambda Construct
+ */
+export interface QueueLambdaConstructProps {
+  queue: Queue;
+  librariesLayer?: ILayerVersion;
+  handlerFile?: string;
+  handlerFunction?: string;
+  environment?: Record<string, string>;
+  timeout?: Duration;
+  withSesPolicy?: boolean;
 }
 
 /**
