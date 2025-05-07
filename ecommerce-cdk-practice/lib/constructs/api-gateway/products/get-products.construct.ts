@@ -9,8 +9,6 @@ import { Construct } from 'constructs';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import { ProductsLambdaConstruct } from '../../lambda/api-gateway/products.construct';
-
 /**
  * Define the construct for API POST order product
  */
@@ -20,20 +18,10 @@ export class GetProductsApiConstruct extends Construct {
 
     const {
       resource,
-      userPool,
-      librariesLayer,
+      lambdaFunction,
       lambdaAuthorizer,
       models
     } = props;
-
-    // Create the Lambda function for product retrieval
-    const productsLambdaConstruct = new ProductsLambdaConstruct(
-      scope, 'GetProductsLambdaConstruct',
-      {
-        librariesLayer: librariesLayer,
-        userPool: userPool!
-      }
-    );
 
     // Define the list error code that need to handle in API
     const errorStatusCodes = [401, 400, 500];
@@ -68,7 +56,7 @@ export class GetProductsApiConstruct extends Construct {
     // Add the GET method to the API resource to get all products
     // This creates the GET /products endpoint
     resource.addMethod('GET', new LambdaIntegration(
-      productsLambdaConstruct.getProductsLambda,
+      lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {

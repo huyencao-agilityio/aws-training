@@ -8,7 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
-import { BUCKET_NAME } from '../../../../src/constants/bucket.constant';
+import { BUCKET_NAME } from '@constants/bucket.constant';
 
 /**
  * Construct for creating Lambda function for resize image in Lambda@Edge

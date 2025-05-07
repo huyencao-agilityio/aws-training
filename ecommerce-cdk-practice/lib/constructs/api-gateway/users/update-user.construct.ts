@@ -1,19 +1,13 @@
 import {
   AuthorizationType,
-  IModel,
   IntegrationResponse,
   LambdaIntegration,
   MethodResponse,
-  Model,
-  Resource
+  Model
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
-
-import {
-  UpdateUserLambdaConstruct
-} from '../../lambda/api-gateway/update-user.construct';
 
 /**
  * Define the construct for API PATCH update user detail
@@ -22,16 +16,12 @@ export class UpdateUsersDetailApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
-
-    // Create the Lambda function for product retrieval
-    const updateUserLambdaConstruct = new UpdateUserLambdaConstruct(
-      this,
-      'GetProductsLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
+    const {
+      resource,
+      lambdaFunction,
+      cognitoAuthorizer,
+      models
+    } = props;
 
     // Define the list error code that need to handle in API
     const errorStatusCodes = [403, 404, 409, 500];
@@ -66,7 +56,7 @@ export class UpdateUsersDetailApiConstruct extends Construct {
     // Add the PATCH method to the API resource for updating user
     // This creates the PATCH /users/{userId} endpoint
     resource.addMethod('PATCH', new LambdaIntegration(
-      updateUserLambdaConstruct.updateUserLambda,
+      lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {

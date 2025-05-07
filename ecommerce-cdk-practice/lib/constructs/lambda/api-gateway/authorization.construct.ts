@@ -28,7 +28,7 @@ export class AuthorizationConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/api/auth/', {
         exclude: ['**/*', '!lambda-authentication.js'],
       }),
-      layers: [librariesLayer],
+      layers: [librariesLayer!],
       timeout: Duration.seconds(10),
       environment: {
         COGNITO_USER_POOL_ID: userPool.userPoolId,
@@ -41,7 +41,7 @@ export class AuthorizationConstruct extends Construct {
       authorizerName: 'LambdaAuthorization',
       handler: this.lambdaAuthorization,
       identitySources: ['method.request.header.Authorization'],
-      resultsCacheTtl: Duration.seconds(0),
+      resultsCacheTtl: Duration.seconds(0)
     });
   }
 }

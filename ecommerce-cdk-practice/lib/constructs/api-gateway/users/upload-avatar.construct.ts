@@ -9,10 +9,6 @@ import {
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import {
-  UploadAvatarLambdaConstruct
-} from '../../lambda/api-gateway/upload-avatar.construct';
-
 /**
  * Define the construct for API POST upload avatar
  */
@@ -20,16 +16,12 @@ export class UploadAvatarApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
-
-    // Create the Lambda function for product retrieval
-    const uploadAvatarLambdaConstruct = new UploadAvatarLambdaConstruct(
-      this,
-      'GetProductsLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
+    const {
+      resource,
+      lambdaFunction,
+      cognitoAuthorizer,
+      models
+    } = props;
 
     // Define the list error code that need to handle in API
     const errorStatusCodes = [403, 500];
@@ -64,7 +56,7 @@ export class UploadAvatarApiConstruct extends Construct {
     // Add the POST method to the API resource to upload image
     // This creates the POST /users/{userId}/avatar endpoint
     resource.addMethod('POST', new LambdaIntegration(
-      uploadAvatarLambdaConstruct.uploadAvatarLambda,
+      lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {

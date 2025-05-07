@@ -1,12 +1,21 @@
-#!/usr/bin/env node
 import 'dotenv/config';
-import { App, pipelines, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
+import {
+  App,
+  pipelines,
+  SecretValue,
+  Stack,
+  StackProps
+} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
+import {
+  CodePipeline,
+  CodePipelineSource,
+  ShellStep
+} from 'aws-cdk-lib/pipelines';
 
-import { CoreStage } from '../lib/stages/core-stage/index';
-import { MonitoringStage } from '../lib/stages/monitoring-stage/index';
-import { AppStage } from '../lib/stages/app-stage/index';
+import { CoreStage } from '../lib/stages/core.stage';
+import { MonitoringStage } from '../lib/stages/monitoring.stage';
+import { AppStage } from '../lib/stages/app.stage';
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

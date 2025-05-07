@@ -9,10 +9,6 @@ import {
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import {
-  OrderLambdaConstruct
-} from '../../lambda/api-gateway/orders.construct';
-
 /**
  * Define the construct for API POST accept order
  */
@@ -20,16 +16,7 @@ export class AcceptOrderApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
-
-    // Create the Lambda function for accept order
-    const acceptOrderLambdaConstruct = new OrderLambdaConstruct(
-      this,
-      'AcceptOrderLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
+    const { resource, lambdaFunction, cognitoAuthorizer, models } = props;
 
     // Define the list error code that need to handle in API
     const errorStatusCodes = [403, 404, 400, 500];
@@ -64,7 +51,7 @@ export class AcceptOrderApiConstruct extends Construct {
     // Add the POST method to the API resource to accept order
     // This creates the POST /orders/{orderId}/accept endpoint
     resource.addMethod('POST', new LambdaIntegration(
-      acceptOrderLambdaConstruct.acceptOrderLambda,
+      lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {
