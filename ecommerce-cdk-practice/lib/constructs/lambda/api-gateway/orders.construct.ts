@@ -1,4 +1,4 @@
-import { Duration } from 'aws-cdk-lib';
+import { Duration, Fn } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
@@ -18,13 +18,17 @@ export class OrderLambdaConstruct extends Construct {
 
     const { librariesLayer } = props;
 
+    const acceptQueueUrl = Fn.importValue('AcceptOrderNotificationQueueCDKUrl');
+    const acceptQueueArn = Fn.importValue('AcceptOrderNotificationQueueCDKArn');
+    const rejectQueueUrl = Fn.importValue('RejectOrderNotificationQueueCDKUrl');
+    const rejectQueueArn = Fn.importValue('RejectOrderNotificationQueueCDKArn');
+    const orderQueueUrl = Fn.importValue('OrderNotificationQueueCDKUrl');
+    const orderQueueArn = Fn.importValue('OrderNotificationQueueCDKArn');
+
     const dbHost = process.env.DB_HOST || '';
     const dbName = process.env.DB_NAME || '';
     const dbPassword = process.env.DB_PASSWORD || '';
     const dbUser= process.env.DB_USER || '';
-    const orderQueue = process.env.ORDER_QUEUE_URL || '';
-    const acceptQueue = process.env.ACCEPT_QUEUE_URL || '';
-    const rejectQueue = process.env.REJECT_QUEUE_URL || '';
 
     // Create the Lambda function for order product
     this.orderProductLambda = new Function(this, 'OrderProduct', {
@@ -40,7 +44,7 @@ export class OrderLambdaConstruct extends Construct {
         DB_NAME: dbName,
         DB_PASSWORD: dbPassword,
         DB_USER: dbUser,
-        QUEUE_URL: orderQueue
+        QUEUE_URL: orderQueueUrl
       },
     });
     // Add IAM policy to allow Lambda access to SQS
@@ -48,8 +52,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      // TODO: Update resource here after creating queue by CDK
-      resources: ['arn:aws:sqs:us-east-1:149379632015:OrderNotificationQueue'],
+      resources: [orderQueueArn],
       effect: Effect.ALLOW
     }));
 
@@ -66,7 +69,7 @@ export class OrderLambdaConstruct extends Construct {
         DB_NAME: dbName,
         DB_PASSWORD: dbPassword,
         DB_USER: dbUser,
-        QUEUE_URL: acceptQueue
+        QUEUE_URL: acceptQueueUrl
       },
     });
     // Add IAM policy to allow Lambda access to SQS
@@ -74,8 +77,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      // TODO: Update resource here after creating queue by CDK
-      resources: ['arn:aws:sqs:us-east-1:149379632015:AcceptOrderNotificationQueue'],
+      resources: [acceptQueueArn],
       effect: Effect.ALLOW
     }));
 
@@ -92,7 +94,7 @@ export class OrderLambdaConstruct extends Construct {
         DB_NAME: dbName,
         DB_PASSWORD: dbPassword,
         DB_USER: dbUser,
-        QUEUE_URL: rejectQueue
+        QUEUE_URL: rejectQueueUrl
       },
     });
     // Add IAM policy to allow Lambda access to SQS
@@ -100,8 +102,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      // TODO: Update resource here after creating queue by CDK
-      resources: ['arn:aws:sqs:us-east-1:149379632015:RejectOrderNotificationQueue'],
+      resources: [rejectQueueArn],
       effect: Effect.ALLOW
     }));
   }

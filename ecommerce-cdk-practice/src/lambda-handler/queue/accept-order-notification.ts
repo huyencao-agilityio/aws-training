@@ -42,7 +42,7 @@ export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
                   </tr>
                 </thead>
                 <tbody>
-                  ${items.map(item => `
+                  ${items.map((item: any) => `
                     <tr>
                       <td style="border: 1px solid #ddd; padding: 8px;">${item.name}</td>
                       <td style="border: 1px solid #ddd; padding: 8px;">${item.quantity}</td>
