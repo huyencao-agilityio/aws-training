@@ -9,6 +9,7 @@ import {
 import { Construct } from 'constructs';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
+import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
  * Construct for creating Lambda function for resize image in Lambda@Edge
@@ -17,8 +18,10 @@ export class ResizeImageLambdaConstruct extends Construct {
   public readonly resizeImageLambda: Function;
   public readonly currentVersion: Version;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
+
+    const { librariesLayer } = props;
 
     // Create the Lambda function for product retrieval
     this.resizeImageLambda = new Function(this, 'ResizeImage', {
@@ -27,6 +30,7 @@ export class ResizeImageLambdaConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/cloudfront/', {
         exclude: ['**/*', '!resize-image.js'],
       }),
+      layers: [librariesLayer!],
       timeout: Duration.seconds(30)
     });
 
