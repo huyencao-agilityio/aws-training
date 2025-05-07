@@ -7,7 +7,6 @@ import {
   UserPoolClient,
   UserPoolClientIdentityProvider,
   UserPoolEmail,
-  UserPoolOperation,
   VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
@@ -15,27 +14,7 @@ import { Construct } from 'constructs';
 import {
   CognitoEnvContextConstructProps
 } from '@interfaces/construct.interface';
-
-import { COGNITO } from '../../../src/constants/cognito.constant';
-import { ProviderConstruct } from './provider.construct';
-import {
-  CreateAuthChallengeLambdaConstruct
-} from '../lambda/cognito/create-auth-challenge.construct';
-import {
-  DefineAuthChallengeLambdaConstruct
-} from '../lambda/cognito/define-auth-challenge.construct';
-import {
-  VerifyAuthChallengeLambdaConstruct
-} from '../lambda/cognito/verify-auth-challenge.construct';
-import {
-  PostConfirmationLambdaConstruct
-} from '../lambda/cognito/post-confirmation.construct';
-import {
-  PreSignUpLambdaConstruct
-} from '../lambda/cognito/pre-sign-up.construct';
-import {
-  CustomMessageLambdaConstruct
-} from '../lambda/cognito/custom-message.construct';
+import { COGNITO } from '@constants/cognito.constant';
 
 /**
  * Construct for managing Cognito User Pool and its associated resources
@@ -53,7 +32,7 @@ export class UserPoolConstruct extends Construct {
   constructor(scope: Construct, id: string, props: CognitoEnvContextConstructProps) {
     super(scope, id);
 
-    const { region, librariesLayer} = props
+    const { region } = props
 
     /**
      * Create the User Pool with:
@@ -103,89 +82,6 @@ export class UserPoolConstruct extends Construct {
         domainPrefix: COGNITO.DOMAIN_PREFIX
       }
     });
-
-    // Create Lambda functions for custom authentication flow
-    // These functions handle different stages of the authentication process
-    const createAuthChallengeLambda = new CreateAuthChallengeLambdaConstruct(
-      this,
-      'CreateAuthChallengeLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
-
-    const defineAuthChallengeLambda = new DefineAuthChallengeLambdaConstruct(
-      this,
-      'DefineAuthChallengeLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
-
-    const verifyAuthChallengeLambda = new VerifyAuthChallengeLambdaConstruct(
-      this,
-      'VerifyAuthChallengeLambdaConstruct'
-    );
-
-    // Create Lambda functions for user lifecycle events
-    // These functions handle events like sign-up confirmation and pre-signup validation
-    const postConfirmationLambda = new PostConfirmationLambdaConstruct(
-      this,
-      'PostConfirmationLambdaConstruct',
-      {
-        librariesLayer: librariesLayer,
-        userPool: this.userPool
-      }
-    );
-
-    const preSignUpLambda = new PreSignUpLambdaConstruct(
-      this,
-      'PreSignUpLambdaConstruct',
-      {
-        librariesLayer: librariesLayer,
-        userPool: this.userPool
-      }
-    );
-
-    const customMessageLambda = new CustomMessageLambdaConstruct(
-      this,
-      'CustomMessageLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
-
-    // Attach Lambda triggers to the User Pool
-    // These triggers are called at specific points in the authentication flow
-    this.userPool.addTrigger(
-      UserPoolOperation.CREATE_AUTH_CHALLENGE,
-      createAuthChallengeLambda.createAuthChallenge
-    );
-
-    this.userPool.addTrigger(
-      UserPoolOperation.DEFINE_AUTH_CHALLENGE,
-      defineAuthChallengeLambda.defineAuthChallenge
-    );
-
-    this.userPool.addTrigger(
-      UserPoolOperation.VERIFY_AUTH_CHALLENGE_RESPONSE,
-      verifyAuthChallengeLambda.verifyAuthChallenge
-    );
-
-    this.userPool.addTrigger(
-      UserPoolOperation.POST_CONFIRMATION,
-      postConfirmationLambda.postConfirmation
-    );
-
-    this.userPool.addTrigger(
-      UserPoolOperation.PRE_SIGN_UP,
-      preSignUpLambda.preSignUp
-    );
-
-    this.userPool.addTrigger(
-      UserPoolOperation.CUSTOM_MESSAGE,
-      customMessageLambda.customMessage
-    );
 
     // Configure user attribute update settings
     // This ensures email verification is required before updating email
@@ -243,22 +139,5 @@ export class UserPoolConstruct extends Construct {
         logoutUrls: [COGNITO.LOGOUT_URI],
       },
     });
-
-    // Create social identity providers
-    const providerConstruct = new ProviderConstruct(
-      this,
-      'ProviderConstruct',
-      {
-        librariesLayer: librariesLayer,
-        userPool: this.userPool
-      }
-    );
-
-    // Ensure social providers are created before the app client
-    // This is required for the app client to support social login
-    this.userPoolClient.node.addDependency(
-      providerConstruct.facebookProvider,
-      providerConstruct.googleProvider
-    );
   }
 }

@@ -1,4 +1,4 @@
-import { Function, IFunction, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -11,11 +11,12 @@ import { UserPoolConstructProps } from '@interfaces/construct.interface';
  * handles pre-signup validation in Cognito User Pool
  */
 export class PreSignUpLambdaConstruct extends Construct {
-  public readonly preSignUp: IFunction;
+  public readonly preSignUp: Function;
 
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
 
+    const { librariesLayer } = props;
     const dbHost = process.env.DB_HOST || '';
     const dbName = process.env.DB_NAME || '';
     const dbPassword = process.env.DB_PASSWORD || '';
@@ -25,7 +26,7 @@ export class PreSignUpLambdaConstruct extends Construct {
     this.preSignUp = new Function(this, 'PreSignUp', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'pre-sign-up.handler',
-      layers: [props.librariesLayer],
+      layers: [librariesLayer!],
       code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
         exclude: ['**/*', '!pre-sign-up.js'],
       }),

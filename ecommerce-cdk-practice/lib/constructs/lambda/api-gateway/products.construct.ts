@@ -1,4 +1,4 @@
-import { IFunction, Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import 'dotenv/config';
@@ -11,7 +11,7 @@ import {
  * Construct for creating Lambda function for API products
  */
 export class ProductsLambdaConstruct extends Construct {
-  public readonly getProductsLambda: IFunction;
+  public readonly getProductsLambda: Function;
 
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
@@ -30,7 +30,7 @@ export class ProductsLambdaConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/api/products/', {
         exclude: ['**/*', '!get-products.js'],
       }),
-      layers: [librariesLayer],
+      layers: [librariesLayer!],
       timeout: Duration.seconds(30),
       environment: {
         COGNITO_USER_POOL_ID: userPool.userPoolId,

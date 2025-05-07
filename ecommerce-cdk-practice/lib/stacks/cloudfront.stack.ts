@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import {
   CloudFrontConstruct
 } from '../constructs/cloudfront/cloudfront.construct';
-import { ResizeImageLambdaConstruct } from '../constructs/lambda/cloudfront/resize-image.construct';
+import { ResizeImageLambdaConstruct } from '../constructs/lambda/cloudfront';
 
 /**
  * Define the CloudFront stack

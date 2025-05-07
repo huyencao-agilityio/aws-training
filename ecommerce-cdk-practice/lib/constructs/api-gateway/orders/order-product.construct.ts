@@ -9,10 +9,6 @@ import {
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import {
-  OrderLambdaConstruct
-} from '../../lambda/api-gateway/orders.construct';
-
 /**
  * Define the construct for API POST order product
  */
@@ -20,16 +16,7 @@ export class OrderProductApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
-
-    // Create the Lambda function for order product
-    const orderProductLambdaConstruct = new OrderLambdaConstruct(
-      this,
-      'OrderProductLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
+    const { resource, lambdaFunction, cognitoAuthorizer, models } = props;
 
     // Define the list error code that need to handle in API
     const errorStatusCodes = [404, 400, 500];
@@ -64,7 +51,7 @@ export class OrderProductApiConstruct extends Construct {
     // Add the POST method to the API resource to order product
     // This creates the POST /orders endpoint
     resource.addMethod('POST', new LambdaIntegration(
-      orderProductLambdaConstruct.orderProductLambda,
+      lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {

@@ -2,10 +2,11 @@ import {
   CognitoUserPoolsAuthorizer,
   RequestAuthorizer,
   IResource,
-  IRestApi
+  IRestApi,
+
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { Function, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Function, IFunction, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 import { ApiGatewayModel } from './api-gateway-model.interface';
 

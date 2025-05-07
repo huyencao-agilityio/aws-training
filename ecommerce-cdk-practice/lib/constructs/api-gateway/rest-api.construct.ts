@@ -8,20 +8,15 @@ import { Construct } from 'constructs';
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
-import { ApiGatewayModel } from '@interfaces/api-gateway-model.interface';
 
 import {
   AuthorizationConstruct
-} from '../lambda/api-gateway/authorization.construct';
+} from '../lambda/api-gateway';
 import { HealthCheckResourceConstruct } from './health-check';
 import { UsersResourceConstruct } from './users';
-import { UserModelConstruct } from './user-model.construct';
-import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
-import { OrderModelConstruct } from './order-model.construct';
-import { ProductModelConstruct } from './product-model.construct';
-import { CommonResponseModelConstruct } from './common-response-model.construct';
 import { ProductsResourceConstruct } from './products';
 import { OrderProductResourceConstruct } from './orders';
+import { ModelRestApiConstruct } from './models';
 
 /**
  * Define the construct to new a REST API
@@ -64,78 +59,54 @@ export class RestApiConstruct extends Construct {
     // Create API resources
     const apiResource = this.restApi.root.addResource('api');
 
-    // Create user model to using in API
-    const userModelConstruct = new UserModelConstruct(this, 'UserModelConstruct', {
+    // Create all model for app
+    const {
+      userModelConstruct,
+      uploadAvatarModelConstruct,
+      orderModelConstruct,
+      productModelConstruct,
+      commonResponseModelConstruct
+    } = new ModelRestApiConstruct(this, 'ModelRestApiConstruct',  {
       restApi: this.restApi
     });
-    // Create upload avatar model
-    const uploadAvatarModelConstruct = new UploadAvatarModelConstruct(
-      this,
-      'UploadAvatarModelConstruct',
-      {
-        restApi: this.restApi
-      }
-    );
-    // Create order model
-    const orderModelConstruct = new OrderModelConstruct(
-      this,
-      'OrderModelConstruct',
-      {
-        restApi: this.restApi
-      }
-    );
-    // Create product model
-    const productModelConstruct = new ProductModelConstruct(
-      this,
-      'ProductModelConstruct',
-      {
-        restApi: this.restApi
-      }
-    );
-    // Create common response
-    const commonResponseModelConstruct = new CommonResponseModelConstruct(
-      this,
-      'CommonResponseModelConstruct',
-      {
-        restApi: this.restApi
-      }
-    );
-
-    // Define all model in API Gateway
-    const restApiModel: ApiGatewayModel = {
-      updateUserModel: userModelConstruct.updateUserProfileModel,
-      uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
-      presignedS3Response: uploadAvatarModelConstruct.presignedS3Response,
-      orderModel: orderModelConstruct.orderProductRequestModel,
-      productModel: productModelConstruct.productsResponseModel,
-      commonResponseModel: commonResponseModelConstruct.commonResponseModel
-    };
 
     // Create APIs for app
     new HealthCheckResourceConstruct(this, 'HealthCheckResourceConstruct', {
       resource: apiResource
     });
 
+    // Create all products API
     new ProductsResourceConstruct(this, 'ProductsResourceConstruct', {
       resource: apiResource,
       userPool: userPool,
       librariesLayer: librariesLayer,
       lambdaAuthorizer: lambdaAuthorizer,
-      models: restApiModel
+      models: {
+        productModel: productModelConstruct.productsResponseModel
+      }
     });
 
+    // Create all users API
     new UsersResourceConstruct(this, 'UsersResourceConstruct', {
       resource: apiResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
-      models: restApiModel
+      models: {
+        updateUserModel: userModelConstruct.updateUserProfileModel,
+        uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
+        presignedS3Response: uploadAvatarModelConstruct.presignedS3Response,
+      }
     });
 
+    // Create all order API
     new OrderProductResourceConstruct(this, 'OrderProductResourceConstruct', {
       resource: apiResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: cognitoAuthorizer,
-      models: restApiModel
+      models: {
+        orderModel: orderModelConstruct.orderProductRequestModel,
+        commonResponseModel: commonResponseModelConstruct.commonResponseModel
+      }
     });
   }
 }

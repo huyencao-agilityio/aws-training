@@ -1,4 +1,4 @@
-import { Function, IFunction, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import 'dotenv/config';
@@ -9,11 +9,12 @@ import { BaseConstructProps } from '@interfaces/construct.interface';
  * Construct sets up a Lambda function that implements custom authentication flow
  */
 export class CreateAuthChallengeLambdaConstruct extends Construct {
-  public readonly createAuthChallenge: IFunction;
+  public readonly createAuthChallenge: Function;
 
   constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
+    const { librariesLayer } = props;
     const defaultEmail = process.env.DEFAULT_EMAIL || '';
     const challengeCode = process.env.CHALLENGE_CODE || '';
 
@@ -21,7 +22,7 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     this.createAuthChallenge = new Function(this, 'CreateAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'create-auth-challenge.handler',
-      layers: [props.librariesLayer],
+      layers: [librariesLayer!],
       code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
         exclude: ['**/*', '!create-auth-challenge.js'],
       }),

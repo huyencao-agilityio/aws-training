@@ -5,8 +5,8 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 
 import { UserPoolStackProps } from '@interfaces/stack.interface';
+import { getLibrariesLayer } from '@utils/layer';
 
-import { getLibrariesLayer } from '../../src/utils/layer';
 import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
 
 /**

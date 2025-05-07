@@ -9,10 +9,6 @@ import {
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 
-import {
-  OrderLambdaConstruct
-} from '../../lambda/api-gateway/orders.construct';
-
 /**
  * Define the construct for API POST reject order
  */
@@ -20,16 +16,7 @@ export class RejectOrderApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: BaseApiGatewayConstructProps) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
-
-    // Create the Lambda function for reject order
-    const rejectOrderLambdaConstruct = new OrderLambdaConstruct(
-      this,
-      'RejectOrderLambdaConstruct',
-      {
-        librariesLayer: librariesLayer
-      }
-    );
+    const { resource, lambdaFunction, cognitoAuthorizer, models } = props;
 
     // Define the list error code that need to handle in API
     const errorStatusCodes = [404, 400, 403, 500];
@@ -64,7 +51,7 @@ export class RejectOrderApiConstruct extends Construct {
     // Add the POST method to the API resource to reject order
     // This creates the POST /orders/{orderId}/reject endpoint
     resource.addMethod('POST', new LambdaIntegration(
-      rejectOrderLambdaConstruct.rejectOrderLambda,
+      lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {

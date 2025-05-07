@@ -10,7 +10,7 @@ import {
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
-import { BUCKET_NAME } from '../../../src/constants/bucket.constant';
+import { BUCKET_NAME } from '@constants/bucket.constant';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 
 /**
@@ -53,6 +53,7 @@ export class CloudFrontConstruct extends Construct {
     });
 
     const cfnDistribution = this.distribution.node.defaultChild as CfnDistribution;
+
     cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.OriginAccessControlId', oac.getAtt('Id'));
     cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', '');
   }
