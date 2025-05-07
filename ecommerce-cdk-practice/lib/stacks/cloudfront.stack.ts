@@ -1,6 +1,8 @@
 import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
+import { getLibrariesLayer } from '@utils/layer';
+
 import {
   CloudFrontConstruct
 } from '../constructs/cloudfront/cloudfront.construct';
@@ -13,10 +15,15 @@ export class CloudFrontStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
+    // Get layer on Lambda
+    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
+
     // Create the Lambda function for resize image
     const resizeLambdaConstruct = new ResizeImageLambdaConstruct(
       this,
-      'ResizeImageLambdaConstruct'
+      'ResizeImageLambdaConstruct', {
+        librariesLayer: librariesLayer
+      }
     );
 
     // Create CloudFront

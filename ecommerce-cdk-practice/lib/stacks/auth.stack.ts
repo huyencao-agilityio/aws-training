@@ -25,6 +25,7 @@ export class AuthStack extends Stack {
 
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
+
     // Get layer on Lambda
     const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
 

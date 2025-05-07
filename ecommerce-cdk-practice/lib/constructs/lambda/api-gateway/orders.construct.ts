@@ -3,6 +3,8 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
+import { BaseConstructProps } from '@interfaces/construct.interface';
+
 /**
  * Construct for creating Lambda function for API order
  */
@@ -11,7 +13,7 @@ export class OrderLambdaConstruct extends Construct {
   public readonly acceptOrderLambda: Function;
   public readonly rejectOrderLambda: Function;
 
-  constructor(scope: Construct, id: string, props: any) {
+  constructor(scope: Construct, id: string, props: BaseConstructProps) {
     super(scope, id);
 
     const { librariesLayer } = props;
@@ -31,7 +33,7 @@ export class OrderLambdaConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/api/orders/', {
         exclude: ['**/*', '!order-product.js'],
       }),
-      layers: [librariesLayer],
+      layers: [librariesLayer!],
       timeout: Duration.minutes(15),
       environment: {
         DB_HOST: dbHost,
@@ -58,7 +60,7 @@ export class OrderLambdaConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/api/orders/', {
         exclude: ['**/*', '!accept-order.js'],
       }),
-      layers: [librariesLayer],
+      layers: [librariesLayer!],
       environment: {
         DB_HOST: dbHost,
         DB_NAME: dbName,
@@ -84,7 +86,7 @@ export class OrderLambdaConstruct extends Construct {
       code: Code.fromAsset('dist/src/lambda-handler/api/orders/', {
         exclude: ['**/*', '!reject-order.js'],
       }),
-      layers: [librariesLayer],
+      layers: [librariesLayer!],
       environment: {
         DB_HOST: dbHost,
         DB_NAME: dbName,
