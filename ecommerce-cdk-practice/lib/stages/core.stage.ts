@@ -1,7 +1,7 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { RDSStack } from '../stacks/rds.stack';
+import { RdsStack } from '../stacks/rds.stack';
 import { StorageStack } from '../stacks/storage.stack';
 import { VPCStack } from '../stacks/vpc.stack';
 import { Route53Stack } from '../stacks/route53.stack';
@@ -12,7 +12,7 @@ import { CloudFrontStack } from '../stacks/cloudfront.stack';
  * such as S3, RDS, Route 53.
  */
 export class CoreStage extends Stage {
-  public readonly rdsStack: RDSStack;
+  public readonly rdsStack: RdsStack;
   public readonly storageStack: StorageStack;
   public readonly vpcStack: VPCStack;
   public readonly route53Stack: Route53Stack;
@@ -23,9 +23,14 @@ export class CoreStage extends Stage {
 
     const { stageName } = props;
 
-    // this.rdsStack = new RDSStack(this, 'RDSStack', {
-    //   stackName: props.stageName,
-    // });
+    this.vpcStack = new VPCStack(this, 'VPCStack', {
+      stackName: props.stageName,
+    });
+
+    this.rdsStack = new RdsStack(this, 'RDSStack', {
+      vpc: this.vpcStack.vpc,
+      securityGroup: this.vpcStack.securityGroup
+    });
 
     this.storageStack = new StorageStack(this, 'StorageStack', {
       stackName: stageName,
@@ -33,10 +38,6 @@ export class CoreStage extends Stage {
 
     this.cloudFrontStack = new CloudFrontStack(this, 'CloudFrontStack', {
       stackName: stageName
-    });
-
-    this.vpcStack = new VPCStack(this, 'VPCStack', {
-      stackName: props.stageName,
     });
 
     // this.route53Stack = new Route53Stack(this, 'VPCStack', {

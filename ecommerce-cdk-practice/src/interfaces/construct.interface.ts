@@ -12,6 +12,7 @@ import { ApiGatewayModel } from './api-gateway-model.interface';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
 import { Topic } from 'aws-cdk-lib/aws-sns';
+import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * Defines interface the base construct.
@@ -103,4 +104,12 @@ export interface AlarmConstructProps {
 export interface SnsAlarmTopicProps {
   email: string;
   topicName?: string;
+}
+
+/**
+ * Defines interface for the RDS Construct
+ */
+export interface PostgresRdsConstructProps {
+  vpc: Vpc;
+  securityGroup: SecurityGroup;
 }
