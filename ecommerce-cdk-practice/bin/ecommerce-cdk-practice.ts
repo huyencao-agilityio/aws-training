@@ -106,3 +106,7 @@ new AppStage(app, 'AppStage', {
 new CoreStage(app, 'CoreStage', {
   env: { account: '149379632015', region: 'us-east-1' }
 });
+
+new MonitoringStage(app, 'MonitoringStage', {
+  env: { account: '149379632015', region: 'us-east-1' }
+});

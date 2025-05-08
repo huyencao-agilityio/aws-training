@@ -14,6 +14,10 @@ export class AppStage extends Stage {
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id, props);
 
+    const queueStack = new QueueStack(this, 'QueueStack', {
+      stackName: 'staging-queue'
+    });
+
     const authStack = new AuthStack(this, 'AuthStack', {
       stackName: 'staging-auth',
     });
@@ -28,10 +32,6 @@ export class AppStage extends Stage {
 
     const eventBridgeStack = new EventBridgeStack(this, 'EventBridgeStack', {
       stackName: 'staging-event-bridge'
-    });
-
-    const queueStack = new QueueStack(this, 'QueueStack', {
-      stackName: 'staging-queue'
     });
 
   }

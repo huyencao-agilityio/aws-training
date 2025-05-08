@@ -14,8 +14,6 @@ import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
  * related integrations for the application.
  */
 export class ApiStack extends Stack {
-  public readonly api: RestApi;
-
   constructor(scope: Construct, id: string, props: UserPoolStackProps) {
     super(scope, id, props);
 
@@ -28,10 +26,22 @@ export class ApiStack extends Stack {
       userPool: props.userPool
     });
 
-    // Output
-    new CfnOutput(this, 'REST API Gateway', {
+    // Export API Url
+    new CfnOutput(this, 'ApiGatewayRestApiUrl', {
       value: restApiConstruct.restApi.url,
-      description: `REST API Gateway`,
+      exportName: 'ApiGatewayRestApiUrl',
+    });
+
+    // Export API Id
+    new CfnOutput(this, 'ApiGatewayRestApiId', {
+      value: restApiConstruct.restApi.restApiId,
+      exportName: 'ApiGatewayRestApiId',
+    });
+
+    // Export Stage name
+    new CfnOutput(this, 'ApiGatewayRestApiStage', {
+      value: restApiConstruct.restApi.deploymentStage.stageName,
+      exportName: 'ApiGatewayRestApiStage',
     });
   }
 }
