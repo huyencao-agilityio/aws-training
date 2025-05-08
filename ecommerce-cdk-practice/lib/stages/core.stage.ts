@@ -35,9 +35,9 @@ export class CoreStage extends Stage {
       stackName: stageName
     });
 
-    // this.vpcStack = new VPCStack(this, 'VPCStack', {
-    //   stackName: props.stageName,
-    // });
+    this.vpcStack = new VPCStack(this, 'VPCStack', {
+      stackName: props.stageName,
+    });
 
     // this.route53Stack = new Route53Stack(this, 'VPCStack', {
     //   stackName: props.stageName,
