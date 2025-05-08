@@ -7,7 +7,7 @@ import { AlarmConstruct } from '../constructs/cloudwatch/alarm.construct';
 import { SnsTopicConstruct } from '../constructs/sns/sns-topic.construct';
 
 /**
- * ApiStack is responsible for provisioning all monitoring in app.
+ * MonitoringStack is responsible for provisioning all monitoring in app.
  */
 export class MonitoringStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
