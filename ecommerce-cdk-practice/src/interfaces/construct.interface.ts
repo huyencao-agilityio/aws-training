@@ -11,6 +11,7 @@ import { Function, IFunction, ILayerVersion, LayerVersion } from 'aws-cdk-lib/aw
 import { ApiGatewayModel } from './api-gateway-model.interface';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
+import { Topic } from 'aws-cdk-lib/aws-sns';
 
 /**
  * Defines interface the base construct.
@@ -87,4 +88,19 @@ export interface RestApiModelConstructProps {
  */
 export interface StorageBucketConstructProps {
   bucketName: string;
+}
+
+/**
+ * Defines interface for the Alarm Construct
+ */
+export interface AlarmConstructProps {
+  snsTopic: Topic;
+}
+
+/**
+ * Defines interface for the SNS topic Construct
+ */
+export interface SnsAlarmTopicProps {
+  email: string;
+  topicName?: string;
 }

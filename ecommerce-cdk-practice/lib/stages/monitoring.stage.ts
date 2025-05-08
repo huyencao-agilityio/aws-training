@@ -11,8 +11,10 @@ export class MonitoringStage extends Stage {
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id, props);
 
+    const { stageName } = props;
+
     new MonitoringStack(this, 'MonitoringStack', {
-      stackName: props.stageName
+      stackName: 'staging-monitoring'
     });
   }
 }
