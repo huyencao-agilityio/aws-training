@@ -1,45 +1,65 @@
 import { Stack, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { UserPoolStackProps } from '@interfaces/stack.interface';
+import { ApiStackProps } from '@interfaces/stack.interface';
 import { getLibrariesLayer } from '@helpers/layer.helper';
 
 import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
+import { ApiDomainConstruct } from '../constructs/api-gateway/api-domain.construct';
 
 /**
  * ApiStack is responsible for provisioning all API Gateway resources and
  * related integrations for the application.
  */
 export class ApiStack extends Stack {
-  constructor(scope: Construct, id: string, props: UserPoolStackProps) {
+  constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
-    const { userPool } = props;
+    const {
+      userPool,
+      hostedZone,
+      certificate,
+      domainName,
+      recordName,
+      basePathApi
+    } = props;
 
     // Get layer on Lambda
     const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
 
     // Init REST API Construct
     const restApiConstruct = new RestApiConstruct(this, 'RestApiConstruct', {
-      librariesLayer: librariesLayer,
-      userPool: userPool
+      librariesLayer,
+      userPool
+    });
+
+    const { restApi } = restApiConstruct;
+
+    // Create new api custom domain for rest api
+    new ApiDomainConstruct(this, 'ApiDomainConstruct', {
+      hostedZone: hostedZone!,
+      certificate: certificate!,
+      domainName: domainName!,
+      restApi,
+      basePathApi,
+      recordName,
     });
 
     // Export API Url
     new CfnOutput(this, 'ApiGatewayRestApiUrl', {
-      value: restApiConstruct.restApi.url,
+      value: restApi.url,
       exportName: 'ApiGatewayRestApiUrl',
     });
 
     // Export API Id
     new CfnOutput(this, 'ApiGatewayRestApiId', {
-      value: restApiConstruct.restApi.restApiId,
+      value: restApi.restApiId,
       exportName: 'ApiGatewayRestApiId',
     });
 
     // Export Stage name
     new CfnOutput(this, 'ApiGatewayRestApiStage', {
-      value: restApiConstruct.restApi.deploymentStage.stageName,
+      value: restApi.deploymentStage.stageName,
       exportName: 'ApiGatewayRestApiStage',
     });
   }

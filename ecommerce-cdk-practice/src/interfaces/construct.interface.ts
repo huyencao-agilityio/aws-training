@@ -3,16 +3,18 @@ import {
   RequestAuthorizer,
   IResource,
   IRestApi,
-
+  RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { Function, IFunction, ILayerVersion, LayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Function, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 import { ApiGatewayModel } from './api-gateway-model.interface';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { IHostedZone } from 'aws-cdk-lib/aws-route53';
+import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 /**
  * Defines interface the base construct.
@@ -112,4 +114,23 @@ export interface SnsAlarmTopicProps {
 export interface PostgresRdsConstructProps {
   vpc: Vpc;
   securityGroup: SecurityGroup;
+}
+
+/**
+ * Defines interface for the Certificate Construct
+ */
+export interface CertificateConstructProps {
+  hostedZone: IHostedZone;
+}
+
+/**
+ * Defines interface for the api domain Construct
+ */
+export interface ApiDomainConstructProps {
+  hostedZone: IHostedZone;
+  certificate: ICertificate;
+  domainName: string;
+  restApi: RestApi;
+  basePathApi?: string;
+  recordName?: string;
 }
