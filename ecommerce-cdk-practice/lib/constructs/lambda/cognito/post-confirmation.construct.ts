@@ -5,6 +5,7 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import 'dotenv/config';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
+import { getDatabaseConfig } from '@helpers/database.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -17,10 +18,8 @@ export class PostConfirmationLambdaConstruct extends Construct {
     super(scope, id);
 
     const { librariesLayer } = props;
-    const dbHost = process.env.DB_HOST || '';
-    const dbName = process.env.DB_NAME || '';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbUser= process.env.DB_USER || '';
+    // Get the db instance
+    const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for post-confirmation handling
     this.postConfirmation = new Function(this, 'PostConfirmation', {
@@ -31,10 +30,7 @@ export class PostConfirmationLambdaConstruct extends Construct {
         exclude: ['**/*', '!post-confirmation.js'],
       }),
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_PASSWORD: dbPassword,
-        DB_USER: dbUser
+        ...dbInstance
       },
       timeout: Duration.minutes(15),
     });

@@ -3,6 +3,8 @@ import { Handler, SQSEvent } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
+import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
+
 const ses = new AWS.SES();
 
 export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
@@ -46,7 +48,7 @@ export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
     `;
 
     const emailParams = {
-      Source: 'thanhhuyen11cntt1@gmail.com',
+      Source: DEFAULT_EMAIL_ADDRESS,
       Destination: {
         ToAddresses: [email]
       },

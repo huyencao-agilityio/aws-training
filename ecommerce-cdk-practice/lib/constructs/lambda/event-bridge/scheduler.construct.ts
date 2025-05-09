@@ -5,9 +5,10 @@ import {
   Code
 } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { getDatabaseConfig } from '@helpers/database.helper';
 
 /**
  * Construct for creating Lambda function for scheduler in Event Bridge
@@ -19,10 +20,8 @@ export class SchedulerLambdaConstruct extends Construct {
     super(scope, id);
 
     const { librariesLayer } = props;
-    const dbHost = process.env.DB_HOST || '';
-    const dbName = process.env.DB_NAME || '';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbUser= process.env.DB_USER || '';
+    // Get the db instance
+    const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for product retrieval
     this.schedulerLambda = new Function(this, 'ResizeImage', {
@@ -34,10 +33,7 @@ export class SchedulerLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       timeout: Duration.seconds(3),
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_PASSWORD: dbPassword,
-        DB_USER: dbUser
+        ...dbInstance
       },
     });
 

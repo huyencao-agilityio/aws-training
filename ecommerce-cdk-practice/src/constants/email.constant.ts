@@ -1,5 +1,5 @@
 
-export const EMAIL_ADDRESS = 'thanhhuyen11cntt1@gmail.com';
+export const DEFAULT_EMAIL_ADDRESS = 'thanhhuyen11cntt1@gmail.com';
 
 export const EMAIL_SUBJECT = {
   LOGIN_VERIFICATION_CODE: 'Ecommerce - Login Verification Code',

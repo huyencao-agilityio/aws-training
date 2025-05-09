@@ -14,7 +14,7 @@
       "@constants/*": ["src/constants/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@enums/*": ["src/enums/*"],
-      "@utils/*": ["src/utils/*"],
+      "@helpers/*": ["src/helpers/*"],
       "@app-types/*": ["src/types/*"]
     },
     "declaration": true,

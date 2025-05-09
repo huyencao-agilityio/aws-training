@@ -11,6 +11,7 @@ import {
   BaseConstructProps
 } from '@interfaces/construct.interface';
 import { BUCKET_NAME } from '@constants/bucket.constant';
+import { getDatabaseConfig } from '@helpers/database.helper';
 
 /**
  * Construct for creating Lambda function for API update user profile
@@ -23,10 +24,8 @@ export class UsersLambdaConstruct extends Construct {
     super(scope, id);
 
     const { librariesLayer } = props;
-    const dbHost = process.env.DB_HOST || '';
-    const dbName = process.env.DB_NAME || '';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbUser= process.env.DB_USER || '';
+    // Get the db instance
+    const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for product retrieval
     this.updateUserLambda = new Function(this, 'UpdateUser', {
@@ -38,10 +37,7 @@ export class UsersLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       timeout: Duration.seconds(30),
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_USER: dbUser,
-        DB_PASSWORD: dbPassword
+        ...dbInstance
       },
     });
 
