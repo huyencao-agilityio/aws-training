@@ -1,4 +1,3 @@
-
 export const DEFAULT_EMAIL_ADDRESS = 'thanhhuyen11cntt1@gmail.com';
 
 export const EMAIL_SUBJECT = {
