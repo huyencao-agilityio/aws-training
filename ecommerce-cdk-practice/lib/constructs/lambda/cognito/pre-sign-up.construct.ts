@@ -5,6 +5,7 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import 'dotenv/config';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
+import { getDatabaseConfig } from '@helpers/database.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -16,11 +17,9 @@ export class PreSignUpLambdaConstruct extends Construct {
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
 
-    const { librariesLayer } = props;
-    const dbHost = process.env.DB_HOST || '';
-    const dbName = process.env.DB_NAME || '';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbUser= process.env.DB_USER || '';
+    const { librariesLayer, userPool } = props;
+    // Get the db instance
+    const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for pre-signup validation
     this.preSignUp = new Function(this, 'PreSignUp', {
@@ -31,10 +30,7 @@ export class PreSignUpLambdaConstruct extends Construct {
         exclude: ['**/*', '!pre-sign-up.js'],
       }),
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_PASSWORD: dbPassword,
-        DB_USER: dbUser
+        ...dbInstance
       },
       timeout: Duration.minutes(15),
     });
@@ -46,7 +42,7 @@ export class PreSignUpLambdaConstruct extends Construct {
         'cognito-idp:AdminLinkProviderForUser',
         'cognito-idp:AdminDeleteUser'
       ],
-      resources: [props.userPool.userPoolArn],
+      resources: [userPool.userPoolArn],
       effect: Effect.ALLOW
     }));
   }

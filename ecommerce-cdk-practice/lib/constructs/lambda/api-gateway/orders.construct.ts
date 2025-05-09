@@ -4,6 +4,8 @@ import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
+import { getQueueResources } from '@helpers/queue.helper';
+import { getDatabaseConfig } from '@helpers/database.helper';
 
 /**
  * Construct for creating Lambda function for API order
@@ -18,17 +20,10 @@ export class OrderLambdaConstruct extends Construct {
 
     const { librariesLayer } = props;
 
-    const acceptQueueUrl = Fn.importValue('AcceptOrderNotificationQueueCDKUrl');
-    const acceptQueueArn = Fn.importValue('AcceptOrderNotificationQueueCDKArn');
-    const rejectQueueUrl = Fn.importValue('RejectOrderNotificationQueueCDKUrl');
-    const rejectQueueArn = Fn.importValue('RejectOrderNotificationQueueCDKArn');
-    const orderQueueUrl = Fn.importValue('OrderNotificationQueueCDKUrl');
-    const orderQueueArn = Fn.importValue('OrderNotificationQueueCDKArn');
-
-    const dbHost = process.env.DB_HOST || '';
-    const dbName = process.env.DB_NAME || '';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbUser= process.env.DB_USER || '';
+    // Get the queue resources
+    const queueResources = getQueueResources();
+    // Get the db instance
+    const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for order product
     this.orderProductLambda = new Function(this, 'OrderProduct', {
@@ -40,11 +35,8 @@ export class OrderLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       timeout: Duration.minutes(15),
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_PASSWORD: dbPassword,
-        DB_USER: dbUser,
-        QUEUE_URL: orderQueueUrl
+        ...dbInstance,
+        QUEUE_URL: queueResources.ORDER.url
       },
     });
     // Add IAM policy to allow Lambda access to SQS
@@ -52,7 +44,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      resources: [orderQueueArn],
+      resources: [queueResources.ORDER.arn],
       effect: Effect.ALLOW
     }));
 
@@ -65,11 +57,8 @@ export class OrderLambdaConstruct extends Construct {
       }),
       layers: [librariesLayer!],
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_PASSWORD: dbPassword,
-        DB_USER: dbUser,
-        QUEUE_URL: acceptQueueUrl
+        ...dbInstance,
+        QUEUE_URL: queueResources.ACCEPT.url
       },
     });
     // Add IAM policy to allow Lambda access to SQS
@@ -77,7 +66,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      resources: [acceptQueueArn],
+      resources: [queueResources.ACCEPT.arn],
       effect: Effect.ALLOW
     }));
 
@@ -90,11 +79,8 @@ export class OrderLambdaConstruct extends Construct {
       }),
       layers: [librariesLayer!],
       environment: {
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_PASSWORD: dbPassword,
-        DB_USER: dbUser,
-        QUEUE_URL: rejectQueueUrl
+        ...dbInstance,
+        QUEUE_URL: queueResources.REJECT.url
       },
     });
     // Add IAM policy to allow Lambda access to SQS
@@ -102,7 +88,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      resources: [rejectQueueArn],
+      resources: [queueResources.REJECT.url],
       effect: Effect.ALLOW
     }));
   }

@@ -6,6 +6,7 @@ import 'dotenv/config';
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
+import { getDatabaseConfig } from '@helpers/database.helper';
 
 /**
  * Construct for creating Lambda function for API products
@@ -18,10 +19,8 @@ export class ProductsLambdaConstruct extends Construct {
 
     const { librariesLayer, userPool } = props;
 
-    const dbHost = process.env.DB_HOST || '';
-    const dbName = process.env.DB_NAME || '';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbUser= process.env.DB_USER || '';
+    // Get the db instance
+    const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for product retrieval
     this.getProductsLambda = new Function(this, 'GetProducts', {
@@ -35,10 +34,7 @@ export class ProductsLambdaConstruct extends Construct {
       environment: {
         COGNITO_USER_POOL_ID: userPool.userPoolId,
         COGNITO_REGION: userPool.env.region,
-        DB_HOST: dbHost,
-        DB_NAME: dbName,
-        DB_USER: dbUser,
-        DB_PASSWORD: dbPassword
+        ...dbInstance
       },
     });
   }

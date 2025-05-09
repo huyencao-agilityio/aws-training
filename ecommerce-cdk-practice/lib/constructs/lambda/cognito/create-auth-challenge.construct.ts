@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import 'dotenv/config';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
+import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -15,7 +16,6 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     super(scope, id);
 
     const { librariesLayer } = props;
-    const defaultEmail = process.env.DEFAULT_EMAIL || '';
     const challengeCode = process.env.CHALLENGE_CODE || '';
 
     // Lambda for Create Auth Challenge
@@ -27,7 +27,7 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
         exclude: ['**/*', '!create-auth-challenge.js'],
       }),
       environment: {
-        DEFAULT_EMAIL: defaultEmail,
+        DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
         CHALLENGE_CODE: challengeCode
       },
     });

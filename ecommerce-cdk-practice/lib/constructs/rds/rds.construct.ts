@@ -25,10 +25,9 @@ export class PostgresRdsConstruct extends Construct {
   constructor(scope: Construct, id: string, props: PostgresRdsConstructProps) {
     super(scope, id);
 
+    const { vpc, securityGroup } = props;
     const DB_PASSWORD = process.env.DB_PASSWORD || '';
     const DB_IDENTIFIER = process.env.DB_IDENTIFIER || '';
-
-    const { vpc, securityGroup } = props;
 
     this.instance = new DatabaseInstance(this, 'PostgresInstance', {
       instanceIdentifier: DB_IDENTIFIER,

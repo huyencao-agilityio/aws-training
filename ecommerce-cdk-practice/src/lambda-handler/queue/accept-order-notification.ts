@@ -1,6 +1,8 @@
 import { Handler, SQSEvent } from 'aws-lambda';
 import AWS from 'aws-sdk';
 
+import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
+
 const ses = new AWS.SES();
 
 export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
@@ -12,7 +14,7 @@ export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
     const { orderId, email, totalAmount, totalQuantity, items } = message;
 
     const emailParams = {
-      Source: 'thanhhuyen11cntt1@gmail.com',
+      Source: DEFAULT_EMAIL_ADDRESS,
       Destination: {
         ToAddresses: ['huyen.cao+1@asnet.com.vn']
       },
