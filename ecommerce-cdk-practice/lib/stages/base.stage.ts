@@ -2,8 +2,6 @@ import { BaseStageProps } from '@interfaces/stage.interface';
 import { Stage } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { getLibrariesLayer } from '@helpers/layer.helper';
-
 import { ApiStack } from '../stacks/api.stack';
 import { AuthStack } from '../stacks/auth.stack';
 import { CloudFrontStack } from '../stacks/cloudfront.stack';
@@ -24,9 +22,6 @@ export class BaseStage extends Stage {
 
     const { stageName } = props;
 
-    // Get layer on Lambda
-    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
-
     const vpcStack = new VPCStack(this, 'VPCStack', {
       stackName: `${stageName}-vpc-stack`
     });
@@ -42,23 +37,19 @@ export class BaseStage extends Stage {
     });
 
     new CloudFrontStack(this, 'CloudFrontStack', {
-      stackName: `${stageName}-cloudfront-stack`,
-      librariesLayer
+      stackName: `${stageName}-cloudfront-stack`
     });
 
     new QueueStack(this, 'QueueStack', {
-      stackName: `${stageName}-queue-stack`,
-      librariesLayer
+      stackName: `${stageName}-queue-stack`
     });
 
     const authStack = new AuthStack(this, 'AuthStack', {
-      stackName: `${stageName}-auth-stack`,
-      librariesLayer
+      stackName: `${stageName}-auth-stack`
     });
 
     const apiStack = new ApiStack(this, 'ApiStack', {
       stackName: `${stageName}-api-stack`,
-      librariesLayer,
       userPool: authStack.userPoolConstruct.userPool
     });
 
@@ -66,13 +57,11 @@ export class BaseStage extends Stage {
     apiStack.addDependency(authStack);
 
     new EventBridgeStack(this, 'EventBridgeStack', {
-      stackName: `${stageName}-event-bridge-stack`,
-      librariesLayer
+      stackName: `${stageName}-event-bridge-stack`
     });
 
     new MonitoringStack(this, 'MonitoringStack', {
       stackName: `${stageName}-monitoring-stack`
     });
-
   }
 }

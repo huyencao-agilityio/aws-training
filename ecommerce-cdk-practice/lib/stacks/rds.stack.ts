@@ -1,7 +1,8 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { PostgresRdsStackProps } from '@interfaces/stack.interface';
+import { DB_CONSTANTS } from '@constants/database.constant';
 
 import { PostgresRdsConstruct } from '../constructs/rds/rds.construct';
 
@@ -15,9 +16,16 @@ export class RdsStack extends Stack {
 
     const { vpc, securityGroup } = props;
 
-    new PostgresRdsConstruct(this, 'PostgresRdsConstruct', {
+    const dbInstance = new PostgresRdsConstruct(this, 'PostgresRdsConstruct', {
       vpc: vpc,
       securityGroup: securityGroup
+    });
+
+    // Output DB information for use in other stacks
+    new CfnOutput(this, 'DbHost', {
+      exportName: `${DB_CONSTANTS.HOST}`,
+      value: dbInstance.instance.dbInstanceEndpointAddress,
+      description: 'The endpoint address of the Postgres database',
     });
   }
 }

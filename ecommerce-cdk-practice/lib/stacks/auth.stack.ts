@@ -1,9 +1,8 @@
-import { Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
+import { Stack, CfnOutput, StackProps } from 'aws-cdk-lib';
 import { UserPoolOperation } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
-import 'dotenv/config';
 
-import { getLibrariesLayer } from '@utils/layer';
+import { getLibrariesLayer } from '@helpers/layer.helper';
 
 import {
   CreateAuthChallengeLambdaConstruct,

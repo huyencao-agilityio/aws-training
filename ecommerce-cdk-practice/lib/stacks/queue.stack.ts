@@ -1,6 +1,8 @@
-import { getLibrariesLayer } from '@utils/layer';
 import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+
+import { getLibrariesLayer } from '@helpers/layer.helper';
+import { QueueNames } from '@constants/queue.constant';
 
 import {
   OrderNotificationLambdaConstruct,
@@ -19,15 +21,15 @@ export class QueueStack extends Stack {
     // Define all queues that need to create
     const queues = [
       {
-        baseName: 'OrderNotificationQueueCDK',
+        baseName: QueueNames.ORDER,
         lambdaConstructName: OrderNotificationLambdaConstruct
       },
       {
-        baseName: 'AcceptOrderNotificationQueueCDK',
+        baseName: QueueNames.ACCEPT,
         lambdaConstructName: AcceptOrderNotificationLambdaConstruct
       },
       {
-        baseName: 'RejectOrderNotificationQueueCDK',
+        baseName: QueueNames.REJECT,
         lambdaConstructName: RejectOrderNotificationLambdaConstruct
       },
     ];

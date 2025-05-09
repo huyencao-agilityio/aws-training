@@ -1,11 +1,8 @@
 import { Stack, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {
-  RestApi
-} from 'aws-cdk-lib/aws-apigateway';
 
 import { UserPoolStackProps } from '@interfaces/stack.interface';
-import { getLibrariesLayer } from '@utils/layer';
+import { getLibrariesLayer } from '@helpers/layer.helper';
 
 import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
 
@@ -17,13 +14,15 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string, props: UserPoolStackProps) {
     super(scope, id, props);
 
-    // Get layer from SSM
+    const { userPool } = props;
+
+    // Get layer on Lambda
     const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
 
     // Init REST API Construct
     const restApiConstruct = new RestApiConstruct(this, 'RestApiConstruct', {
       librariesLayer: librariesLayer,
-      userPool: props.userPool
+      userPool: userPool
     });
 
     // Export API Url
