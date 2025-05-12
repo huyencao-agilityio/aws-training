@@ -22,7 +22,6 @@ export class ApiDomainConstruct extends Construct {
       hostedZone,
       certificate,
       domainName,
-      recordName,
       restApi,
       basePathApi
     } = props;
@@ -41,6 +40,9 @@ export class ApiDomainConstruct extends Construct {
       basePath: basePathApi,
       stage: restApi.deploymentStage
     });
+
+    // Get record name from domain name
+    const recordName = domainName?.split('.')[0] || '';
 
     // Add A record for API Gateway in Route 53
     new ARecord(this, 'ApiAliasRecord', {

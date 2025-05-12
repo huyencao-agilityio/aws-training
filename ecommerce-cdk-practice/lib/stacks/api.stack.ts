@@ -20,7 +20,6 @@ export class ApiStack extends Stack {
       hostedZone,
       certificate,
       domainName,
-      recordName,
       basePathApi
     } = props;
 
@@ -42,7 +41,6 @@ export class ApiStack extends Stack {
       domainName: domainName!,
       restApi,
       basePathApi,
-      recordName,
     });
 
     // Export API Url
