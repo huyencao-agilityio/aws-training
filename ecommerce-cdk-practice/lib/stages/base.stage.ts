@@ -23,7 +23,10 @@ export class BaseStage extends Stage {
   constructor(scope: Construct, id: string, props: BaseStageProps) {
     super(scope, id, props);
 
-    const { stageName, domainName,  recordName, basePathApi } = props;
+    const {
+      services,
+      stageName
+    } = props;
 
     // Create route 53 stack
     const route53Stack = new Route53Stack(this, 'Route53Stack', {
@@ -36,6 +39,7 @@ export class BaseStage extends Stage {
     const certificateStack = new CertificateStack(this, 'CertificateStack', {
       hostedZone: hostedZone
     });
+    const certificate = certificateStack.certificateConstruct.certificate;
 
     // Create VPC stack
     const vpcStack = new VPCStack(this, 'VPCStack', {
@@ -56,7 +60,11 @@ export class BaseStage extends Stage {
 
     // Create CloudFront stack
     new CloudFrontStack(this, 'CloudFrontStack', {
-      stackName: `${stageName}-cloudfront-stack`
+      stackName: `${stageName}-cloudfront-stack`,
+      certificate,
+      hostedZone,
+      domainName: services?.cloudFront?.domainName!,
+      recordName: services?.cloudFront?.recordName!
     });
 
     // Create SQS stack
@@ -73,10 +81,10 @@ export class BaseStage extends Stage {
     const apiStack = new ApiStack(this, 'ApiStack', {
       stackName: `${stageName}-api-stack`,
       userPool: authStack.userPoolConstruct.userPool,
-      domainName,
-      recordName,
-      basePathApi,
-      certificate: certificateStack.certificateConstruct.certificate,
+      domainName: services?.apiGateway?.domainName!,
+      recordName: services?.apiGateway?.recordName!,
+      basePathApi: services?.apiGateway?.basePathApi!,
+      certificate,
       hostedZone,
     });
 
