@@ -1,8 +1,9 @@
-import { Stack, CfnOutput, StackProps } from 'aws-cdk-lib';
+import { Stack, CfnOutput } from 'aws-cdk-lib';
 import { UserPoolOperation } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
 import { getLibrariesLayer } from '@helpers/layer.helper';
+import { BaseStackProps } from '@interfaces/stack.interface';
 
 import {
   CreateAuthChallengeLambdaConstruct,
@@ -14,6 +15,7 @@ import {
 } from '../constructs/lambda/cognito';
 import { UserPoolConstruct } from '../constructs/cognito/user-pool.construct';
 import { ProviderConstruct } from '../constructs/cognito/provider.construct';
+import { UserPoolDomainConstruct } from '../constructs/cognito/user-pool-domain.construct';
 
 /**
  * AuthStack is responsible for provisioning all authentication-related resources
@@ -22,8 +24,12 @@ import { ProviderConstruct } from '../constructs/cognito/provider.construct';
 export class AuthStack extends Stack {
   public readonly userPoolConstruct: UserPoolConstruct;
 
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props: BaseStackProps) {
     super(scope, id, props);
+
+    const { hostedZone, domainName, certificate } =  props;
+
+    console.log('services?.cognito?.domainName! Auth Stack', domainName)
 
     // Get layer on Lambda
     const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
@@ -31,10 +37,19 @@ export class AuthStack extends Stack {
     // Create user pool construct
     this.userPoolConstruct = new UserPoolConstruct(this, 'UserPoolConstruct', {
       librariesLayer: librariesLayer,
-      region: this.region
+      region: this.region,
+      domainName,
+      certificate
     });
 
-    const { userPool, userPoolClient } = this.userPoolConstruct;
+    const { userPool, userPoolClient, domain } = this.userPoolConstruct;
+
+    //  Add domain for user pool
+    new UserPoolDomainConstruct(this, 'UserPoolDomainConstruct', {
+      hostedZone,
+      domainName,
+      cognitoDomain: domain
+    });
 
     // Create Lambda functions for custom authentication flow
     // These functions handle different stages of the authentication process

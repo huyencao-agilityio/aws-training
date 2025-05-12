@@ -5,7 +5,7 @@ import {
   IRestApi,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { UserPool, UserPoolDomain } from 'aws-cdk-lib/aws-cognito';
 import { Function, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 import { ApiGatewayModel } from './api-gateway-model.interface';
@@ -28,8 +28,19 @@ export interface BaseConstructProps {
 /**
  * Defines interface for the construct that need to related to User Pool.
  */
-export interface CognitoEnvContextConstructProps extends BaseConstructProps {
-  region?: string;
+export interface CognitoConstructProps extends BaseConstructProps {
+  region: string;
+  certificate: ICertificate;
+  domainName: string;
+}
+
+/**
+ * Defines interface for the user pool domain construct props
+ */
+export interface UserPoolDomainConstructProps {
+  hostedZone: IHostedZone;
+  domainName: string;
+  cognitoDomain: UserPoolDomain;
 }
 
 /**
@@ -48,6 +59,20 @@ export interface BaseApiGatewayConstructProps extends BaseConstructProps {
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
   lambdaAuthorizer?: RequestAuthorizer,
   models?: ApiGatewayModel;
+}
+
+/**
+ * Defines interface for health check API Construct
+ */
+export interface HealthCheckApiConstructProps {
+  resource: IResource;
+}
+
+/**
+ * Defines interface for Rest API Model Construct
+ */
+export interface RestApiModelConstructProps {
+  restApi: IRestApi
 }
 
 /**
@@ -71,20 +96,6 @@ export interface QueueLambdaConstructProps {
   environment?: Record<string, string>;
   timeout?: Duration;
   withSesPolicy?: boolean;
-}
-
-/**
- * Defines interface for health check API Construct
- */
-export interface HealthCheckApiConstructProps {
-  resource: IResource;
-}
-
-/**
- * Defines interface for Rest API Model Construct
- */
-export interface RestApiModelConstructProps {
-  restApi: IRestApi
 }
 
 /**
@@ -133,7 +144,6 @@ export interface ApiDomainConstructProps {
   domainName: string;
   restApi: RestApi;
   basePathApi?: string;
-  recordName: string;
 }
 
 /**
@@ -142,7 +152,7 @@ export interface ApiDomainConstructProps {
  */
 export interface CloudFrontDomainConstructProps {
   hostedZone: IHostedZone;
-  recordName: string;
+  domainName: string;
   distribution: Distribution;
 }
 

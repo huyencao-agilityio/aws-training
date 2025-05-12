@@ -6,13 +6,14 @@ import {
   UserPool,
   UserPoolClient,
   UserPoolClientIdentityProvider,
+  UserPoolDomain,
   UserPoolEmail,
   VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
 import {
-  CognitoEnvContextConstructProps
+  CognitoConstructProps
 } from '@interfaces/construct.interface';
 import { COGNITO } from '@constants/cognito.constant';
 
@@ -28,11 +29,13 @@ import { COGNITO } from '@constants/cognito.constant';
 export class UserPoolConstruct extends Construct {
   public readonly userPool: UserPool;
   public readonly userPoolClient: UserPoolClient;
+  public readonly domain: UserPoolDomain;
 
-  constructor(scope: Construct, id: string, props: CognitoEnvContextConstructProps) {
+  constructor(scope: Construct, id: string, props: CognitoConstructProps) {
     super(scope, id);
 
-    const { region } = props
+    const { region, domainName, certificate } = props;
+
 
     /**
      * Create the User Pool with:
@@ -76,11 +79,13 @@ export class UserPoolConstruct extends Construct {
       }
     });
 
+    console.log('User pool construct Custom domain name:', domainName);
     // Add a custom domain to the User Pool
-    this.userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: {
-        domainPrefix: COGNITO.DOMAIN_PREFIX
-      }
+    this.domain = this.userPool.addDomain('CognitoCustomDomain', {
+      customDomain: {
+        domainName,
+        certificate,
+      },
     });
 
     // Configure user attribute update settings

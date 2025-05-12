@@ -1,4 +1,4 @@
-import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { getLibrariesLayer } from '@helpers/layer.helper';
@@ -22,7 +22,6 @@ export class CloudFrontStack extends Stack {
     const {
       hostedZone,
       domainName,
-      recordName,
       certificate,
     } = props;
 
@@ -51,7 +50,7 @@ export class CloudFrontStack extends Stack {
     // Custom domain for cloudfront
     new CloudFrontDomainConstruct(this, 'CloudFrontDomainConstruct', {
       hostedZone: hostedZone!,
-      recordName: recordName!,
+      domainName: domainName!,
       distribution: cloudFrontConstruct.distribution
     });
 
