@@ -71,7 +71,6 @@ export class BaseStage extends Stage {
       stackName: `${stageName}-queue-stack`
     });
 
-    console.log('services?.cognito?.domainName! Stage', services?.cognito?.domainName)
     // Create auth stack
     const authStack = new AuthStack(this, 'AuthStack', {
       stackName: `${stageName}-auth-stack`,

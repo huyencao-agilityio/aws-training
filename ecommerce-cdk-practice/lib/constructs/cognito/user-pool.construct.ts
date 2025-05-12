@@ -79,7 +79,6 @@ export class UserPoolConstruct extends Construct {
       }
     });
 
-    console.log('User pool construct Custom domain name:', domainName);
     // Add a custom domain to the User Pool
     this.domain = this.userPool.addDomain('CognitoCustomDomain', {
       customDomain: {

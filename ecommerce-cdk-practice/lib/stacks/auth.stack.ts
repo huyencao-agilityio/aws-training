@@ -29,8 +29,6 @@ export class AuthStack extends Stack {
 
     const { hostedZone, domainName, certificate } =  props;
 
-    console.log('services?.cognito?.domainName! Auth Stack', domainName)
-
     // Get layer on Lambda
     const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
 
