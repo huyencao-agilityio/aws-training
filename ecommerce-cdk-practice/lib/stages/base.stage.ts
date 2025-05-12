@@ -47,24 +47,23 @@ export class BaseStage extends Stage {
     });
 
     // Create RDS stack
-    new RdsStack(this, 'RDSStack', {
+    const rdsStack = new RdsStack(this, 'RDSStack', {
       stackName: `${stageName}-rds-stack`,
       vpc: vpcStack.vpc,
       securityGroup: vpcStack.securityGroup
     });
 
     // Create S3 storage stack
-    new StorageStack(this, 'StorageStack', {
+    const storageStack = new StorageStack(this, 'StorageStack', {
       stackName: `${stageName}-storage-stack`,
     });
 
     // Create CloudFront stack
-    new CloudFrontStack(this, 'CloudFrontStack', {
+    const cloudFrontStack = new CloudFrontStack(this, 'CloudFrontStack', {
       stackName: `${stageName}-cloudfront-stack`,
       certificate,
       hostedZone,
-      domainName: services?.cloudFront?.domainName!,
-      recordName: services?.cloudFront?.recordName!
+      domainName: services?.cloudFront?.domainName!
     });
 
     // Create SQS stack
@@ -72,9 +71,13 @@ export class BaseStage extends Stage {
       stackName: `${stageName}-queue-stack`
     });
 
+    console.log('services?.cognito?.domainName! Stage', services?.cognito?.domainName)
     // Create auth stack
     const authStack = new AuthStack(this, 'AuthStack', {
-      stackName: `${stageName}-auth-stack`
+      stackName: `${stageName}-auth-stack`,
+      hostedZone,
+      domainName: services?.cognito?.domainName!,
+      certificate
     });
 
     // Create API stack
@@ -82,14 +85,10 @@ export class BaseStage extends Stage {
       stackName: `${stageName}-api-stack`,
       userPool: authStack.userPoolConstruct.userPool,
       domainName: services?.apiGateway?.domainName!,
-      recordName: services?.apiGateway?.recordName!,
       basePathApi: services?.apiGateway?.basePathApi!,
       certificate,
       hostedZone,
     });
-
-    // Explicit dependency
-    apiStack.addDependency(authStack);
 
     // Create EventBridge stack
     new EventBridgeStack(this, 'EventBridgeStack', {
@@ -100,5 +99,10 @@ export class BaseStage extends Stage {
     new MonitoringStack(this, 'MonitoringStack', {
       stackName: `${stageName}-monitoring-stack`
     });
+
+    // Explicit dependency
+    apiStack.addDependency(authStack);
+    cloudFrontStack.addDependency(storageStack);
+    rdsStack.addDependency(vpcStack);
   }
 }

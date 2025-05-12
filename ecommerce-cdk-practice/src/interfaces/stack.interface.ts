@@ -10,7 +10,6 @@ import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 export interface BaseStackProps extends StackProps {
   domainName: string;
   certificate: ICertificate;
-  recordName: string;
   hostedZone: IHostedZone;
 }
 
