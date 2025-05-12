@@ -5,15 +5,21 @@ import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
 /**
+ * Defines interface for the base stack properties
+ */
+export interface BaseStackProps extends StackProps {
+  domainName: string;
+  certificate: ICertificate;
+  recordName: string;
+  hostedZone: IHostedZone;
+}
+
+/**
  * Defines interface for the stack that need to related to User Pool
  */
-export interface ApiStackProps extends StackProps {
+export interface ApiStackProps extends BaseStackProps {
   userPool: UserPool;
-  domainName?: string;
-  recordName?: string;
   basePathApi?: string;
-  hostedZone?: IHostedZone;
-  certificate: ICertificate;
 }
 
 /**

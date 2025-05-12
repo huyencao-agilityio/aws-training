@@ -1,12 +1,23 @@
 import { Environment } from 'aws-cdk-lib/core';
 
 /**
- * Defines interface for app environment
+ * Define the interface for an individual service in a specific environment
+ */
+export interface ServiceEnvironment {
+  domainName?: string;
+  recordName?: string;
+  basePathApi?: string;
+}
+
+/**
+ * Defines interface for the overall application environment configuration
  */
 export interface AppEnvironment {
   env: Environment;
   stageName: string;
-  domainName?: string;
-  recordName?: string;
-  basePathApi?: string;
+  services?: {
+    apiGateway?: ServiceEnvironment;
+    cloudFront?: ServiceEnvironment;
+    cognito?: ServiceEnvironment;
+  };
 }

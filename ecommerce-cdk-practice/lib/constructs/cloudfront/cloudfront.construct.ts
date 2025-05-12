@@ -11,7 +11,7 @@ import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
-import { BaseConstructProps } from '@interfaces/construct.interface';
+import { CloudFrontProps } from '@interfaces/construct.interface';
 
 /**
  * Define the construct to create new CloudFront
@@ -19,10 +19,10 @@ import { BaseConstructProps } from '@interfaces/construct.interface';
 export class CloudFrontConstruct extends Construct {
   public readonly distribution: Distribution;
 
-  constructor(scope: Construct, id: string, props: BaseConstructProps) {
+  constructor(scope: Construct, id: string, props: CloudFrontProps) {
     super(scope, id);
 
-    const { lambdaFunction } = props;
+    const { lambdaFunction, certificate, domainName } = props;
     const bucket = Bucket.fromBucketName(this, 'FromBucketName', BUCKET_NAME);
 
     // Create Origin Access Control (OAC)
@@ -49,6 +49,8 @@ export class CloudFrontConstruct extends Construct {
           },
         ],
       },
+      domainNames: [domainName],
+      certificate: certificate,
       comment: 'CloudFront for public image access via S3',
     });
 

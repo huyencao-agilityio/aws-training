@@ -13,9 +13,11 @@ const environments: Record<string, AppEnvironment> = {
   staging: {
     env: { account: '149379632015', region: 'us-east-1' },
     stageName: 'staging',
-    domainName: ENVIRONMENTS.staging.domainName,
-    recordName: ENVIRONMENTS.staging.recordName,
-    basePathApi: ENVIRONMENTS.staging.basePathApi
+    services: {
+      apiGateway: ENVIRONMENTS.staging.apiGateway,
+      cloudFront: ENVIRONMENTS.staging.cloudFront,
+      cognito: ENVIRONMENTS.staging.cognito,
+    },
   },
   prod: {
     env: { account: '149379632015', region: 'us-east-1' },

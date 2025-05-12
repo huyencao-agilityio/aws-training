@@ -15,6 +15,7 @@ import { Topic } from 'aws-cdk-lib/aws-sns';
 import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
 
 /**
  * Defines interface the base construct.
@@ -132,5 +133,24 @@ export interface ApiDomainConstructProps {
   domainName: string;
   restApi: RestApi;
   basePathApi?: string;
-  recordName?: string;
+  recordName: string;
+}
+
+/**
+ * Defines interface for the CloudFront domain construct
+ * Used to create Route 53 DNS records pointing to a CloudFront distribution
+ */
+export interface CloudFrontDomainConstructProps {
+  hostedZone: IHostedZone;
+  recordName: string;
+  distribution: Distribution;
+}
+
+/**
+ * Defines interface for the CloudFront construct.
+ * Used to configure a CloudFront distribution with a custom domain and certificate.
+ */
+export interface CloudFrontProps extends BaseConstructProps {
+  certificate: ICertificate;
+  domainName: string;
 }
