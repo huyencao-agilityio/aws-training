@@ -6,7 +6,7 @@ import { DB_CONSTANTS } from '@constants/database.constant';
 /**
  * Fetches the database configuration by reading environment variables and importing values for the host
  */
-export const getDatabaseConfig = () => {
+export const getDatabaseConfig = (): Record<string, string> => {
   const dbName = process.env.DB_NAME || '';
   const dbPassword = process.env.DB_PASSWORD || '';
   const dbUser= process.env.DB_USER || '';

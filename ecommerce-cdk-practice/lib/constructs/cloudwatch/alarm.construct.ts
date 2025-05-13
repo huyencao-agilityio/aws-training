@@ -2,12 +2,15 @@ import { Duration, Fn } from 'aws-cdk-lib';
 import {
   Alarm,
   ComparisonOperator,
-  Metric
+  Metric,
+  Stats
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 import { AlarmConstructProps } from '@interfaces/construct.interface';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { API_METRIC_ERRORS } from '@constants/metric.constant';
 
 /**
  * Define the construct to create new alarm in cloudwatch
@@ -21,25 +24,53 @@ export class AlarmConstruct extends Construct {
     const restApiId = Fn.importValue('ApiGatewayRestApiId');
     const stage = Fn.importValue('ApiGatewayRestApiStage');
 
+    // Create metric for 5xx error
+    const metric = this.createMetric5XXError(restApiId, stage);
+    // Create alarm for 5xx error
+    this.createAlarm5XXError(metric, snsTopic, stage);
+  }
+
+  /**
+   * Creates a CloudWatch metric for monitoring 5XX errors in the API Gateway
+   *
+   * @param restApiId - The id of the rest api
+   * @param stage - The stage of the rest api
+   * @returns The created metric
+   */
+  createMetric5XXError(restApiId: string, stage: string): Metric {
     const metric = new Metric({
       namespace: 'AWS/ApiGateway',
-      metricName: '5XXError',
+      metricName: API_METRIC_ERRORS.ERROR_5XX,
       dimensionsMap: {
         ApiId: restApiId,
         Stage: stage,
       },
-      statistic: 'Sum',
+      statistic: Stats.SUM,
       period: Duration.minutes(1),
     });
 
+    return metric;
+  }
+
+  /**
+   * Create a new alarm for 5xx error in cloudwatch
+   *
+   * @param metric - The metric to create the alarm on
+   * @param snsTopic - The sns topic to send the alarm to
+   * @param stage - The stage of the rest api
+   * @returns The created alarm
+   */
+  createAlarm5XXError(metric: Metric, snsTopic: Topic, stage: string): Alarm {
     const alarm = new Alarm(this, 'ApiGateway5XXAlarm', {
       metric: metric,
       threshold: 0,
       evaluationPeriods: 1,
       comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
-      alarmDescription: `Alarm when 5XX errors > 0 in API Gateway stage ${stage}`,
+      alarmDescription: `Alarm when 5XX errors > 0 in stage ${stage}`,
     });
 
     alarm.addAlarmAction(new SnsAction(snsTopic));
+
+    return alarm;
   }
 }

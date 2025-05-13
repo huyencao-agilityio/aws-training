@@ -1,9 +1,11 @@
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
+import { SCHEDULE_EXPRESSIONS, TIMEZONES } from '@constants/schedule.constant';
 
 /**
  * Define the construct to create new scheduler in EventBridge
@@ -16,8 +18,18 @@ export class EventBridgeConstruct extends Construct {
 
     const { lambdaFunction } = props;
 
-    // Create IAM role for EventBridge Scheduler
-    const schedulerRole = new Role(this, 'EventBridgeSchedulerRole', {
+    // Create EventBridge Schedule
+    this.schedule = this.createSchedule(lambdaFunction!);
+  }
+
+  /**
+   * Create a new role for EventBridge Scheduler
+   *
+   * @param functionArn - The arn lambda function to schedule
+   * @returns The created role instance
+   */
+  createRoleForSchedule(functionArn: string): Role {
+    const role = new Role(this, 'EventBridgeSchedulerRole', {
       assumedBy: new ServicePrincipal('scheduler.amazonaws.com', {
         conditions: {
           'StringEquals': {
@@ -26,24 +38,39 @@ export class EventBridgeConstruct extends Construct {
         }
       }),
     });
-    schedulerRole.addToPolicy(new PolicyStatement({
+
+    role.addToPolicy(new PolicyStatement({
       actions: ['lambda:InvokeFunction'],
-      resources: [lambdaFunction!.functionArn],
+      resources: [functionArn],
     }));
 
-    // Create EventBridge Schedule
-    this.schedule = new CfnSchedule(this, 'EventBridgeScheduler', {
+    return role;
+  }
+
+  /**
+   * Create a new schedule in EventBridge
+   *
+   * @param lambdaFunction - The lambda function to schedule
+   * @returns The created schedule instance
+   */
+  createSchedule(lambdaFunction: IFunction): CfnSchedule {
+    const functionArn = lambdaFunction!.functionArn;
+    const role = this.createRoleForSchedule(functionArn);
+
+    const schedule = new CfnSchedule(this, 'EventBridgeScheduler', {
       name: 'WeeklyReport',
-      scheduleExpression: 'cron(20 10 ? * WED *)',
+      scheduleExpression: SCHEDULE_EXPRESSIONS.WEEKLY_REPORT,
       flexibleTimeWindow: {
         mode: 'OFF',
       },
-      scheduleExpressionTimezone: 'Asia/Saigon',
+      scheduleExpressionTimezone: TIMEZONES.VIETNAM,
       target: {
-        arn: lambdaFunction!.functionArn,
-        roleArn: schedulerRole.roleArn,
+        arn: functionArn,
+        roleArn: role.roleArn,
       },
       state: 'ENABLED'
     });
+
+    return schedule;
   }
 }

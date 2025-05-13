@@ -6,5 +6,9 @@
     "us-east-1d",
     "us-east-1e",
     "us-east-1f"
-  ]
+  ],
+  "hosted-zone:account=149379632015:domainName=ecommerce-app.click:region=us-east-1": {
+    "Id": "/hostedzone/Z0344904LOXNYZARXRJA",
+    "Name": "ecommerce-app.click."
+  }
 }

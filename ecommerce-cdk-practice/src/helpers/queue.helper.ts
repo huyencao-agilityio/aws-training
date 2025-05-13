@@ -1,10 +1,10 @@
 import { Fn } from 'aws-cdk-lib';
 
-import { QueueExportMap } from '@app-types/queue.type';
+import { QueueResources } from '@app-types/queue.type';
 import { QueueNames } from '@constants/queue.constant';
 
 // Define the function to get the queue resources
-export const getQueueResources = (): QueueExportMap => {
+export const getQueueResources = (): QueueResources => {
   return Object.fromEntries(
     Object.entries(QueueNames).map(([key, baseName]) => [
       key,
@@ -13,5 +13,5 @@ export const getQueueResources = (): QueueExportMap => {
         arn: Fn.importValue(`${baseName}Arn`),
       },
     ])
-  ) as QueueExportMap;
+  ) as QueueResources;
 };

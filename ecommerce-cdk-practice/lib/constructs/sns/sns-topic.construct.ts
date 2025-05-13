@@ -15,12 +15,25 @@ export class SnsTopicConstruct extends Construct {
 
     const { email, topicName } = props;
 
-    this.topic = new Topic(this, 'AlarmTopic', {
+    this.topic = this.createTopic(topicName!, email);
+  }
+
+  /**
+   * Create a new SNS topic
+   *
+   * @param topicName - The name of the topic to create
+   * @param email - The email address to subscribe to the topic
+   * @returns The created topic instance
+   */
+  createTopic(topicName: string, email: string): Topic {
+    const topic = new Topic(this, 'AlarmTopic', {
       displayName: topicName ?? 'Alarm Topic',
     });
 
-    this.topic.addSubscription(
+    topic.addSubscription(
       new EmailSubscription(email)
     );
+
+    return topic;
   }
 }
