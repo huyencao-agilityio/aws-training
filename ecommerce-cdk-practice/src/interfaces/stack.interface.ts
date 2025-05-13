@@ -4,6 +4,8 @@ import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
+import { AppEnvironment } from './app-env.interface';
+
 /**
  * Defines interface for the base stack properties
  */
@@ -34,4 +36,11 @@ export interface PostgresRdsStackProps extends StackProps {
  */
 export interface CertificateStackProps extends StackProps {
   hostedZone: IHostedZone;
+}
+
+/**
+ *Defines interface for the Pipeline Stack
+ */
+export interface PipelineStackProps extends StackProps {
+  stage: AppEnvironment;
 }

@@ -5,7 +5,7 @@ import {
   ProviderAttribute,
   UserPool
 } from 'aws-cdk-lib/aws-cognito';
-import 'dotenv/config';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import {
   UserPoolConstructProps
@@ -40,8 +40,14 @@ export class ProviderConstruct extends Construct {
     userPool: UserPool
   ): UserPoolIdentityProviderFacebook {
     // Get client credentials from environment variables
-    const fbClientId = process.env.FB_CLIENT_ID || '';
-    const fbClientSecret = process.env.FB_CLIENT_SECRET || '';
+    const fbClientId = StringParameter.valueForStringParameter(
+      this,
+      '/provider/facebook-client-id'
+    );
+    const fbClientSecret = StringParameter.valueForStringParameter(
+      this,
+      '/provider/facebook-client-secret'
+    );
 
     // Create provider
     const provider = new UserPoolIdentityProviderFacebook(
@@ -72,8 +78,14 @@ export class ProviderConstruct extends Construct {
     userPool: UserPool
   ): UserPoolIdentityProviderGoogle {
     // Get client credentials from environment variables
-    const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
-    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+    const googleClientId = StringParameter.valueForStringParameter(
+      this,
+      '/provider/google-client-id'
+    );
+    const googleClientSecret = StringParameter.valueForStringParameter(
+      this,
+      '/provider/google-client-secret'
+    );
 
     // Create google provider
     const provider = new UserPoolIdentityProviderGoogle(

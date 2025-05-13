@@ -21,7 +21,7 @@ export class PostConfirmationLambdaConstruct extends Construct {
 
     const { librariesLayer, userPool } = props;
     // Get the db instance
-    const dbInstance = getDatabaseConfig();
+    const dbInstance = getDatabaseConfig(scope);
 
     // Create the Lambda function for post-confirmation handling
     this.postConfirmation = this.createPostConfirmationLambdaFunction(

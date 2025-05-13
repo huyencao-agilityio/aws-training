@@ -17,7 +17,7 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
 
     const { librariesLayer, queue } = props;
     // Get the db instance
-    const dbInstance = getDatabaseConfig();
+    const dbInstance = getDatabaseConfig(scope);
 
     // Create the SQS Lambda Construct
     this.createSqsLambdaConstruct(

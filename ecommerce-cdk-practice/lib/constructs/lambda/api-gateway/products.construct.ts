@@ -27,7 +27,7 @@ export class ProductsLambdaConstruct extends Construct {
     const { librariesLayer, userPool } = props;
 
     // Get the db instance
-    const dbInstance = getDatabaseConfig();
+    const dbInstance = getDatabaseConfig(scope);
 
     // Create the Lambda function for products retrieval
     this.getProductsLambda = this.createGetProductsLambdaFunction(

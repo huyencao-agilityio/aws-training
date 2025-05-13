@@ -26,7 +26,7 @@ export class PreSignUpLambdaConstruct extends Construct {
 
     const { librariesLayer, userPool } = props;
     // Get the db instance
-    const dbInstance = getDatabaseConfig();
+    const dbInstance = getDatabaseConfig(scope);
 
     // Create the Lambda function for pre-signup validation
     this.preSignUp = this.createPreSignUpLambdaFunction(

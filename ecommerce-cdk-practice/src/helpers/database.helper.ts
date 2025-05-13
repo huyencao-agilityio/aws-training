@@ -2,14 +2,25 @@ import { Fn } from 'aws-cdk-lib';
 import 'dotenv/config';
 
 import { DB_CONSTANTS } from '@constants/database.constant';
+import { Construct } from 'constructs';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 /**
  * Fetches the database configuration by reading environment variables and importing values for the host
  */
-export const getDatabaseConfig = (): Record<string, string> => {
-  const dbName = process.env.DB_NAME || '';
-  const dbPassword = process.env.DB_PASSWORD || '';
-  const dbUser= process.env.DB_USER || '';
+export const getDatabaseConfig = (scope: Construct): Record<string, string> => {
+  const dbPassword =  StringParameter.valueForStringParameter(
+    scope,
+    '/db/password'
+  );
+  const dbName =  StringParameter.valueForStringParameter(
+    scope,
+    '/db/name'
+  );
+  const dbUser =  StringParameter.valueForStringParameter(
+    scope,
+    '/db/user'
+  );
 
   return {
     DB_HOST: Fn.importValue(DB_CONSTANTS.HOST),

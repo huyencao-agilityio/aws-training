@@ -22,7 +22,7 @@ export class SchedulerLambdaConstruct extends Construct {
 
     const { librariesLayer } = props;
     // Get the db instance
-    const dbInstance = getDatabaseConfig();
+    const dbInstance = getDatabaseConfig(scope);
 
     // Create the Lambda function for scheduler
     this.schedulerLambda = this.createSchedulerLambdaFunction(

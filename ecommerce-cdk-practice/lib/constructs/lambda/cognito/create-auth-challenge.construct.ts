@@ -6,7 +6,7 @@ import {
 } from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import 'dotenv/config';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
@@ -38,7 +38,10 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
   createCreateAuthChallengeLambdaFunction(
     librariesLayer: ILayerVersion
   ): Function {
-    const challengeCode = process.env.CHALLENGE_CODE || '';
+    const challengeCode = StringParameter.valueForStringParameter(
+      this,
+      '/cognito/challenge-code'
+    );
 
     const lambdaFunction = new Function(this, 'CreateAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
