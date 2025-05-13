@@ -6,7 +6,9 @@ import { UserModelConstruct } from './user-model.construct';
 import { UploadAvatarModelConstruct } from './upload-avatar-model.construct';
 import { OrderModelConstruct } from './order-model.construct';
 import { ProductModelConstruct } from './product-model.construct';
-import { CommonResponseModelConstruct } from './common-response-model.construct';
+import {
+  CommonResponseModelConstruct
+} from './common-response-model.construct';
 
 export class ModelRestApiConstruct extends Construct {
   public readonly userModelConstruct: UserModelConstruct;
@@ -15,15 +17,23 @@ export class ModelRestApiConstruct extends Construct {
   public readonly productModelConstruct: ProductModelConstruct;
   public readonly commonResponseModelConstruct: CommonResponseModelConstruct;
 
-  constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: RestApiModelConstructProps
+  ) {
     super(scope, id);
 
     const { restApi } = props;
 
     // Create user model to using in API
-    this.userModelConstruct = new UserModelConstruct(this, 'UserModelConstruct', {
-      restApi: restApi
-    });
+    this.userModelConstruct = new UserModelConstruct(
+      this,
+      'UserModelConstruct',
+      {
+        restApi: restApi
+      }
+    );
 
     // Create upload avatar model
     this.uploadAvatarModelConstruct = new UploadAvatarModelConstruct(

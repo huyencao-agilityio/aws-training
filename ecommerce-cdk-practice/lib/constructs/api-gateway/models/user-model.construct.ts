@@ -1,4 +1,9 @@
-import { JsonSchemaType, IModel, Model } from 'aws-cdk-lib/aws-apigateway';
+import {
+  JsonSchemaType,
+  IModel,
+  Model,
+  IRestApi
+} from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import {
@@ -11,13 +16,27 @@ import {
 export class UserModelConstruct extends Construct {
   public readonly updateUserProfileModel: IModel;
 
-  constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: RestApiModelConstructProps
+  ) {
     super(scope, id);
 
     const { restApi } = props;
 
     // Create model to defines the fields to update a user
-    this.updateUserProfileModel = new Model(this, 'UpdateUserProfileModel', {
+    this.updateUserProfileModel = this.createUpdateUserProfileModel(restApi);
+  }
+
+  /**
+   * Create the update user profile model
+   *
+   * @param restApi - The REST API
+   * @returns The update user profile model
+   */
+  createUpdateUserProfileModel(restApi: IRestApi): IModel {
+    const model = new Model(this, 'UpdateUserProfileModel', {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'UpdateUserProfileModel',
@@ -38,5 +57,7 @@ export class UserModelConstruct extends Construct {
         }
       },
     });
+
+    return model;
   }
 }

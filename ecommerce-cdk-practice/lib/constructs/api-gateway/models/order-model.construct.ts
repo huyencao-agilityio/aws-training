@@ -1,4 +1,9 @@
-import { IModel, JsonSchemaType, Model } from 'aws-cdk-lib/aws-apigateway';
+import {
+  IModel,
+  IRestApi,
+  JsonSchemaType,
+  Model
+} from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import {
@@ -11,13 +16,29 @@ import {
 export class OrderModelConstruct extends Construct {
   public readonly orderProductRequestModel: IModel;
 
-  constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: RestApiModelConstructProps
+  ) {
     super(scope, id);
 
     const { restApi } = props;
 
     // Create model to defines the fields to order product
-    this.orderProductRequestModel = new Model(this, 'OrderProductRequestModel', {
+    this.orderProductRequestModel = this.createOrderProductRequestModel(
+      restApi
+    );
+  }
+
+  /**
+   * Create the order product request model
+   *
+   * @param restApi - The REST API
+   * @returns The order product request model
+   */
+  createOrderProductRequestModel(restApi: IRestApi): IModel {
+    const model = new Model(this, 'OrderProductRequestModel', {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'OrderProductRequestModel',
@@ -38,5 +59,7 @@ export class OrderModelConstruct extends Construct {
         minItems: 1
       },
     });
+
+    return model;
   }
 }

@@ -1,4 +1,9 @@
-import { IModel, JsonSchemaType, Model } from 'aws-cdk-lib/aws-apigateway';
+import {
+  IModel,
+  JsonSchemaType,
+  Model,
+  IRestApi
+} from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import {
@@ -11,13 +16,27 @@ import {
 export class CommonResponseModelConstruct extends Construct {
   public readonly commonResponseModel: IModel;
 
-  constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: RestApiModelConstructProps
+  ) {
     super(scope, id);
 
     const { restApi } = props;
 
     // Create model to defines the fields for common response in API
-    this.commonResponseModel = new Model(this, 'CommonResponseModel', {
+    this.commonResponseModel = this.createCommonResponseModel(restApi);
+  }
+
+  /**
+   * Create the common response model
+   *
+   * @param restApi - The REST API
+   * @returns The common response model
+   */
+  createCommonResponseModel(restApi: IRestApi): IModel {
+    const model = new Model(this, 'CommonResponseModel', {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'CommonResponseModel',
@@ -31,5 +50,7 @@ export class CommonResponseModelConstruct extends Construct {
         }
       },
     });
+
+    return model;
   }
 }

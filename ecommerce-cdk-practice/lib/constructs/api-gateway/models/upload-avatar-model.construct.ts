@@ -1,4 +1,9 @@
-import { IModel, JsonSchemaType, Model } from 'aws-cdk-lib/aws-apigateway';
+import {
+  IModel,
+  IRestApi,
+  JsonSchemaType,
+  Model
+} from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import {
@@ -12,13 +17,30 @@ export class UploadAvatarModelConstruct extends Construct {
   public readonly uploadAvatarModel: IModel;
   public readonly presignedS3Response: IModel;
 
-  constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: RestApiModelConstructProps
+  ) {
     super(scope, id);
 
     const { restApi } = props;
 
     // Create model to defines the fields to upload avatar
-    this.uploadAvatarModel = new Model(this, 'UploadAvatarModel', {
+    this.uploadAvatarModel = this.createUploadAvatarModel(restApi);
+
+    // Create model to defines the fields to upload avatar
+    this.presignedS3Response = this.createPresignedS3ResponseModel(restApi);
+  }
+
+  /**
+   * Create the upload avatar model
+   *
+   * @param restApi - The REST API
+   * @returns The upload avatar model
+   */
+  createUploadAvatarModel(restApi: IRestApi): IModel {
+    const model = new Model(this, 'UploadAvatarModel', {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'UploadAvatarModel',
@@ -34,8 +56,17 @@ export class UploadAvatarModelConstruct extends Construct {
       },
     });
 
-    // Create model to defines the fields to upload avatar
-    this.presignedS3Response = new Model(this, 'PresignedS3Response', {
+    return model;
+  }
+
+  /**
+   * Create the presigned S3 response model
+   *
+   * @param restApi - The REST API
+   * @returns The presigned S3 response model
+   */
+  createPresignedS3ResponseModel(restApi: IRestApi): IModel {
+    const model = new Model(this, 'PresignedS3Response', {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'presignedS3Response',
@@ -84,5 +115,7 @@ export class UploadAvatarModelConstruct extends Construct {
         }
       },
     });
+
+    return model;
   }
 }

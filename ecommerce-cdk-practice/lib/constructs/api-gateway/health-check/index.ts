@@ -11,7 +11,11 @@ import { HealthCheckApiConstruct } from './health-check.construct';
 export class HealthCheckResourceConstruct extends Construct {
   public readonly healthCheckResource: IResource;
 
-  constructor(scope: Construct, id: string, props: HealthCheckApiConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: HealthCheckApiConstructProps
+  ) {
     super(scope, id);
 
     const { resource } = props;
