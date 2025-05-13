@@ -24,6 +24,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Build Lambda Layer
+        run: |
+          cd lambda-layer
+          npm install
+          npm run build:layer
+
       - name: Install dependencies
         run: |
           cd ecommerce-cdk-practice
