@@ -9,12 +9,12 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "synth:testing": "ENV=local cdk synth",
-    "deploy:testing": "ENV=local cdk deploy",
-    "synth:prod": "ENV=prod cdk synth",
-    "deploy:prod": "ENV=prod cdk deploy",
-    "synth:staging": "ENV=staging cdk synth",
-    "deploy:staging": "ENV=staging cdk deploy"
+    "synth:testing": "ENV=local npx cdk synth",
+    "deploy:testing": "ENV=local npx cdk deploy",
+    "synth:prod": "ENV=prod npx cdk synth",
+    "deploy:prod": "ENV=prod npx cdk deploy",
+    "synth:staging": "ENV=staging npx cdk synth",
+    "deploy:staging": "ENV=staging npx cdk deploy"
 
   },
   "devDependencies": {

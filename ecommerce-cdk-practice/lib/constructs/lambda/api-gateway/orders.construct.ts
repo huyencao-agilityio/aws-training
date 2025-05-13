@@ -29,7 +29,7 @@ export class OrderLambdaConstruct extends Construct {
     // Get the queue resources
     const queueResources = getQueueResources();
     // Get the db instance
-    const dbInstance = getDatabaseConfig();
+    const dbInstance = getDatabaseConfig(scope);
 
     // Create the Lambda function for order product
     this.orderProductLambda = this.createOrderLambdaFunction(

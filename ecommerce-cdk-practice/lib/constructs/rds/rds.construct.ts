@@ -14,7 +14,7 @@ import {
   StorageType
 } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
-import 'dotenv/config';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { PostgresRdsConstructProps } from '@interfaces/construct.interface';
 
@@ -40,11 +40,17 @@ export class PostgresRdsConstruct extends Construct {
    * @returns The created DatabaseInstance.
    */
   createRdsInstance(vpc: Vpc, securityGroup: SecurityGroup): DatabaseInstance {
-    const DB_PASSWORD = process.env.DB_PASSWORD || '';
-    const DB_IDENTIFIER = process.env.DB_IDENTIFIER || '';
+    const dbPassword =  StringParameter.valueForStringParameter(
+      this,
+      '/db/password'
+    );
+    const dbIdentifier =  StringParameter.valueForStringParameter(
+      this,
+      '/db/identifier'
+    );
 
     const instance = new DatabaseInstance(this, 'PostgresInstance', {
-      instanceIdentifier: DB_IDENTIFIER,
+      instanceIdentifier: dbIdentifier,
       engine: DatabaseInstanceEngine.postgres({
         version: PostgresEngineVersion.VER_17,
       }),
@@ -64,7 +70,7 @@ export class PostgresRdsConstruct extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
       credentials: {
         username: 'postgres',
-        password: SecretValue.unsafePlainText(DB_PASSWORD),
+        password: SecretValue.unsafePlainText(dbPassword),
       },
       storageEncrypted: true,
       enablePerformanceInsights: true
