@@ -1,8 +1,12 @@
 import {
   CognitoUserPoolsAuthorizer,
   EndpointType,
+  IResource,
+  RequestAuthorizer,
   RestApi
 } from 'aws-cdk-lib/aws-apigateway';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 import {
@@ -23,14 +27,45 @@ import { ModelRestApiConstruct } from './models';
  */
 export class RestApiConstruct extends Construct {
   public readonly restApi: RestApi;
-
+  public readonly apiResource: IResource;
+  public readonly lambdaAuthorizer: RequestAuthorizer;
+  public readonly cognitoAuthorizer: CognitoUserPoolsAuthorizer;
+  public readonly models: ModelRestApiConstruct;
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
 
     const { userPool, librariesLayer } = props;
 
     // Create the API Gateway REST API
-    this.restApi = new RestApi(this, 'EcommerceApi', {
+    this.restApi = this.createRestApi();
+    // Create Cognito Authorizer
+    this.cognitoAuthorizer = this.createCognitoAuthorizer(userPool!);
+    // Create a custom lambda authorizer
+    this.lambdaAuthorizer = this.createLambdaAuthorizer(librariesLayer!, userPool!);
+
+    // Create API resources
+    this.apiResource = this.restApi.root.addResource('api');
+
+    // Create all model for app
+    this.models = this.createModels();
+
+    // Create health check API
+    this.createHealthCheckApi();
+    // Create all products API
+    this.createProductsApi(userPool!, librariesLayer!);
+    // Create all users API
+    this.createUsersApi(librariesLayer!);
+    // Create all order API
+    this.createOrdersApi(librariesLayer!);
+  }
+
+  /**
+   * Create the REST API
+   *
+   * @returns The REST API
+   */
+  createRestApi(): RestApi {
+    const api = new RestApi(this, 'EcommerceApi', {
       restApiName: 'Ecommerce API CDK',
       description: 'API for Ecommerce application',
       endpointConfiguration: {
@@ -38,15 +73,41 @@ export class RestApiConstruct extends Construct {
       }
     });
 
-    // Create Cognito Authorizer
-    const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'CognitoAuthorizer', {
-      authorizerName: 'CognitoAuthorization',
-      cognitoUserPools: [userPool],
-      identitySource: 'method.request.header.Authorization'
-    });
+    return api;
+  }
 
-    // Create a custom lambda authorizer
-    const authorizationConstruct = new AuthorizationConstruct(
+  /**
+   * Create the Cognito Authorizer
+   *
+   * @param userPool - The user pool
+   * @returns The Cognito Authorizer
+   */
+  createCognitoAuthorizer(userPool: UserPool): CognitoUserPoolsAuthorizer {
+    const authorizer = new CognitoUserPoolsAuthorizer(
+      this,
+      'CognitoUserPoolsAuthorizer',
+      {
+        authorizerName: 'CognitoAuthorization',
+        cognitoUserPools: [userPool],
+        identitySource: 'method.request.header.Authorization'
+      }
+    );
+
+    return authorizer;
+  }
+
+  /**
+   * Create the Lambda Authorizer
+   *
+   * @param librariesLayer - The libraries layer
+   * @param userPool - The user pool
+   * @returns The Lambda Authorizer
+     */
+  createLambdaAuthorizer(
+    librariesLayer: ILayerVersion,
+    userPool: UserPool
+  ): RequestAuthorizer {
+    const authorization = new AuthorizationConstruct(
       this,
       'AuthorizationConstruct',
       {
@@ -54,58 +115,100 @@ export class RestApiConstruct extends Construct {
         userPool: userPool
       }
     );
-    const lambdaAuthorizer = authorizationConstruct.lambdaAuthorizer;
+    const lambdaAuthorizer = authorization.lambdaAuthorizer;
 
-    // Create API resources
-    const apiResource = this.restApi.root.addResource('api');
+    return lambdaAuthorizer;
+  }
 
-    // Create all model for app
-    const {
-      userModelConstruct,
-      uploadAvatarModelConstruct,
-      orderModelConstruct,
-      productModelConstruct,
-      commonResponseModelConstruct
-    } = new ModelRestApiConstruct(this, 'ModelRestApiConstruct',  {
+  /**
+   * Create the models for the API
+   *
+   * @returns The model construct
+   */
+  createModels(): ModelRestApiConstruct {
+    const models = new ModelRestApiConstruct(this, 'ModelRestApiConstruct',  {
       restApi: this.restApi
     });
 
-    // Create APIs for app
+    return models;
+  }
+  /**
+   * Create the health check API
+   *
+   * @param apiResource - The API resource
+   */
+  createHealthCheckApi(): void {
     new HealthCheckResourceConstruct(this, 'HealthCheckResourceConstruct', {
-      resource: apiResource
+      resource: this.apiResource
     });
+  }
 
-    // Create all products API
+  /**
+   * Create the products API
+   *
+   * @param userPool - The user pool
+   * @param librariesLayer - The libraries layer
+   * @param productModelConstruct - The product model construct
+   */
+  createProductsApi(
+    userPool: UserPool,
+    librariesLayer: ILayerVersion
+  ): void {
     new ProductsResourceConstruct(this, 'ProductsResourceConstruct', {
-      resource: apiResource,
+      resource: this.apiResource,
       userPool: userPool,
       librariesLayer: librariesLayer,
-      lambdaAuthorizer: lambdaAuthorizer,
+      lambdaAuthorizer: this.lambdaAuthorizer,
       models: {
-        productModel: productModelConstruct.productsResponseModel
+        productModel: this.models.productModelConstruct.productsResponseModel
       }
     });
+  }
 
-    // Create all users API
+  /**
+   * Create the users API
+   *
+   * @param librariesLayer - The libraries layer
+   */
+  createUsersApi(
+    librariesLayer: ILayerVersion
+  ): void {
+    const {
+      uploadAvatarModel,
+      presignedS3Response
+    } = this.models.uploadAvatarModelConstruct;
+
+    // Create the users API
     new UsersResourceConstruct(this, 'UsersResourceConstruct', {
-      resource: apiResource,
+      resource: this.apiResource,
       librariesLayer: librariesLayer,
-      cognitoAuthorizer: cognitoAuthorizer,
+      cognitoAuthorizer: this.cognitoAuthorizer,
       models: {
-        updateUserModel: userModelConstruct.updateUserProfileModel,
-        uploadAvatarModel: uploadAvatarModelConstruct.uploadAvatarModel,
-        presignedS3Response: uploadAvatarModelConstruct.presignedS3Response,
+        updateUserModel: this.models.userModelConstruct.updateUserProfileModel,
+        uploadAvatarModel: uploadAvatarModel,
+        presignedS3Response: presignedS3Response,
       }
     });
+  }
 
-    // Create all order API
+  /**
+   * Create the orders API
+   *
+   * @param librariesLayer - The libraries layer
+   */
+  createOrdersApi(
+    librariesLayer: ILayerVersion
+  ): void {
+    const { commonResponseModel } = this.models.commonResponseModelConstruct;
+    const { orderProductRequestModel } = this.models.orderModelConstruct;
+
     new OrderProductResourceConstruct(this, 'OrderProductResourceConstruct', {
-      resource: apiResource,
+      resource: this.apiResource,
       librariesLayer: librariesLayer,
-      cognitoAuthorizer: cognitoAuthorizer,
+      cognitoAuthorizer: this.cognitoAuthorizer,
       models: {
-        orderModel: orderModelConstruct.orderProductRequestModel,
-        commonResponseModel: commonResponseModelConstruct.commonResponseModel
+        orderModel: orderProductRequestModel,
+        commonResponseModel: commonResponseModel
       }
     });
   }

@@ -1,4 +1,9 @@
-import { IModel, JsonSchemaType, Model } from 'aws-cdk-lib/aws-apigateway';
+import {
+  IModel,
+  IRestApi,
+  JsonSchemaType,
+  Model
+} from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 import {
@@ -11,13 +16,27 @@ import {
 export class ProductModelConstruct extends Construct {
   public readonly productsResponseModel: IModel;
 
-  constructor(scope: Construct, id: string, props: RestApiModelConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: RestApiModelConstructProps
+  ) {
     super(scope, id);
 
     const { restApi } = props;
 
     // Create model to defines the fields for get all products
-    this.productsResponseModel = new Model(this, 'ProductsResponseModel', {
+    this.productsResponseModel = this.createProductsResponseModel(restApi);
+  }
+
+  /**
+   * Create the products response model
+   *
+   * @param restApi - The REST API
+   * @returns The products response model
+   */
+  createProductsResponseModel(restApi: IRestApi): IModel {
+    const model = new Model(this, 'ProductsResponseModel', {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'ProductsResponseModel',
@@ -75,5 +94,7 @@ export class ProductModelConstruct extends Construct {
         }
       },
     });
+
+    return model;
   }
 }
