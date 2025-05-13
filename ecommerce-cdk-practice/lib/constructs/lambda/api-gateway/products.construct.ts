@@ -1,12 +1,19 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import {
+  Function,
+  Runtime,
+  Code,
+  ILayerVersion
+} from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import 'dotenv/config';
 
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct for creating Lambda function for API products
@@ -22,11 +29,31 @@ export class ProductsLambdaConstruct extends Construct {
     // Get the db instance
     const dbInstance = getDatabaseConfig();
 
-    // Create the Lambda function for product retrieval
-    this.getProductsLambda = new Function(this, 'GetProducts', {
+    // Create the Lambda function for products retrieval
+    this.getProductsLambda = this.createGetProductsLambdaFunction(
+      librariesLayer!,
+      dbInstance,
+      userPool
+    );
+  }
+
+  /**
+   * Create the Lambda function for products retrieval
+   *
+   * @param librariesLayer - The libraries layer
+   * @param dbInstance - The database instance
+   * @param userPool - The user pool
+   * @returns The Lambda function for product retrieval
+   */
+  createGetProductsLambdaFunction(
+    librariesLayer: ILayerVersion,
+    dbInstance: Record<string, string>,
+    userPool: UserPool
+  ): Function {
+    const lambdaFunction = new Function(this, 'GetProducts', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'get-products.handler',
-      code: Code.fromAsset('dist/src/lambda-handler/api/products/', {
+      code: Code.fromAsset(LAMBDA_PATH.PRODUCTS, {
         exclude: ['**/*', '!get-products.js'],
       }),
       layers: [librariesLayer!],
@@ -37,5 +64,7 @@ export class ProductsLambdaConstruct extends Construct {
         ...dbInstance
       },
     });
+
+    return lambdaFunction;
   }
 }

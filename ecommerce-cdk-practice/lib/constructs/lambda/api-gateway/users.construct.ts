@@ -1,7 +1,8 @@
 import {
   Function,
   Runtime,
-  Code
+  Code,
+  ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -12,6 +13,7 @@ import {
 } from '@interfaces/construct.interface';
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { getDatabaseConfig } from '@helpers/database.helper';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct for creating Lambda function for API update user profile
@@ -27,11 +29,33 @@ export class UsersLambdaConstruct extends Construct {
     // Get the db instance
     const dbInstance = getDatabaseConfig();
 
-    // Create the Lambda function for product retrieval
-    this.updateUserLambda = new Function(this, 'UpdateUser', {
+    // Create the Lambda function for update user
+    this.updateUserLambda = this.createUpdateUserLambdaFunction(
+      librariesLayer!,
+      dbInstance
+    );
+    // Create the Lambda function for upload avatar
+    this.uploadAvatarLambda = this.createUploadAvatarLambdaFunction(
+      librariesLayer!,
+      dbInstance
+    );
+  }
+
+  /**
+   * Create the Lambda function for update user
+   *
+   * @param librariesLayer - The libraries layer
+   * @param dbInstance - The database instance
+   * @returns The Lambda function for update user
+   */
+  createUpdateUserLambdaFunction(
+    librariesLayer: ILayerVersion,
+    dbInstance: Record<string, string>
+  ): Function {
+    const lambdaFunction = new Function(this, 'UpdateUser', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'update-user.handler',
-      code: Code.fromAsset('dist/src/lambda-handler/api/users/', {
+      code: Code.fromAsset(LAMBDA_PATH.USERS, {
         exclude: ['**/*', '!update-user.js'],
       }),
       layers: [librariesLayer!],
@@ -41,11 +65,24 @@ export class UsersLambdaConstruct extends Construct {
       },
     });
 
-    // Create the Lambda function for upload avatar
-    this.uploadAvatarLambda = new Function(this, 'UploadAvatar', {
+    return lambdaFunction;
+  }
+
+  /**
+   * Create the Lambda function for upload avatar
+   *
+   * @param librariesLayer - The libraries layer
+   * @param dbInstance - The database instance
+   * @returns The Lambda function for upload avatar
+   */
+  createUploadAvatarLambdaFunction(
+    librariesLayer: ILayerVersion,
+    dbInstance: Record<string, string>
+  ): Function {
+    const lambdaFunction = new Function(this, 'UploadAvatar', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'upload-avatar.handler',
-      code: Code.fromAsset('dist/src/lambda-handler/api/users/', {
+      code: Code.fromAsset(LAMBDA_PATH.USERS, {
         exclude: ['**/*', '!upload-avatar.js'],
       }),
       layers: [librariesLayer!],
@@ -54,5 +91,7 @@ export class UsersLambdaConstruct extends Construct {
         BUCKET_NAME: BUCKET_NAME
       },
     });
+
+    return lambdaFunction
   }
 }

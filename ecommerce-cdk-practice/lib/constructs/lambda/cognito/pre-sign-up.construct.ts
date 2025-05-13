@@ -1,11 +1,18 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import {
+  Function,
+  Runtime,
+  Code,
+  ILayerVersion
+} from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import 'dotenv/config';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct sets up a Lambda function that
@@ -22,11 +29,31 @@ export class PreSignUpLambdaConstruct extends Construct {
     const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for pre-signup validation
-    this.preSignUp = new Function(this, 'PreSignUp', {
+    this.preSignUp = this.createPreSignUpLambdaFunction(
+      librariesLayer!,
+      dbInstance,
+      userPool
+    );
+  }
+
+  /**
+   * Create the Lambda function for pre-signup validation
+   *
+   * @param librariesLayer - The libraries layer
+   * @param dbInstance - The database instance
+   * @param userPool - The user pool
+   * @returns The Lambda function for pre-signup validation
+   */
+  createPreSignUpLambdaFunction(
+    librariesLayer: ILayerVersion,
+    dbInstance: Record<string, string>,
+    userPool: UserPool
+  ): Function {
+    const lambdaFunction = new Function(this, 'PreSignUp', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'pre-sign-up.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
+      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
         exclude: ['**/*', '!pre-sign-up.js'],
       }),
       environment: {
@@ -36,7 +63,7 @@ export class PreSignUpLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow Lambda access to Cognito
-    this.preSignUp.addToRolePolicy(new PolicyStatement({
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
       actions: [
         'cognito-idp:ListUsers',
         'cognito-idp:AdminLinkProviderForUser',
@@ -45,5 +72,7 @@ export class PreSignUpLambdaConstruct extends Construct {
       resources: [userPool.userPoolArn],
       effect: Effect.ALLOW
     }));
+
+    return lambdaFunction;
   }
 }

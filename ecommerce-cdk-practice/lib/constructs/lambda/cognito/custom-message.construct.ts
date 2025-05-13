@@ -1,9 +1,15 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import {
+  Function,
+  Runtime,
+  Code,
+  ILayerVersion
+} from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct sets up a Lambda function that
@@ -18,20 +24,36 @@ export class CustomMessageLambdaConstruct extends Construct {
     const { librariesLayer } = props;
 
     // Create the Lambda function for message customization
-    this.customMessage = new Function(this, 'CustomMessage', {
+    this.customMessage = this.createCustomMessageLambdaFunction(
+      librariesLayer!
+    );
+  }
+
+  /**
+   * Create the Lambda function for message customization
+   *
+   * @param librariesLayer - The libraries layer
+   * @returns The Lambda function for message customization
+   */
+  createCustomMessageLambdaFunction(
+    librariesLayer: ILayerVersion
+  ): Function {
+    const lambdaFunction = new Function(this, 'CustomMessage', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'custom-message.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
+      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
         exclude: ['**/*', '!custom-message.js'],
       }),
     });
 
     // Add IAM policy to allow sending emails via SES
-    this.customMessage.addToRolePolicy(new PolicyStatement({
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
       actions: ['ses:SendEmail'],
       resources: ['*'],
       effect: Effect.ALLOW
     }));
+
+    return lambdaFunction;
   }
 }
