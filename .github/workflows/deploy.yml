@@ -39,6 +39,6 @@ jobs:
         run: |
           cd ecommerce-cdk-practice
           npm run build
-          ENV=staging cdk deploy
+          npm run deploy:staging
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
