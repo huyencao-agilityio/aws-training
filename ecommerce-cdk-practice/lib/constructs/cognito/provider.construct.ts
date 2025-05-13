@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import {
   UserPoolIdentityProviderFacebook,
   UserPoolIdentityProviderGoogle,
-  ProviderAttribute
+  ProviderAttribute,
+  UserPool
 } from 'aws-cdk-lib/aws-cognito';
 import 'dotenv/config';
 
@@ -11,7 +12,8 @@ import {
 } from '@interfaces/construct.interface';
 
 /**
- * Construct for managing social identity providers (Facebook, Google) for Cognito User Pool
+ * Construct for managing social identity providers (Facebook, Google)
+ * for Cognito User Pool
  */
 export class ProviderConstruct extends Construct {
   public readonly facebookProvider: UserPoolIdentityProviderFacebook;
@@ -22,16 +24,27 @@ export class ProviderConstruct extends Construct {
 
     const { userPool } = props;
 
+    // Configure Facebook provider
+    this.facebookProvider = this.createFacebookProvider(userPool);
+    // Configure Google provider
+    this.googleProvider = this.createGoogleProvider(userPool);
+  }
+
+  /**
+   * Create a new Facebook provider
+   *
+   * @param userPool - The user pool to create the provider for
+   * @returns The created provider
+   */
+  createFacebookProvider(
+    userPool: UserPool
+  ): UserPoolIdentityProviderFacebook {
     // Get client credentials from environment variables
     const fbClientId = process.env.FB_CLIENT_ID || '';
     const fbClientSecret = process.env.FB_CLIENT_SECRET || '';
-    const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
-    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 
-    // Configure Facebook provider
-    // This allows users to sign in with their Facebook account
-    // Required scopes: public_profile and email
-    this.facebookProvider = new UserPoolIdentityProviderFacebook(
+    // Create provider
+    const provider = new UserPoolIdentityProviderFacebook(
       this,
       'FacebookProvider',
       {
@@ -46,10 +59,24 @@ export class ProviderConstruct extends Construct {
       }
     );
 
-    // Configure Google provider
-    // This allows users to sign in with their Google account
-    // Required scopes: profile, email and openid
-    this.googleProvider = new UserPoolIdentityProviderGoogle(
+    return provider;
+  }
+
+  /**
+   * Create a new Google provider
+   *
+   * @param userPool - The user pool to create the provider for
+   * @returns The created provider
+   */
+  createGoogleProvider(
+    userPool: UserPool
+  ): UserPoolIdentityProviderGoogle {
+    // Get client credentials from environment variables
+    const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
+    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+
+    // Create google provider
+    const provider = new UserPoolIdentityProviderGoogle(
       this,
       'GoogleProvider',
       {
@@ -64,5 +91,7 @@ export class ProviderConstruct extends Construct {
         }
       }
     );
+
+    return provider;
   }
 }
