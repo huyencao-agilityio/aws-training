@@ -14,7 +14,7 @@
     "synth:prod": "ENV=prod npx cdk synth",
     "deploy:prod": "ENV=prod npx cdk deploy",
     "synth:staging": "ENV=staging npx cdk synth",
-    "deploy:staging": "ENV=staging npx cdk deploy"
+    "deploy:staging": "ENV=staging npx cdk deploy --require-approval never"
 
   },
   "devDependencies": {
