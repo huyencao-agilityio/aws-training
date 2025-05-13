@@ -18,6 +18,7 @@ export class CloudFrontDomainConstruct extends Construct {
     super(scope, id);
 
     const { hostedZone, domainName, distribution } = props;
+    // Get the record name
     const recordName = domainName?.split('.')[0] || '';
 
     // Create an A record in Route 53 pointing to the CloudFront distribution
