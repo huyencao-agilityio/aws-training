@@ -16,6 +16,7 @@ import {
   CognitoConstructProps
 } from '@interfaces/construct.interface';
 import { COGNITO } from '@constants/cognito.constant';
+import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 /**
  * Construct for managing Cognito User Pool and its associated resources
@@ -36,15 +37,29 @@ export class UserPoolConstruct extends Construct {
 
     const { region, domainName, certificate } = props;
 
+    // Create the User Pool
+    this.userPool = this.createUserPool(region);
+    // Configure user attribute update settings
+    this.configureUserAttributeSettings();
+    // Create user groups
+    this.createGroup();
+    // Add a custom domain to the User Pool
+    this.domain = this.addCustomDomain(domainName, certificate);
 
-    /**
-     * Create the User Pool with:
-     * Strong password policy
-     * Email verification required
-     * SES for email delivery
-     * Standard attributes for user profile
-     */
-    this.userPool = new UserPool(this, 'UserPool', {
+    // Create the App Client with OAuth configuration
+    this.userPoolClient = this.createUserPoolClient();
+  }
+
+  /**
+   * Create a new user pool
+   *
+   * @param region - The region to create the user pool in
+   * @returns The created user pool
+   */
+  createUserPool(
+    region: string
+  ): UserPool {
+    const userPool = new UserPool(this, 'UserPool', {
       userPoolName: COGNITO.USER_POOL_NAME,
       selfSignUpEnabled: true,
       signInAliases: {
@@ -79,23 +94,10 @@ export class UserPoolConstruct extends Construct {
       }
     });
 
-    // Add a custom domain to the User Pool
-    this.domain = this.userPool.addDomain('CognitoCustomDomain', {
-      customDomain: {
-        domainName,
-        certificate,
-      },
-    });
+    return userPool;
+  }
 
-    // Configure user attribute update settings
-    // This ensures email verification is required before updating email
-    const cfnUserPool = this.userPool.node.defaultChild as CfnUserPool;
-    cfnUserPool.userAttributeUpdateSettings = {
-      attributesRequireVerificationBeforeUpdate: ['email'],
-    };
-
-    // Create user groups for role-based access control
-    // These groups determine what permissions users have in the system
+  createGroup(): void {
     new CfnUserPoolGroup(this, 'AdminGroup', {
       groupName: COGNITO.GROUPS.ADMIN.NAME,
       userPoolId: this.userPool.userPoolId,
@@ -107,10 +109,47 @@ export class UserPoolConstruct extends Construct {
       userPoolId: this.userPool.userPoolId,
       description: COGNITO.GROUPS.USER.DESCRIPTION,
     });
+  }
 
-    // Create the App Client with OAuth configuration
-    // This client is used by applications to authenticate users
-    this.userPoolClient = this.userPool.addClient('AppClient', {
+  /**
+   * Add a custom domain to the user pool
+   *
+   * @param domainName - The name of the domain to add
+   * @param certificate - The certificate to use for the domain
+   * @returns The created domain
+   */
+  addCustomDomain(
+    domainName: string,
+    certificate: ICertificate
+  ): UserPoolDomain {
+    const domain = this.userPool.addDomain('CognitoCustomDomain', {
+      customDomain: {
+        domainName,
+        certificate,
+      },
+    });
+
+    return domain;
+  }
+
+  /**
+   * Configure user attribute settings
+   */
+  configureUserAttributeSettings(): void {
+    const cfnUserPool = this.userPool.node.defaultChild as CfnUserPool;
+
+    cfnUserPool.userAttributeUpdateSettings = {
+      attributesRequireVerificationBeforeUpdate: ['email'],
+    };
+  }
+
+  /**
+   * Create a new user pool client
+   *
+   * @returns The created user pool client
+   */
+  createUserPoolClient(): UserPoolClient {
+    const client = this.userPool.addClient('AppClient', {
       userPoolClientName: COGNITO.CLIENT_NAME,
       accessTokenValidity: Duration.minutes(60),
       idTokenValidity: Duration.minutes(60),
@@ -143,5 +182,7 @@ export class UserPoolConstruct extends Construct {
         logoutUrls: [COGNITO.LOGOUT_URI],
       },
     });
+
+    return client;
   }
 }
