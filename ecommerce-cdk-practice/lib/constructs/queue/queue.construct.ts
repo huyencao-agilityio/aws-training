@@ -1,7 +1,5 @@
-import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
-import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 
 import { QueueConstructProps } from '@interfaces/construct.interface';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
@@ -19,14 +17,25 @@ export class QueueConstruct extends Construct {
     const { baseName, maxReceiveCount = 2, isFifo = false } = props;
 
     // Create dead letter queue for main queue
-    this.dlqQueue = new Queue(this, `${baseName}DLQ`, {
-      queueName: isFifo ? `${baseName}-DLQ.fifo` : `${baseName}DLQ`,
-      retentionPeriod: Duration.days(4),
-      fifo: isFifo
-    });
-
+    this.dlqQueue = this.createDeadLetterQueue(baseName!, isFifo);
     // Create queue in SQS
-    this.queue = new Queue(this, `${baseName}Queue`, {
+    this.queue = this.createMainQueue(baseName!, isFifo, maxReceiveCount);
+  }
+
+  /**
+   * Create a new queue in SQS
+   *
+   * @param baseName - The base name of the queue
+   * @param isFifo - Whether the queue is a FIFO queue
+   * @param maxReceiveCount - The maximum number of times a message can be received
+   * @returns The created queue instance
+   */
+  createMainQueue(
+    baseName: string,
+    isFifo: boolean,
+    maxReceiveCount: number
+  ): Queue {
+    const queue = new Queue(this, `${baseName}Queue`, {
       queueName: isFifo ? `${baseName}.fifo` : baseName,
       visibilityTimeout: Duration.seconds(30),
       deadLetterQueue: {
@@ -35,5 +44,25 @@ export class QueueConstruct extends Construct {
       },
       fifo: isFifo
     });
+
+    return queue;
   }
+
+  /**
+   * Create a new dead letter queue in SQS
+   *
+   * @param baseName - The base name of the queue
+   * @param isFifo - Whether the queue is a FIFO queue
+   * @returns The created dead letter queue instance
+   */
+  createDeadLetterQueue(baseName: string, isFifo: boolean): Queue {
+    const dlq = new Queue(this, `${baseName}DLQ`, {
+      queueName: isFifo ? `${baseName}-DLQ.fifo` : `${baseName}DLQ`,
+      retentionPeriod: Duration.days(4),
+      fifo: isFifo
+    });
+
+    return dlq;
+  }
+
 }

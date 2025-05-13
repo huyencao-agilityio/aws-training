@@ -24,6 +24,8 @@ export class VpcConstruct extends Construct {
 
   /**
    * Create a new VPC
+   *
+   * @returns The created VPC instance
    */
   createVpc(): Vpc {
     const vpc = new Vpc(this, 'CdkAppVpc', {
@@ -51,7 +53,8 @@ export class VpcConstruct extends Construct {
 
   /**
    * Create security group for VPC
-   * @returns
+   *
+   * @returns The created security group instance
    */
   createSecurityGroup(): SecurityGroup {
     const securityGroup = new SecurityGroup(this, 'SecurityGroup', {

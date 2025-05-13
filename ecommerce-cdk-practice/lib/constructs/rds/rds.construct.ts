@@ -4,6 +4,8 @@ import {
   InstanceType,
   InstanceClass,
   InstanceSize,
+  Vpc,
+  SecurityGroup,
 } from 'aws-cdk-lib/aws-ec2';
 import {
   DatabaseInstance,
@@ -26,10 +28,22 @@ export class PostgresRdsConstruct extends Construct {
     super(scope, id);
 
     const { vpc, securityGroup } = props;
+
+    this.instance = this.createRdsInstance(vpc, securityGroup);
+  }
+
+  /**
+   * Creates an RDS instance
+   *
+   * @param vpc - The VPC to attach to the RDS instance.
+   * @param securityGroup - The security group to attach to the RDS instance.
+   * @returns The created DatabaseInstance.
+   */
+  createRdsInstance(vpc: Vpc, securityGroup: SecurityGroup): DatabaseInstance {
     const DB_PASSWORD = process.env.DB_PASSWORD || '';
     const DB_IDENTIFIER = process.env.DB_IDENTIFIER || '';
 
-    this.instance = new DatabaseInstance(this, 'PostgresInstance', {
+    const instance = new DatabaseInstance(this, 'PostgresInstance', {
       instanceIdentifier: DB_IDENTIFIER,
       engine: DatabaseInstanceEngine.postgres({
         version: PostgresEngineVersion.VER_17,
@@ -55,5 +69,7 @@ export class PostgresRdsConstruct extends Construct {
       storageEncrypted: true,
       enablePerformanceInsights: true
     });
+
+    return instance;
   }
 }
