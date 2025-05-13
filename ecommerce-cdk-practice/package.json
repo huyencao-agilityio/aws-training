@@ -9,9 +9,13 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy:prod": "cdk deploy -c stage=production",
-    "deploy:staging": "cdk deploy",
-    "deploy:testing": "cdk deploy -c stage=testing"
+    "synth:testing": "ENV=local cdk synth",
+    "deploy:testing": "ENV=local cdk deploy",
+    "synth:prod": "ENV=prod cdk synth",
+    "deploy:prod": "ENV=prod cdk deploy",
+    "synth:staging": "ENV=staging cdk synth",
+    "deploy:staging": "ENV=staging cdk deploy"
+
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.798.0",

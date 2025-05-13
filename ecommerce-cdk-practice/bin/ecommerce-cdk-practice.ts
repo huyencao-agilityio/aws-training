@@ -1,26 +1,25 @@
 import { App } from 'aws-cdk-lib';
 import 'dotenv/config';
 
-import { StagingStage } from '../lib/stages/staging.stage';
-import { ProductionStage } from '../lib/stages/production.stage';
-import { TestingStage } from '../lib/stages/testing.stage';
-
-import { ENVIRONMENTS } from '@constants/domain.constant';
-import { AppEnvironment } from '@interfaces/app-env.interface';
+import { AppPipelineStack } from '../lib/pipelines/app.pipeline';
+import { TestingStage } from 'lib/stages/testing.stage';
 import { StageName } from '@enums/stage-name.enum';
+import { AppEnvironment } from '@interfaces/app-env.interface';
+import { ENVIRONMENTS } from '@constants/domain.constant';
+import { ProductionStage } from 'lib/stages/production.stage';
+import { EnvType } from '@app-types/environment.type';
 
 const app = new App();
 
-// Common AWS environment config
-const defaultAwsEnv = {
-  account: process.env.AWS_ACCOUNT,
-  region: process.env.AWS_REGION,
-};
+const env =  {
+  account: process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_DEFAULT_REGION
+}
 
 // Define environment-specific configuration
-const environments: Record<StageName, AppEnvironment> = {
+const stage: Record<StageName, AppEnvironment> = {
   [StageName.STAGING]: {
-    env: defaultAwsEnv,
+    env,
     stageName: StageName.STAGING,
     services: {
       apiGateway: ENVIRONMENTS.staging.apiGateway,
@@ -29,44 +28,32 @@ const environments: Record<StageName, AppEnvironment> = {
     },
   },
   [StageName.PROD]: {
-    env: defaultAwsEnv,
+    env,
     stageName: StageName.PROD,
   },
   [StageName.TESTING]: {
-    env: defaultAwsEnv,
+    env,
     stageName: StageName.TESTING,
+    services: {
+      apiGateway: ENVIRONMENTS.testing.apiGateway,
+      cloudFront: ENVIRONMENTS.testing.cloudFront,
+      cognito: ENVIRONMENTS.testing.cognito,
+    },
   },
 };
 
-// Get the selected stage from context
-const stage = app.node.tryGetContext('stage');
+// Define the stage map for the different environments
+const stageMap: Record<EnvType, () => void> = {
+  local: () => new TestingStage(app, 'TestingStage', stage[StageName.TESTING]),
+  staging: () => new AppPipelineStack(app, 'AppPipelineStack', {
+    env,
+    stage: stage[StageName.STAGING],
+  }),
+  prod: () => new ProductionStage(app, 'ProductionStage', stage[StageName.PROD]),
+};
 
-// Define the mapping between stage name and its corresponding class + environment
-const stageConfigMap = {
-  [StageName.STAGING]: {
-    name: 'StagingStage',
-    stageClass: StagingStage,
-    env: environments.staging,
-  },
-  [StageName.PROD]: {
-    name: 'ProductionStage',
-    stageClass: ProductionStage,
-    env: environments.prod,
-  },
-  [StageName.TESTING]: {
-    name: 'TestingStage',
-    stageClass: TestingStage,
-    env: environments.testing,
-  },
-} as const;
+// Get the environment type from the environment variable
+const envType: EnvType = process.env.ENV as EnvType || 'local';
 
-// Get the config for the selected stage
-const selectedConfig = stageConfigMap[stage as keyof typeof stageConfigMap];
-
-// Throw error if invalid stage
-if (!selectedConfig) {
-  throw new Error(`Invalid or missing stage: ${stage}`);
-}
-
-// Create the corresponding stage
-new selectedConfig.stageClass(app, selectedConfig.name, selectedConfig.env);
+// Initialize the stage
+stageMap[envType]();
