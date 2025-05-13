@@ -1,10 +1,16 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import {
+  Function,
+  Runtime,
+  Code,
+  ILayerVersion
+} from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -16,14 +22,29 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     super(scope, id);
 
     const { librariesLayer } = props;
-    const challengeCode = process.env.CHALLENGE_CODE || '';
 
     // Lambda for Create Auth Challenge
-    this.createAuthChallenge = new Function(this, 'CreateAuthChallengeLambda', {
+    this.createAuthChallenge = this.createCreateAuthChallengeLambdaFunction(
+      librariesLayer!
+    );
+  }
+
+  /**
+   * Create the Lambda function for Create Auth Challenge
+   *
+   * @param librariesLayer - The libraries layer
+   * @returns The Lambda function for Create Auth Challenge
+   */
+  createCreateAuthChallengeLambdaFunction(
+    librariesLayer: ILayerVersion
+  ): Function {
+    const challengeCode = process.env.CHALLENGE_CODE || '';
+
+    const lambdaFunction = new Function(this, 'CreateAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'create-auth-challenge.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
+      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
         exclude: ['**/*', '!create-auth-challenge.js'],
       }),
       environment: {
@@ -33,10 +54,12 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow sending emails via SES
-    this.createAuthChallenge.addToRolePolicy(new PolicyStatement({
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
       actions: ['ses:SendEmail'],
       resources: ['*'],
       effect: Effect.ALLOW
     }));
+
+    return lambdaFunction;
   }
 }

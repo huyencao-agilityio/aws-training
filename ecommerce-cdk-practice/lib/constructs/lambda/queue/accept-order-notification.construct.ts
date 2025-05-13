@@ -1,5 +1,7 @@
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
+import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
@@ -17,15 +19,41 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
     // Get the db instance
     const dbInstance = getDatabaseConfig();
 
-    new SqsLambdaConstruct(this, 'AcceptOrderNotification', {
-      queue: queue,
-      librariesLayer: librariesLayer,
-      handlerFile: 'accept-order-notification',
-      environment: {
-        ...dbInstance
-      },
-      timeout: Duration.seconds(5),
-      withSesPolicy: true,
-    });
+    // Create the SQS Lambda Construct
+    this.createSqsLambdaConstruct(
+      librariesLayer!,
+      dbInstance,
+      queue
+    );
+  }
+
+  /**
+   * Create the SQS Lambda Construct
+   *
+   * @param librariesLayer - The libraries layer
+   * @param dbInstance - The database instance
+   * @returns The Lambda function for accept order notification
+   */
+  createSqsLambdaConstruct(
+    librariesLayer: ILayerVersion,
+    dbInstance: Record<string, string>,
+    queue: Queue
+  ): SqsLambdaConstruct {
+    const construct = new SqsLambdaConstruct(
+      this,
+      'AcceptOrderNotificationConstruct',
+      {
+        queue: queue,
+        librariesLayer: librariesLayer,
+        handlerFile: 'accept-order-notification',
+        environment: {
+          ...dbInstance
+        },
+        timeout: Duration.seconds(5),
+        withSesPolicy: true,
+      }
+    );
+
+    return construct;
   }
 }

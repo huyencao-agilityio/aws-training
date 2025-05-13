@@ -4,12 +4,14 @@ import {
   Function,
   Runtime,
   Code,
-  Version
+  Version,
+  ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { BaseConstructProps } from '@interfaces/construct.interface';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct for creating Lambda function for resize image in Lambda@Edge
@@ -23,11 +25,27 @@ export class ResizeImageLambdaConstruct extends Construct {
 
     const { librariesLayer } = props;
 
-    // Create the Lambda function for product retrieval
-    this.resizeImageLambda = new Function(this, 'ResizeImage', {
+    // Create the Lambda function for resize image
+    this.resizeImageLambda = this.createResizeImageLambdaFunction(
+      librariesLayer!
+    );
+    // Get version for Lambda function
+    this.currentVersion = this.resizeImageLambda.currentVersion;
+  }
+
+  /**
+   * Create the Lambda function for resize image
+   *
+   * @param librariesLayer - The libraries layer
+   * @returns The Lambda function for resize image
+   */
+  createResizeImageLambdaFunction(
+    librariesLayer: ILayerVersion
+  ): Function {
+    const lambdaFunction = new Function(this, 'ResizeImage', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'resize-image.handler',
-      code: Code.fromAsset('dist/src/lambda-handler/cloudfront/', {
+      code: Code.fromAsset(LAMBDA_PATH.CLOUDFRONT, {
         exclude: ['**/*', '!resize-image.js'],
       }),
       layers: [librariesLayer!],
@@ -35,7 +53,7 @@ export class ResizeImageLambdaConstruct extends Construct {
     });
 
     // Add IAM role policy for Lambda function
-    this.resizeImageLambda.addToRolePolicy(new PolicyStatement({
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
         'lambda:GetFunction',
@@ -47,7 +65,7 @@ export class ResizeImageLambdaConstruct extends Construct {
       resources: ['*'],
     }));
 
-    this.resizeImageLambda.addToRolePolicy(new PolicyStatement({
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
         's3:GetObject',
@@ -57,7 +75,6 @@ export class ResizeImageLambdaConstruct extends Construct {
       resources: [`arn:aws:s3:::${BUCKET_NAME}/*`],
     }));
 
-    // Get version for Lambda function
-    this.currentVersion = this.resizeImageLambda.currentVersion;
+    return lambdaFunction;
   }
 }

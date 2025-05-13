@@ -1,11 +1,13 @@
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, Code, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import 'dotenv/config';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
+import { LAMBDA_PATH } from '@constants/lambda-path.constants';
 
 /**
  * Construct sets up a Lambda function that
@@ -17,16 +19,28 @@ export class PostConfirmationLambdaConstruct extends Construct {
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
 
-    const { librariesLayer } = props;
+    const { librariesLayer, userPool } = props;
     // Get the db instance
     const dbInstance = getDatabaseConfig();
 
     // Create the Lambda function for post-confirmation handling
-    this.postConfirmation = new Function(this, 'PostConfirmation', {
+    this.postConfirmation = this.createPostConfirmationLambdaFunction(
+      librariesLayer!,
+      dbInstance,
+      userPool
+    );
+  }
+
+  createPostConfirmationLambdaFunction(
+    librariesLayer: ILayerVersion,
+    dbInstance: Record<string, string>,
+    userPool: UserPool
+  ): Function {
+    const lambdaFunction = new Function(this, 'PostConfirmation', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'post-confirmation.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset('dist/src/lambda-handler/cognito/', {
+      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
         exclude: ['**/*', '!post-confirmation.js'],
       }),
       environment: {
@@ -36,12 +50,14 @@ export class PostConfirmationLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow add user to group in Cognito
-    this.postConfirmation.addToRolePolicy(new PolicyStatement({
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
       actions: [
         'cognito-idp:AdminAddUserToGroup'
       ],
-      resources: [props.userPool.userPoolArn],
+      resources: [userPool.userPoolArn],
       effect: Effect.ALLOW
     }));
+
+    return lambdaFunction;
   }
 }
