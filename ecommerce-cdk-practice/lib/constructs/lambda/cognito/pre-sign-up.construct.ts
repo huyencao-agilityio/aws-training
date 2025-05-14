@@ -1,18 +1,20 @@
+import path from 'path';
+
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import 'dotenv/config';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
 import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct sets up a Lambda function that
@@ -49,17 +51,19 @@ export class PreSignUpLambdaConstruct extends Construct {
     dbInstance: Record<string, string>,
     userPool: UserPool
   ): Function {
-    const lambdaFunction = new Function(this, 'PreSignUp', {
+    // Create new Lambda function
+    const lambdaFunction = new NodejsFunction(this, 'PreSignUp', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'pre-sign-up.handler',
+      handler: 'index.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
-        exclude: ['**/*', '!pre-sign-up.js'],
-      }),
+      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/pre-sign-up.ts`),
       environment: {
         ...dbInstance
       },
       timeout: Duration.minutes(15),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
     });
 
     // Add IAM policy to allow Lambda access to Cognito

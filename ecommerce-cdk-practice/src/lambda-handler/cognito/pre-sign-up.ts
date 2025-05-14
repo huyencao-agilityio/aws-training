@@ -3,10 +3,10 @@ import {
   UserType,
   AdminLinkProviderForUserRequest
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { PreSignUpTriggerEvent } from 'aws-lambda';
-import { Handler } from 'aws-cdk-lib/aws-lambda';
+import { Handler, PreSignUpTriggerEvent } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
+
 import { CognitoProviderInfo } from '@interfaces/cognito.interface';
 import { DB_PROVIDER_FIELDS, PROVIDER_MAP } from '@constants/cognito.constant';
 import { PreSignUpTrigger } from '@enums/pre-signup-trigger.enum';

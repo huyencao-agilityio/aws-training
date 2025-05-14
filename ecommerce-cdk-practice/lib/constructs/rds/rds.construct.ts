@@ -40,11 +40,14 @@ export class PostgresRdsConstruct extends Construct {
    * @returns The created DatabaseInstance.
    */
   createRdsInstance(vpc: Vpc, securityGroup: SecurityGroup): DatabaseInstance {
-    const dbPassword =  StringParameter.valueForStringParameter(
+    const dbPassword =  StringParameter.fromSecureStringParameterAttributes(
       this,
-      '/db/password'
-    );
-    const dbIdentifier =  StringParameter.valueForStringParameter(
+      'DbPassword',
+      {
+        parameterName: '/db/password',
+      }
+    ).stringValue;
+    const dbIdentifier = StringParameter.valueForStringParameter(
       this,
       '/db/identifier'
     );
