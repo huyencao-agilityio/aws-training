@@ -44,24 +44,12 @@ export class ProviderConstruct extends Construct {
     secret: ISecret
   ): UserPoolIdentityProviderFacebook {
     // Get client credentials from environment variables
-    // const fbClientId =  StringParameter.fromSecureStringParameterAttributes(
-    //   this,
-    //   'FbClientId',
-    //   {
-    //     parameterName: '/provider/facebook-client-id',
-    //   }
-    // ).stringValue;
-
-    // const fbClientSecret = StringParameter.fromSecureStringParameterAttributes(
-    //   this,
-    //   'FbClientSecret',
-    //   {
-    //     parameterName: '/provider/facebook-client-secret',
-    //   }
-    // ).stringValue;
-
-    const fbClientId = secret.secretValueFromJson('fb_client_id').unsafeUnwrap();
-    const fbClientSecret = secret.secretValueFromJson('fb_client_secret').unsafeUnwrap();
+    const fbClientId = secret.secretValueFromJson(
+      'fb_client_id'
+    ).unsafeUnwrap();
+    const fbClientSecret = secret.secretValueFromJson(
+      'fb_client_secret'
+    ).unsafeUnwrap();
 
     // Create provider
     const provider = new UserPoolIdentityProviderFacebook(
@@ -92,25 +80,12 @@ export class ProviderConstruct extends Construct {
     userPool: UserPool,
     secret: ISecret
   ): UserPoolIdentityProviderGoogle {
-    // Get client credentials from environment variables
-    // const googleClientId = StringParameter.fromSecureStringParameterAttributes(
-    //   this,
-    //   'GoogleClientId',
-    //   {
-    //     parameterName: '/provider/google-client-id',
-    //   }
-    // ).stringValue;
-
-    // const googleClientSecret = StringParameter.fromSecureStringParameterAttributes(
-    //   this,
-    //   'GoogleClientSecret',
-    //   {
-    //     parameterName: '/provider/google-client-secret',
-    //   }
-    // ).stringValue;
-
-    const googleClientId = secret.secretValueFromJson('google_client_id').unsafeUnwrap();
-    const googleClientSecret = secret.secretValueFromJson('google_client_secret').unsafeUnwrap();
+    const googleClientId = secret.secretValueFromJson(
+      'google_client_id'
+    ).unsafeUnwrap();
+    const googleClientSecret = secret.secretValueFromJson(
+      'google_client_secret'
+    ).unsafeUnwrap();
 
     // Create google provider
     const provider = new UserPoolIdentityProviderGoogle(
