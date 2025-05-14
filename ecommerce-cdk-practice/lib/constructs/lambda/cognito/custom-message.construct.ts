@@ -1,3 +1,5 @@
+import path from 'path';
+
 import {
   Function,
   Runtime,
@@ -6,10 +8,11 @@ import {
 } from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import 'dotenv/config';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct sets up a Lambda function that
@@ -38,13 +41,15 @@ export class CustomMessageLambdaConstruct extends Construct {
   createCustomMessageLambdaFunction(
     librariesLayer: ILayerVersion
   ): Function {
-    const lambdaFunction = new Function(this, 'CustomMessage', {
+    // Create new Lambda function
+    const lambdaFunction = new NodejsFunction(this, 'CustomMessage', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'custom-message.handler',
+      handler: 'index.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
-        exclude: ['**/*', '!custom-message.js'],
-      }),
+      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/custom-message.ts`),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
     });
 
     // Add IAM policy to allow sending emails via SES

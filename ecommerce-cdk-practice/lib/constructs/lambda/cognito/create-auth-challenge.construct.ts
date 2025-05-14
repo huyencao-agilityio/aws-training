@@ -1,9 +1,11 @@
+import path from 'path';
+
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
@@ -11,6 +13,7 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -38,18 +41,21 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
   createCreateAuthChallengeLambdaFunction(
     librariesLayer: ILayerVersion
   ): Function {
+    // Get challenge code
     const challengeCode = StringParameter.valueForStringParameter(
       this,
-      '/cognito/challenge-code'
+      '/cognito/challenge-code',
     );
 
-    const lambdaFunction = new Function(this, 'CreateAuthChallengeLambda', {
+    // Create new Lambda function
+    const lambdaFunction = new NodejsFunction(this, 'CreateAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'create-auth-challenge.handler',
+      handler: 'index.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
-        exclude: ['**/*', '!create-auth-challenge.js'],
-      }),
+      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/create-auth-challenge.ts`),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
       environment: {
         DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
         CHALLENGE_CODE: challengeCode

@@ -1,6 +1,5 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { Handler, PostConfirmationTriggerEvent } from 'aws-lambda';
-import 'dotenv/config';
 
 import { PgPool } from '/opt/nodejs/index.js';
 

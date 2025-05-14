@@ -10,6 +10,7 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
+import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 /**
  * Construct for managing social identity providers (Facebook, Google)
@@ -24,10 +25,12 @@ export class ProviderConstruct extends Construct {
 
     const { userPool } = props;
 
+    const secret = Secret.fromSecretNameV2(this, 'Secret', 'secret');
+
     // Configure Facebook provider
-    this.facebookProvider = this.createFacebookProvider(userPool);
+    this.facebookProvider = this.createFacebookProvider(userPool, secret);
     // Configure Google provider
-    this.googleProvider = this.createGoogleProvider(userPool);
+    this.googleProvider = this.createGoogleProvider(userPool, secret);
   }
 
   /**
@@ -37,17 +40,28 @@ export class ProviderConstruct extends Construct {
    * @returns The created provider
    */
   createFacebookProvider(
-    userPool: UserPool
+    userPool: UserPool,
+    secret: ISecret
   ): UserPoolIdentityProviderFacebook {
     // Get client credentials from environment variables
-    const fbClientId = StringParameter.valueForStringParameter(
-      this,
-      '/provider/facebook-client-id'
-    );
-    const fbClientSecret = StringParameter.valueForStringParameter(
-      this,
-      '/provider/facebook-client-secret'
-    );
+    // const fbClientId =  StringParameter.fromSecureStringParameterAttributes(
+    //   this,
+    //   'FbClientId',
+    //   {
+    //     parameterName: '/provider/facebook-client-id',
+    //   }
+    // ).stringValue;
+
+    // const fbClientSecret = StringParameter.fromSecureStringParameterAttributes(
+    //   this,
+    //   'FbClientSecret',
+    //   {
+    //     parameterName: '/provider/facebook-client-secret',
+    //   }
+    // ).stringValue;
+
+    const fbClientId = secret.secretValueFromJson('fb_client_id').unsafeUnwrap();
+    const fbClientSecret = secret.secretValueFromJson('fb_client_secret').unsafeUnwrap();
 
     // Create provider
     const provider = new UserPoolIdentityProviderFacebook(
@@ -75,17 +89,28 @@ export class ProviderConstruct extends Construct {
    * @returns The created provider
    */
   createGoogleProvider(
-    userPool: UserPool
+    userPool: UserPool,
+    secret: ISecret
   ): UserPoolIdentityProviderGoogle {
     // Get client credentials from environment variables
-    const googleClientId = StringParameter.valueForStringParameter(
-      this,
-      '/provider/google-client-id'
-    );
-    const googleClientSecret = StringParameter.valueForStringParameter(
-      this,
-      '/provider/google-client-secret'
-    );
+    // const googleClientId = StringParameter.fromSecureStringParameterAttributes(
+    //   this,
+    //   'GoogleClientId',
+    //   {
+    //     parameterName: '/provider/google-client-id',
+    //   }
+    // ).stringValue;
+
+    // const googleClientSecret = StringParameter.fromSecureStringParameterAttributes(
+    //   this,
+    //   'GoogleClientSecret',
+    //   {
+    //     parameterName: '/provider/google-client-secret',
+    //   }
+    // ).stringValue;
+
+    const googleClientId = secret.secretValueFromJson('google_client_id').unsafeUnwrap();
+    const googleClientSecret = secret.secretValueFromJson('google_client_secret').unsafeUnwrap();
 
     // Create google provider
     const provider = new UserPoolIdentityProviderGoogle(

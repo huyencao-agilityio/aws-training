@@ -1,13 +1,16 @@
-import { Function, Runtime, Code, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import path from 'path';
+
+import { Function, Runtime, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import 'dotenv/config';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
 import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct sets up a Lambda function that
@@ -36,17 +39,19 @@ export class PostConfirmationLambdaConstruct extends Construct {
     dbInstance: Record<string, string>,
     userPool: UserPool
   ): Function {
-    const lambdaFunction = new Function(this, 'PostConfirmation', {
+    // Create new Lambda function
+    const lambdaFunction = new NodejsFunction(this, 'PostConfirmation', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'post-confirmation.handler',
+      handler: 'index.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
-        exclude: ['**/*', '!post-confirmation.js'],
-      }),
+      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/post-confirmation.ts`),
       environment: {
         ...dbInstance
       },
       timeout: Duration.minutes(15),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
     });
 
     // Add IAM policy to allow add user to group in Cognito

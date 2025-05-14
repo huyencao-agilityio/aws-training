@@ -1,14 +1,17 @@
+import path from 'path';
+
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct sets up a Lambda function that
@@ -37,14 +40,16 @@ export class DefineAuthChallengeLambdaConstruct extends Construct {
   createDefineAuthChallengeLambdaFunction(
     librariesLayer: ILayerVersion
   ): Function {
-    const lambdaFunction = new Function(this, 'DefineAuthChallengeLambda', {
+    // Create new Lambda function
+    const lambdaFunction = new NodejsFunction(this, 'DefineAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'define-auth-challenge.handler',
+      handler: 'index.handler',
       layers: [librariesLayer!],
-      code: Code.fromAsset(LAMBDA_PATH.AUTH, {
-        exclude: ['**/*', '!define-auth-challenge.js'],
-      }),
+      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/define-auth-challenge.ts`),
       timeout: Duration.minutes(15),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
     });
 
     return lambdaFunction;
