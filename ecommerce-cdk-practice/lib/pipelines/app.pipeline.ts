@@ -25,6 +25,8 @@ export class AppPipelineStack extends Stack {
     const branchName = process.env.BRANCH_NAME || '';
     const repoName = process.env.REPO_NAME || '';
 
+    console.log('TOKEN', SecretValue.secretsManager('github-token'))
+
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
       synth: new ShellStep('Synth', {
@@ -32,10 +34,12 @@ export class AppPipelineStack extends Stack {
           authentication: SecretValue.secretsManager('github-token'),
         }),
         commands: [
+          'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
           'npx cdk synth'
         ],
+        primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
       }),
     });
 
