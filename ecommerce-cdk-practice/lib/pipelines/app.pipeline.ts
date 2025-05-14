@@ -33,6 +33,10 @@ export class AppPipelineStack extends Stack {
         input: CodePipelineSource.gitHub(repoName, branchName, {
           authentication: SecretValue.secretsManager('github-token'),
         }),
+        installCommands: [
+          'cd ecommerce-cdk-practice',
+          'npm install'
+        ],
         commands: [
           'cd ecommerce-cdk-practice',
           'npm install',
