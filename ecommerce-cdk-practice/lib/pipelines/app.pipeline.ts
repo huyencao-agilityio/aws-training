@@ -35,7 +35,7 @@ export class AppPipelineStack extends Stack {
         }),
         commands: [
           'cd ecommerce-cdk-practice',
-          'npm ci',
+          'npm install',
           'npm run build',
           'npx cdk synth'
         ],
