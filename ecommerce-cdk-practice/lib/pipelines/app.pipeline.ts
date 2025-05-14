@@ -31,10 +31,13 @@ export class AppPipelineStack extends Stack {
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
       synth: new CodeBuildStep('Synth', {
-        input: CodePipelineSource.gitHub(repoName, branchName, {
+        input: CodePipelineSource.gitHub('huyencao-agilityio/aws-training', 'develop', {
           authentication: SecretValue.secretsManager('github-token'),
         }),
         installCommands: [
+          'echo "Current working directory: $(pwd)"',
+          'ls -al',
+          'ls -al ecommerce-cdk-practice || echo "Folder ecommerce-cdk-practice not found"',
           'cd ecommerce-cdk-practice',
           'npm install'
         ],
