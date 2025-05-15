@@ -87,7 +87,7 @@ export class OrderLambdaConstruct extends Construct {
       timeout: Duration.minutes(15),
       environment: {
         ...dbInstance,
-        QUEUE_URL: queueResources.ORDER.url
+        ORDER_QUEUE_URL: queueResources.ORDER.url
       },
     });
 
@@ -129,7 +129,7 @@ export class OrderLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       environment: {
         ...dbInstance,
-        QUEUE_URL: queueResources.ACCEPT.url
+        ACCEPT_QUEUE_URL: queueResources.ACCEPT.url
       },
     });
 
@@ -171,7 +171,7 @@ export class OrderLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       environment: {
         ...dbInstance,
-        QUEUE_URL: queueResources.REJECT.url
+        REJECT_QUEUE_URL: queueResources.REJECT.url
       },
     });
 
@@ -180,7 +180,7 @@ export class OrderLambdaConstruct extends Construct {
       actions: [
         'sqs:SendMessage'
       ],
-      resources: [queueResources.REJECT.url],
+      resources: [queueResources.REJECT.arn],
       effect: Effect.ALLOW
     }));
 
