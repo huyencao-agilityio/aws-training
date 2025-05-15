@@ -3,8 +3,8 @@ import { Handler } from 'aws-lambda';
 import { PgPool } from'/opt/nodejs/index.js';
 
 import { UserGroup } from '@enums/user-group.enum';
-import { User } from '@interfaces/user.interface';
 import { HttpStatusCode } from '@enums/http-status-code.enum';
+import { User } from '@interfaces/user.interface';
 import {
   APIGatewayEventRequestUserResource
 } from '@interfaces/api-gateway-event.interface';
