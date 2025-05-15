@@ -81,7 +81,7 @@ export class UsersResourceConstruct extends Construct {
     const resources: ResourceConfig[] = [
       {
         construct: UpdateUsersDetailApiConstruct,
-        resource: usersResource,
+        resource: userIdResource,
         lambdaFunction: usersLambdaConstruct.updateUserLambda,
         cognitoAuthorizer,
         models: {
