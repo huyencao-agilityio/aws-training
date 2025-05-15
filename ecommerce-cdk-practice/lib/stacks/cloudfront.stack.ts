@@ -1,8 +1,7 @@
 import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { getLibrariesLayer } from '@helpers/layer.helper';
-import { BaseStackProps } from '@interfaces/stack.interface';
+import { CloudFrontStackProps } from '@interfaces/stack.interface';
 
 import {
   CloudFrontConstruct
@@ -16,24 +15,21 @@ import {
  * Define the CloudFront stack
  */
 export class CloudFrontStack extends Stack {
-  constructor(scope: Construct, id: string, props: BaseStackProps) {
+  constructor(scope: Construct, id: string, props: CloudFrontStackProps) {
     super(scope, id, props);
 
     const {
       hostedZone,
       domainName,
       certificate,
+      bucket
     } = props;
-
-    // Get layer on Lambda
-    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
 
     // Create the Lambda function for resize image
     const resizeLambdaConstruct = new ResizeImageLambdaConstruct(
       this,
-      'ResizeImageLambdaConstruct', {
-        librariesLayer
-      }
+      'ResizeImageLambdaConstruct',
+      {}
     );
 
     // Create CloudFront construct
@@ -43,7 +39,8 @@ export class CloudFrontStack extends Stack {
       {
         lambdaFunction: resizeLambdaConstruct.resizeImageLambda,
         certificate,
-        domainName
+        domainName,
+        bucket
       }
     );
 

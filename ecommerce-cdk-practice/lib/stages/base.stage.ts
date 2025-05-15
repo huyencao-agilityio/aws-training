@@ -63,7 +63,8 @@ export class BaseStage extends Stage {
       stackName: `${stageName}-cloudfront-stack`,
       certificate,
       hostedZone,
-      domainName: services?.cloudFront?.domainName!
+      domainName: services?.cloudFront?.domainName!,
+      bucket: storageStack.storageConstruct.bucket
     });
 
     // Create SQS stack
@@ -101,7 +102,6 @@ export class BaseStage extends Stage {
 
     // Explicit dependency
     apiStack.addDependency(authStack);
-    cloudFrontStack.addDependency(storageStack);
     rdsStack.addDependency(vpcStack);
   }
 }

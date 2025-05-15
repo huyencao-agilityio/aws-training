@@ -4,7 +4,7 @@ import {
   PresignedPost,
   PresignedPostOptions
 } from '@aws-sdk/s3-presigned-post';
-import { Handler } from 'aws-cdk-lib/aws-lambda';
+import { Handler } from 'aws-lambda';
 
 import { HttpStatusCode } from '@enums/http-status-code.enum';
 import { UserGroup } from '@enums/user-group.enum';

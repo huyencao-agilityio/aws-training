@@ -14,9 +14,15 @@ import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Function } from 'aws-cdk-lib/aws-lambda';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import {
+  Effect,
+  PolicyStatement,
+  ServicePrincipal
+} from 'aws-cdk-lib/aws-iam';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
-import { CloudFrontProps } from '@interfaces/construct.interface';
+import { CloudFrontConstructProps } from '@interfaces/construct.interface';
+
 
 /**
  * Define the construct to create new CloudFront
@@ -24,15 +30,20 @@ import { CloudFrontProps } from '@interfaces/construct.interface';
 export class CloudFrontConstruct extends Construct {
   public readonly distribution: Distribution;
 
-  constructor(scope: Construct, id: string, props: CloudFrontProps) {
+  constructor(scope: Construct, id: string, props: CloudFrontConstructProps) {
     super(scope, id);
 
-    const { lambdaFunction, certificate, domainName } = props;
+    const { lambdaFunction, certificate, domainName, bucket } = props;
 
     // Create new a distribution in CloudFront
     this.distribution = this.createDistribution(
-      certificate, lambdaFunction!, domainName
+      certificate,
+      lambdaFunction!,
+      domainName
     );
+
+    // Add bucket resource policy to allow CloudFront to access the bucket
+    this.addBucketResourcePolicy(bucket);
   }
 
   /**
@@ -104,5 +115,28 @@ export class CloudFrontConstruct extends Construct {
     );
 
     return distribution;
+  }
+
+  /**
+   * Add a resource policy to the bucket to allow CloudFront to access the bucket
+   *
+   * @param bucket - The bucket to add the resource policy
+   */
+  addBucketResourcePolicy(bucket: Bucket): void {
+    // Add resource policy to the bucket
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        sid: 'AllowCloudFrontServicePrincipal',
+        effect: Effect.ALLOW,
+        actions: ['s3:GetObject'],
+        resources: [`${bucket.bucketArn}/*`],
+        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'AWS:SourceArn': this.distribution.distributionArn,
+          },
+        },
+      })
+    );
   }
 }
