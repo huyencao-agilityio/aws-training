@@ -10,12 +10,11 @@
     "test": "jest",
     "cdk": "cdk",
     "synth:testing": "ENV=local npx cdk synth",
-    "deploy:testing": "ENV=local npx cdk deploy",
+    "deploy:testing": "ENV=local cdk deploy TestingStage/*",
     "synth:prod": "ENV=prod npx cdk synth",
     "deploy:prod": "ENV=prod npx cdk deploy",
     "synth:staging": "ENV=staging npx cdk synth",
     "deploy:staging": "ENV=staging npx cdk deploy --require-approval never"
-
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.798.0",
@@ -32,7 +31,6 @@
     "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
     "jwk-to-pem": "^2.0.7",
-    "sharp": "^0.34.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -42,6 +40,7 @@
     "@aws-cdk/aws-cloudfront": "^1.203.0",
     "aws-cdk-lib": "2.181.1",
     "constructs": "^10.0.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "sharp": "^0.34.1"
   }
 }

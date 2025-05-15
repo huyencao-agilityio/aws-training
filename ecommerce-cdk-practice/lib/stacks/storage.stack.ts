@@ -9,15 +9,16 @@ import { StorageConstruct } from '../constructs/s3/storage.construct';
  * for the application.
  */
 export class StorageStack extends Stack {
+  public readonly storageConstruct: StorageConstruct;
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    const storageConstruct = new StorageConstruct(this, 'StorageConstruct', {
+    this.storageConstruct = new StorageConstruct(this, 'StorageConstruct', {
       bucketName: BUCKET_NAME,
     });
 
     new CfnOutput(this, 'BucketNameOutput', {
-      value: storageConstruct.bucket.bucketName,
+      value: this.storageConstruct.bucket.bucketName,
       exportName: 'BucketName',
     });
   }

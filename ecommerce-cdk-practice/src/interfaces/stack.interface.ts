@@ -3,6 +3,7 @@ import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 import { AppEnvironment } from './app-env.interface';
 
@@ -13,6 +14,13 @@ export interface BaseStackProps extends StackProps {
   domainName: string;
   certificate: ICertificate;
   hostedZone: IHostedZone;
+}
+
+/**
+ * Defines interface for the CloudFront stack properties
+ */
+export interface CloudFrontStackProps extends BaseStackProps {
+  bucket: Bucket;
 }
 
 /**

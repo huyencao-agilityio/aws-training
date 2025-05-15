@@ -7,8 +7,6 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool, UserPoolDomain } from 'aws-cdk-lib/aws-cognito';
 import { Function, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
-
-import { ApiGatewayModel } from './api-gateway-model.interface';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
 import { Topic } from 'aws-cdk-lib/aws-sns';
@@ -16,6 +14,9 @@ import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+import { ApiGatewayModel } from './api-gateway-model.interface';
 
 /**
  * Defines interface the base construct.
@@ -92,7 +93,6 @@ export interface QueueLambdaConstructProps {
   queue: Queue;
   librariesLayer?: ILayerVersion;
   handlerFile?: string;
-  handlerFunction?: string;
   environment?: Record<string, string>;
   timeout?: Duration;
   withSesPolicy?: boolean;
@@ -160,7 +160,8 @@ export interface CloudFrontDomainConstructProps {
  * Defines interface for the CloudFront construct.
  * Used to configure a CloudFront distribution with a custom domain and certificate.
  */
-export interface CloudFrontProps extends BaseConstructProps {
+export interface CloudFrontConstructProps extends BaseConstructProps {
   certificate: ICertificate;
   domainName: string;
+  bucket: Bucket;
 }

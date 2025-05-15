@@ -7,7 +7,7 @@ export const ENVIRONMENTS = {
       basePathApi: 'v1',
     },
     cloudFront: {
-      domainName: 'staging.ecommerce-app.click',
+      domainName: 'cdn.ecommerce-app.click',
     },
     cognito: {
       domainName: 'auth-staging.ecommerce-app.click',
@@ -19,7 +19,7 @@ export const ENVIRONMENTS = {
       basePathApi: 'v1',
     },
     cloudFront: {
-      domainName: 'staging.ecommerce-app.click',
+      domainName: 'cdn.ecommerce-app.click',
     },
     cognito: {
       domainName: 'auth-staging.ecommerce-app.click',
