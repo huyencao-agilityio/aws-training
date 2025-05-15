@@ -5,6 +5,7 @@ export const ENVIRONMENTS = {
     apiGateway: {
       domainName: 'staging-api.ecommerce-app.click',
       basePathApi: 'v1',
+      stage: 'v1',
     },
     cloudFront: {
       domainName: 'cdn.ecommerce-app.click',
@@ -15,8 +16,9 @@ export const ENVIRONMENTS = {
   },
   testing: {
     apiGateway: {
-      domainName: 'staging-api.ecommerce-app.click',
+      domainName: 'api.ecommerce-app.click',
       basePathApi: 'v1',
+      stage: 'v1',
     },
     cloudFront: {
       domainName: 'cdn.ecommerce-app.click',

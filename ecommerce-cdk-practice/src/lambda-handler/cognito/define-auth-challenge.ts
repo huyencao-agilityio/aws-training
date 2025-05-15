@@ -1,5 +1,6 @@
-import { ChallengeName } from '@enums/challenge-name.enum';
 import { Handler, DefineAuthChallengeTriggerEvent } from 'aws-lambda';
+
+import { ChallengeName } from '@enums/challenge-name.enum';
 
 /**
  * Lambda handler for Cognito Define Auth Challenge trigger.
