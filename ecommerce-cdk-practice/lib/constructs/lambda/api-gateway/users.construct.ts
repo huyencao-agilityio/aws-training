@@ -8,6 +8,7 @@ import {
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 import {
   BaseConstructProps
@@ -41,8 +42,7 @@ export class UsersLambdaConstruct extends Construct {
     );
     // Create the Lambda function for upload avatar
     this.uploadAvatarLambda = this.createUploadAvatarLambdaFunction(
-      librariesLayer!,
-      dbInstance
+      librariesLayer!
     );
   }
 
@@ -85,8 +85,7 @@ export class UsersLambdaConstruct extends Construct {
    * @returns The Lambda function for upload avatar
    */
   createUploadAvatarLambdaFunction(
-    librariesLayer: ILayerVersion,
-    dbInstance: Record<string, string>
+    librariesLayer: ILayerVersion
   ): Function {
     const lambdaFunction = new NodejsFunction(this, 'UploadAvatar', {
       runtime: Runtime.NODEJS_20_X,
@@ -104,6 +103,13 @@ export class UsersLambdaConstruct extends Construct {
         BUCKET_NAME: BUCKET_NAME
       },
     });
+
+    // Add policy to can upload image to S3
+    lambdaFunction.addToRolePolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['s3:PutObject'],
+      resources: [`arn:aws:s3:::${BUCKET_NAME}/*`],
+    }));
 
     return lambdaFunction
   }

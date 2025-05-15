@@ -9,7 +9,9 @@ import { Handler } from 'aws-lambda';
 import { HttpStatusCode } from '@enums/http-status-code.enum';
 import { UserGroup } from '@enums/user-group.enum';
 import { UploadAvatar } from '@interfaces/upload-image.interface';
-import { APIGatewayEventRequestUserResource } from '@interfaces/api-gateway-event.interface';
+import {
+  APIGatewayEventRequestUserResource
+} from '@interfaces/api-gateway-event.interface';
 
 const s3Client = new S3Client({ region: 'us-east-1' });
 

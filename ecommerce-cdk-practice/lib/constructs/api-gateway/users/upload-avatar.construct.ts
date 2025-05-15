@@ -119,14 +119,12 @@ export class UploadAvatarApiConstruct extends Construct {
         proxy: false,
         requestTemplates: {
           'application/json': `{
-            {
-              "userId": "$input.params('userId')",
-              "body": $input.json('$'),
-              "context" : {
-                "sub" : "$context.authorizer.claims.sub",
-                "email" : "$context.authorizer.claims.email",
-                "group": "$context.authorizer.claims['cognito:groups']"
-              }
+            "userId": "$input.params('userId')",
+            "body": $input.json('$'),
+            "context" : {
+              "sub" : "$context.authorizer.claims.sub",
+              "email" : "$context.authorizer.claims.email",
+              "group": "$context.authorizer.claims['cognito:groups']"
             }
           }`
         },
