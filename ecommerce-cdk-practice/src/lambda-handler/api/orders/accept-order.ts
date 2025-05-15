@@ -6,9 +6,9 @@ import { PgPool } from '/opt/nodejs/index.js';
 import {
   APIGatewayEventRequestOrderDetailResource
 } from '@interfaces/api-gateway-event.interface';
+import { ApiResponseCommon } from '@interfaces/common-response.interface';
 import { HttpStatusCode } from '@enums/http-status-code.enum';
 import { UserGroup } from '@enums/user-group.enum';
-import { ApiResponseCommon } from '@interfaces/common-response.interface';
 import { OrderStatus } from '@enums/order-status.enum';
 
 const sqs = new AWS.SQS();
@@ -57,11 +57,11 @@ export const handler: Handler = async (
 
     const updateQuery = `
       UPDATE public.order
-      SET status = ${OrderStatus.ACCEPTED}
-      WHERE id = $1
+      SET status = $1
+      WHERE id = $2
       RETURNING id, status
     `;
-    await PgPool.query(updateQuery, [orderId]);
+    await PgPool.query(updateQuery, [OrderStatus.ACCEPTED, orderId]);
 
     const message = {
       orderId: orderId,

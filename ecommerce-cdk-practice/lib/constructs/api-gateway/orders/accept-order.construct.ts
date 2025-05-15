@@ -128,7 +128,7 @@ export class AcceptOrderApiConstruct extends Construct {
               "email" : "$context.authorizer.claims.email",
               "group": "$context.authorizer.claims['cognito:groups']"
             }
-        }`
+          }`
         },
         integrationResponses: integrationResponses
       }
