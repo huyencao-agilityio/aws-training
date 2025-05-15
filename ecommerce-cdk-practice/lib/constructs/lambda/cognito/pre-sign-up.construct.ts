@@ -13,7 +13,10 @@ import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  LAMBDA_PATH,
+  DEFAULT_LAMBDA_HANDLER
+} from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
@@ -54,9 +57,12 @@ export class PreSignUpLambdaConstruct extends Construct {
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'PreSignUp', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'index.handler',
+      handler: DEFAULT_LAMBDA_HANDLER,
       layers: [librariesLayer!],
-      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/pre-sign-up.ts`),
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.COGNITO}/pre-sign-up.ts`
+      ),
       environment: {
         ...dbInstance
       },

@@ -1,19 +1,23 @@
+import path from 'path';
+
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { RequestAuthorizer } from 'aws-cdk-lib/aws-apigateway';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import 'dotenv/config';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_PATH
+} from '@constants/lambda.constant';
 
 /**
  * Construct create Lambda function to validates JWT tokens from Cognito User Pool
@@ -48,15 +52,17 @@ export class AuthorizationConstruct extends Construct {
     librariesLayer: ILayerVersion,
     userPool: UserPool
   ): Function {
-    const lambdaFunction = new Function(
+    const lambdaFunction = new NodejsFunction(
       this,
       'LambdaAuthorizationFunction',
       {
         runtime: Runtime.NODEJS_20_X,
-        handler: 'lambda-authentication.handler',
-        code: Code.fromAsset(LAMBDA_PATH.AUTH, {
-          exclude: ['**/*', '!lambda-authentication.js'],
-        }),
+        handler: DEFAULT_LAMBDA_HANDLER,
+        entry: path.join(
+          __dirname,
+          `${LAMBDA_PATH.AUTH}/lambda-authentication.ts`
+        ),
+
         layers: [librariesLayer!],
         timeout: Duration.seconds(10),
         environment: {
