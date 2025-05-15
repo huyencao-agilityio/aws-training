@@ -20,7 +20,8 @@ export class ApiStack extends Stack {
       hostedZone,
       certificate,
       domainName,
-      basePathApi
+      basePathApi,
+      stage
     } = props;
 
     // Get layer on Lambda
@@ -29,7 +30,8 @@ export class ApiStack extends Stack {
     // Init REST API Construct
     const restApiConstruct = new RestApiConstruct(this, 'RestApiConstruct', {
       librariesLayer,
-      userPool
+      userPool,
+      stage
     });
 
     const { restApi } = restApiConstruct;

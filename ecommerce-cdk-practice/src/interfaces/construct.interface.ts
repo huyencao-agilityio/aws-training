@@ -52,6 +52,13 @@ export interface UserPoolConstructProps extends BaseConstructProps {
 }
 
 /**
+ * Defines interface for the construct for API Gateway
+ */
+export interface RestApiConstructProps extends UserPoolConstructProps {
+  stage?: string;
+}
+
+/**
  * Defines interface for base API Gateway Construct
  */
 export interface BaseApiGatewayConstructProps extends BaseConstructProps {

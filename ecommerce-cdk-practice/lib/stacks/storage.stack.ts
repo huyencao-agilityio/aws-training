@@ -16,10 +16,5 @@ export class StorageStack extends Stack {
     this.storageConstruct = new StorageConstruct(this, 'StorageConstruct', {
       bucketName: BUCKET_NAME,
     });
-
-    new CfnOutput(this, 'BucketNameOutput', {
-      value: this.storageConstruct.bucket.bucketName,
-      exportName: 'BucketName',
-    });
   }
 }

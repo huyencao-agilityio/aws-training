@@ -68,7 +68,7 @@ export class BaseStage extends Stage {
     });
 
     // Create SQS stack
-    new QueueStack(this, 'QueueStack', {
+    const queueStack = new QueueStack(this, 'QueueStack', {
       stackName: `${stageName}-queue-stack`
     });
 
@@ -84,6 +84,7 @@ export class BaseStage extends Stage {
     const apiStack = new ApiStack(this, 'ApiStack', {
       stackName: `${stageName}-api-stack`,
       userPool: authStack.userPoolConstruct.userPool,
+      stage: services?.apiGateway?.stage!,
       domainName: services?.apiGateway?.domainName!,
       basePathApi: services?.apiGateway?.basePathApi!,
       certificate,
@@ -102,6 +103,7 @@ export class BaseStage extends Stage {
 
     // Explicit dependency
     apiStack.addDependency(authStack);
+    apiStack.addDependency(queueStack);
     rdsStack.addDependency(vpcStack);
   }
 }

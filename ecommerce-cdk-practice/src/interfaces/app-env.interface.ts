@@ -7,6 +7,7 @@ export interface ServiceEnvironment {
   domainName?: string;
   recordName?: string;
   basePathApi?: string;
+  stage?: string;
 }
 
 /**

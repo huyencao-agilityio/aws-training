@@ -29,6 +29,7 @@ export interface CloudFrontStackProps extends BaseStackProps {
 export interface ApiStackProps extends BaseStackProps {
   userPool: UserPool;
   basePathApi?: string;
+  stage?: string;
 }
 
 /**

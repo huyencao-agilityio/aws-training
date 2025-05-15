@@ -10,7 +10,7 @@ import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 import {
-  UserPoolConstructProps
+  RestApiConstructProps
 } from '@interfaces/construct.interface';
 
 import {
@@ -31,13 +31,13 @@ export class RestApiConstruct extends Construct {
   public readonly lambdaAuthorizer: RequestAuthorizer;
   public readonly cognitoAuthorizer: CognitoUserPoolsAuthorizer;
   public readonly models: ModelRestApiConstruct;
-  constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
+  constructor(scope: Construct, id: string, props: RestApiConstructProps) {
     super(scope, id);
 
-    const { userPool, librariesLayer } = props;
+    const { userPool, librariesLayer, stage } = props;
 
     // Create the API Gateway REST API
-    this.restApi = this.createRestApi();
+    this.restApi = this.createRestApi(stage!);
     // Create Cognito Authorizer
     this.cognitoAuthorizer = this.createCognitoAuthorizer(userPool!);
     // Create a custom lambda authorizer
@@ -64,13 +64,16 @@ export class RestApiConstruct extends Construct {
    *
    * @returns The REST API
    */
-  createRestApi(): RestApi {
+  createRestApi(stage: string): RestApi {
     const api = new RestApi(this, 'EcommerceApi', {
       restApiName: 'Ecommerce API CDK',
       description: 'API for Ecommerce application',
       endpointConfiguration: {
         types: [EndpointType.REGIONAL],
-      }
+      },
+      deployOptions: {
+        stageName: stage || 'v1',
+      },
     });
 
     return api;
