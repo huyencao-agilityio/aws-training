@@ -72,7 +72,7 @@ async function sendOrderMessage(
   totalQuantity: number,
   items: CartItemAndProduct[]
 ) {
-  const queueUrl = process.env.QUEUE_URL || '';
+  const queueUrl = process.env.ORDER_QUEUE_URL || '';
 
   return await sqs
     .sendMessage({

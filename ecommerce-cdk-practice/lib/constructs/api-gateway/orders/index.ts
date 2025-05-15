@@ -71,7 +71,7 @@ export class OrderProductResourceConstruct extends Construct {
     cognitoAuthorizer: CognitoUserPoolsAuthorizer
   ) {
     const ordersResource = resource.addResource('orders');
-    const orderIdResource = resource.addResource('{orderId}');
+    const orderIdResource = ordersResource.addResource('{orderId}');
     const acceptResource = orderIdResource.addResource('accept');
     const rejectResource = orderIdResource.addResource('reject');
 

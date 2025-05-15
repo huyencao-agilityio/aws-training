@@ -121,13 +121,11 @@ export class OrderProductApiConstruct extends Construct {
         proxy: false,
         requestTemplates: {
           'application/json': `{
-            {
-              "body": $input.json('$'),
-              "context" : {
-                "sub" : "$context.authorizer.claims.sub",
-                "email" : "$context.authorizer.claims.email",
-                "group": "$context.authorizer.claims['cognito:groups']"
-              }
+            "body": $input.json('$'),
+            "context" : {
+              "sub" : "$context.authorizer.claims.sub",
+              "email" : "$context.authorizer.claims.email",
+              "group": "$context.authorizer.claims['cognito:groups']"
             }
           }`
         },
