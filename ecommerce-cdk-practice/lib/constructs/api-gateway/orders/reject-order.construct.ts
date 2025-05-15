@@ -120,13 +120,11 @@ export class RejectOrderApiConstruct extends Construct {
         proxy: false,
         requestTemplates: {
           'application/json': `{
-            {
-              "orderId": "$input.params('orderId')",
-              "context" : {
-                "sub" : "$context.authorizer.claims.sub",
-                "email" : "$context.authorizer.claims.email",
-                "group": "$context.authorizer.claims['cognito:groups']"
-              }
+            "orderId": "$input.params('orderId')",
+            "context" : {
+              "sub" : "$context.authorizer.claims.sub",
+              "email" : "$context.authorizer.claims.email",
+              "group": "$context.authorizer.claims['cognito:groups']"
             }
           }`
         },
