@@ -10,7 +10,10 @@ import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  LAMBDA_PATH,
+  DEFAULT_LAMBDA_HANDLER,
+} from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
@@ -43,9 +46,12 @@ export class DefineAuthChallengeLambdaConstruct extends Construct {
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'DefineAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'index.handler',
+      handler: DEFAULT_LAMBDA_HANDLER,
       layers: [librariesLayer!],
-      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/define-auth-challenge.ts`),
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.COGNITO}/define-auth-challenge.ts`
+      ),
       timeout: Duration.minutes(15),
       bundling: {
         externalModules: EXTERNAL_MODULES,

@@ -3,7 +3,6 @@ import path from 'path';
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -11,7 +10,10 @@ import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_PATH
+} from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
@@ -44,9 +46,12 @@ export class CustomMessageLambdaConstruct extends Construct {
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'CustomMessage', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'index.handler',
+      handler: DEFAULT_LAMBDA_HANDLER,
       layers: [librariesLayer!],
-      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/custom-message.ts`),
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.COGNITO}/custom-message.ts`
+      ),
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },

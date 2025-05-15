@@ -1,19 +1,24 @@
+import path from 'path';
+
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import 'dotenv/config';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_PATH
+} from '@constants/lambda.constant';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct for creating Lambda function for API products
@@ -50,12 +55,16 @@ export class ProductsLambdaConstruct extends Construct {
     dbInstance: Record<string, string>,
     userPool: UserPool
   ): Function {
-    const lambdaFunction = new Function(this, 'GetProducts', {
+    const lambdaFunction = new NodejsFunction(this, 'GetProducts', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'get-products.handler',
-      code: Code.fromAsset(LAMBDA_PATH.PRODUCTS, {
-        exclude: ['**/*', '!get-products.js'],
-      }),
+      handler: DEFAULT_LAMBDA_HANDLER,
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.PRODUCTS}/get-products.ts`
+      ),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
       layers: [librariesLayer!],
       timeout: Duration.seconds(30),
       environment: {

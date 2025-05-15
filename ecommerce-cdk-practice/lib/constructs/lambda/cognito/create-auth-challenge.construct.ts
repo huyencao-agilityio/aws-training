@@ -12,7 +12,10 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  LAMBDA_PATH,
+  DEFAULT_LAMBDA_HANDLER
+} from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
@@ -50,9 +53,12 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'CreateAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'index.handler',
+      handler: DEFAULT_LAMBDA_HANDLER,
       layers: [librariesLayer!],
-      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/create-auth-challenge.ts`),
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.COGNITO}/create-auth-challenge.ts`
+      ),
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },

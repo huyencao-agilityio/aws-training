@@ -1,18 +1,24 @@
+import path from 'path';
+
 import { Duration } from 'aws-cdk-lib';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { getQueueResources } from '@helpers/queue.helper';
 import { getDatabaseConfig } from '@helpers/database.helper';
 import { QueueResources } from '@app-types/queue.type';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_PATH
+} from '@constants/lambda.constant';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct for creating Lambda function for API order
@@ -67,12 +73,16 @@ export class OrderLambdaConstruct extends Construct {
     queueResources: QueueResources
   ): Function {
     // Create the Lambda function for order product
-    const lambdaFunction = new Function(this, 'OrderProduct', {
+    const lambdaFunction = new NodejsFunction(this, 'OrderProduct', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'order-product.handler',
-      code: Code.fromAsset(LAMBDA_PATH.ORDERS, {
-        exclude: ['**/*', '!order-product.js'],
-      }),
+      handler: DEFAULT_LAMBDA_HANDLER,
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.ORDERS}/order-product.ts`
+      ),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
       layers: [librariesLayer!],
       timeout: Duration.minutes(15),
       environment: {
@@ -106,12 +116,16 @@ export class OrderLambdaConstruct extends Construct {
     dbInstance: Record<string, string>,
     queueResources: QueueResources
   ): Function {
-    const lambdaFunction = new Function(this, 'AcceptOrderFunction', {
+    const lambdaFunction = new NodejsFunction(this, 'AcceptOrderFunction', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'accept-order.handler',
-      code: Code.fromAsset(LAMBDA_PATH.ORDERS, {
-        exclude: ['**/*', '!accept-order.js'],
-      }),
+      handler: DEFAULT_LAMBDA_HANDLER,
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.ORDERS}/accept-order.ts`
+      ),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
       layers: [librariesLayer!],
       environment: {
         ...dbInstance,
@@ -144,12 +158,16 @@ export class OrderLambdaConstruct extends Construct {
     dbInstance: Record<string, string>,
     queueResources: QueueResources
   ): Function {
-    const lambdaFunction = new Function(this, 'RejectOrderFunction', {
+    const lambdaFunction = new NodejsFunction(this, 'RejectOrderFunction', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'reject-order.handler',
-      code: Code.fromAsset(LAMBDA_PATH.ORDERS, {
-        exclude: ['**/*', '!reject-order.js'],
-      }),
+      handler: DEFAULT_LAMBDA_HANDLER,
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.ORDERS}/reject-order.ts`
+      ),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
       layers: [librariesLayer!],
       environment: {
         ...dbInstance,

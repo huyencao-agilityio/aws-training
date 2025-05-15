@@ -67,6 +67,10 @@ export class EventBridgeConstruct extends Construct {
       target: {
         arn: functionArn,
         roleArn: role.roleArn,
+        retryPolicy: {
+          maximumEventAgeInSeconds: 60,
+          maximumRetryAttempts: 0
+        }
       },
       state: 'ENABLED'
     });

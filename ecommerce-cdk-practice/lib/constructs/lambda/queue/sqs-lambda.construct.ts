@@ -11,7 +11,10 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import { DEFAULT_LAMBDA_HANDLER, LAMBDA_PATH } from '@constants/lambda.constant';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import path from 'path';
+import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
  * Construct for creating a common construct to create Lambda function for queue
@@ -24,7 +27,6 @@ export class SqsLambdaConstruct extends Construct {
       queue,
       librariesLayer,
       handlerFile,
-      handlerFunction = 'handler',
       environment = {},
       timeout = Duration.seconds(3),
       withSesPolicy = true,
@@ -37,7 +39,6 @@ export class SqsLambdaConstruct extends Construct {
       timeout,
       environment,
       handlerFile!,
-      handlerFunction,
       withSesPolicy,
       queue
     );
@@ -54,6 +55,7 @@ export class SqsLambdaConstruct extends Construct {
    * @param handlerFunction - The handler function of the Lambda function
    * @param withSesPolicy - Whether to add SES policy to the Lambda function
    * @param queue - The queue
+   *
    * @returns The Lambda function for the queue
    */
   createSqsLambdaFunction(
@@ -62,16 +64,20 @@ export class SqsLambdaConstruct extends Construct {
     timeout: Duration,
     environment: Record<string, string>,
     handlerFile: string,
-    handlerFunction: string,
     withSesPolicy: boolean,
     queue: Queue
   ): Function {
-    const lambdaFunction = new Function(this, `${id}Function`, {
+    // Create Lambda function
+    const lambdaFunction = new NodejsFunction(this, `${id}Function`, {
       runtime: Runtime.NODEJS_20_X,
-      handler: `${handlerFile}.${handlerFunction}`,
-      code: Code.fromAsset(LAMBDA_PATH.QUEUE, {
-        exclude: ['**/*', `!${handlerFile}.js`],
-      }),
+      handler: DEFAULT_LAMBDA_HANDLER,
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.QUEUE}/${handlerFile}.ts`
+      ),
+      bundling: {
+        externalModules: EXTERNAL_MODULES,
+      },
       layers: librariesLayer ? [librariesLayer] : [],
       timeout,
       environment,

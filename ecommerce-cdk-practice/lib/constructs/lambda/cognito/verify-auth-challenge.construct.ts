@@ -4,7 +4,10 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
-import { LAMBDA_PATH } from '@constants/lambda-path.constants';
+import {
+  LAMBDA_PATH,
+  DEFAULT_LAMBDA_HANDLER
+} from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**
@@ -30,8 +33,11 @@ export class VerifyAuthChallengeLambdaConstruct extends Construct {
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'VerifyAuthChallengeLambda', {
       runtime: Runtime.NODEJS_20_X,
-      handler: 'index.handler',
-      entry: path.join(__dirname, `${LAMBDA_PATH.AUTH}/verify-auth-challenge.ts`),
+      handler: DEFAULT_LAMBDA_HANDLER,
+      entry: path.join(
+        __dirname,
+        `${LAMBDA_PATH.COGNITO}/verify-auth-challenge.ts`
+      ),
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
