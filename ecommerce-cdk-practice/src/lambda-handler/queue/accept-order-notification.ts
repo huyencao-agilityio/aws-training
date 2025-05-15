@@ -1,65 +1,64 @@
-import { Handler, SQSEvent } from 'aws-lambda';
 import AWS from 'aws-sdk';
+import { Handler, SQSEvent } from 'aws-lambda';
+
+import { PgPool } from '/opt/nodejs/index.js';
 
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 
 const ses = new AWS.SES();
 
 export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
-  console.log('Handle Order Notification', JSON.stringify(event));
+  console.log('Handle Accept Order Notification', JSON.stringify(event));
 
   try {
     const record = event.Records[0];
     const message = JSON.parse(record.body);
-    const { orderId, email, totalAmount, totalQuantity, items } = message;
+    const { userId } = message;
+
+    if (!userId) {
+      throw new Error('User ID is missing in the message');
+    }
+
+    const userQuery = `
+      SELECT email, name
+      FROM public.user
+      WHERE id = $1
+    `;
+    const userResult = await PgPool.query(userQuery, [userId]);
+
+    if (userResult.rows.length === 0) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    const { email, name } = userResult.rows[0];
+
+    const emailBody = `
+      <html>
+        <body>
+          <p>Dear ${name || 'Customer'},</p>
+          <p>We are pleased to inform you that your order has been accepted by our team.</p>
+
+          <p>Thank you for shopping with us! If you have any questions, feel free to contact our support team.</p>
+          <p>This is an automated message. Please do not reply directly to this email.</p>
+
+          <p>Best regards,<br/>The Ecommerce Team</p>
+
+        </body>
+      </html>
+    `;
 
     const emailParams = {
       Source: DEFAULT_EMAIL_ADDRESS,
       Destination: {
-        ToAddresses: ['huyen.cao+1@asnet.com.vn']
+        ToAddresses: [email]
       },
       Message: {
         Subject: {
-          Data: 'Ecommerce - New Order Placed'
+          Data: 'Ecommerce - Order Accepted'
         },
         Body: {
           Html: {
-            Data: `
-              <p>Hi Admin,</p>
-              <p>A new order has been placed by a user. Below are the details of the order:</p>
-
-              <p><strong>User:</strong> ${email}</p>
-              <p><strong>Order ID:</strong> ${orderId}</p>
-              <p><strong>Total Amount:</strong> $${totalAmount}</p>
-              <p><strong>Total Quantity:</strong> ${totalQuantity}</p>
-
-              <h3>Products:</h3>
-              <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
-                <thead>
-                  <tr>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Product Name</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Quantity</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Price</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Total Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${items.map((item: any) => `
-                    <tr>
-                      <td style="border: 1px solid #ddd; padding: 8px;">${item.name}</td>
-                      <td style="border: 1px solid #ddd; padding: 8px;">${item.quantity}</td>
-                      <td style="border: 1px solid #ddd; padding: 8px;">$${item.price}</td>
-                      <td style="border: 1px solid #ddd; padding: 8px;">$${(item.quantity * item.price).toFixed(2)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-
-              <p>Please review the order and take any necessary actions.</p>
-
-              <p>Best regards,</p>
-              <p>Your system</p>
-            `
+            Data: emailBody
           }
         }
       }
@@ -67,7 +66,7 @@ export const handler: Handler = async (event: SQSEvent): Promise<SQSEvent> => {
     await ses.sendEmail(emailParams).promise();
 
     return event;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error sending email:', error);
 
     throw error;
