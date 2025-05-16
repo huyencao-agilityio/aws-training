@@ -25,8 +25,6 @@ export class AppPipelineStack extends Stack {
 
     const { stage } = props;
 
-    const env = process.env.ENV || 'staging';
-
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
       synth: new CodeBuildStep('Synth', {
@@ -49,8 +47,7 @@ export class AppPipelineStack extends Stack {
           'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
-          `npx cdk synth`,
-          'ls -la'
+          `npx cdk synth`
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
         rolePolicyStatements: [
