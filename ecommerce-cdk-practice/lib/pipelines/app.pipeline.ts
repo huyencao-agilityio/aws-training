@@ -12,6 +12,7 @@ import { PipelineStackProps } from '@interfaces/stack.interface';
 
 import { StagingStage } from '../stages/staging.stage';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 /**
  * The AppPipeline class defines the main CDK Stack responsible for
@@ -52,10 +53,17 @@ export class AppPipelineStack extends Stack {
           'ls -la ecommerce-cdk-practice'
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
-        env: {
-          ENV: env,
-        },
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: [
+              'route53:ListHostedZonesByName',
+              'ec2:DescribeAvailabilityZones'
+            ],
+            resources: ['*']
+          })
+        ]
       }),
+
     });
 
     // Add stage
