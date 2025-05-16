@@ -24,18 +24,20 @@ export class AppPipelineStack extends Stack {
 
     const { stage } = props;
 
-    const branchName = StringParameter.valueForStringParameter(this, '/github/branch-name');
-    const repoName = StringParameter.valueForStringParameter(this, '/github/repo-name');
     const env = process.env.ENV || 'staging';
 
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
       synth: new CodeBuildStep('Synth', {
-        input: CodePipelineSource.gitHub(repoName, branchName, {
-          authentication: SecretValue.secretsManager('secret', {
-            jsonField: 'github_token',
-          }),
-        }),
+        input: CodePipelineSource.gitHub(
+          'huyencao-agilityio/aws-training',
+          'develop',
+          {
+            authentication: SecretValue.secretsManager('secret', {
+              jsonField: 'github_token',
+            }),
+          }
+        ),
         commands: [
           // Need to build lambda layer first
           'cd lambda-layer',
