@@ -50,7 +50,7 @@ export class AppPipelineStack extends Stack {
           'npm ci',
           'npm run build',
           `npx cdk synth`,
-          'ls -la ecommerce-cdk-practice'
+          'ls -la'
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
         rolePolicyStatements: [
