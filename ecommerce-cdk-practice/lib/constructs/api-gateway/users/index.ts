@@ -1,15 +1,16 @@
 import { Construct } from 'constructs';
+import { IResource } from 'aws-cdk-lib/aws-apigateway';
+import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { CognitoUserPoolsAuthorizer } from 'aws-cdk-lib/aws-apigateway';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 import { ResourceConfig } from '@interfaces/resource.interface';
+import { ApiGatewayModel } from '@interfaces/api-gateway-model.interface';
 
 import { UpdateUsersDetailApiConstruct } from './update-user.construct';
 import { UploadAvatarApiConstruct } from './upload-avatar.construct';
 import { UsersLambdaConstruct } from '../../lambda/api-gateway';
-import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
-import { CognitoUserPoolsAuthorizer } from 'aws-cdk-lib/aws-apigateway';
-import { ApiGatewayModel } from '@interfaces/api-gateway-model.interface';
-import { IResource } from 'aws-cdk-lib/aws-apigateway';
+
 /**
  * Define the construct for the resource users
  */

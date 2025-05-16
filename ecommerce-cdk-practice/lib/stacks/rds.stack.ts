@@ -3,8 +3,7 @@ import { Construct } from 'constructs';
 
 import { PostgresRdsStackProps } from '@interfaces/stack.interface';
 import { DB_CONSTANTS } from '@constants/database.constant';
-
-import { PostgresRdsConstruct } from '../constructs/rds/rds.construct';
+import { PostgresRdsConstruct } from '@constructs/rds/rds.construct';
 
 /**
  * RdsStack is responsible for provisioning the PostgreSQL RDS instance

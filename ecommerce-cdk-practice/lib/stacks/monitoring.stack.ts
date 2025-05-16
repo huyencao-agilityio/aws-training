@@ -2,9 +2,8 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
-
-import { AlarmConstruct } from '../constructs/cloudwatch/alarm.construct';
-import { SnsTopicConstruct } from '../constructs/sns/sns-topic.construct';
+import { AlarmConstruct } from '@constructs/cloudwatch/alarm.construct';
+import { SnsTopicConstruct } from '@constructs/sns/sns-topic.construct';
 
 /**
  * MonitoringStack is responsible for provisioning all monitoring in app.

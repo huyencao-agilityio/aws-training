@@ -15,7 +15,11 @@
       "@interfaces/*": ["src/interfaces/*"],
       "@enums/*": ["src/enums/*"],
       "@helpers/*": ["src/helpers/*"],
-      "@app-types/*": ["src/types/*"]
+      "@app-types/*": ["src/types/*"],
+      "@constructs/*": ["lib/constructs/*"],
+      "@stacks/*": ["lib/stacks/*"],
+      "@stages/*": ["lib/stages/*"],
+      "@pipelines/*": ["lib/pipelines/*"]
     },
     "declaration": true,
     "strict": true,

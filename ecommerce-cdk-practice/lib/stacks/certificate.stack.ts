@@ -2,10 +2,9 @@ import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { CertificateStackProps } from '@interfaces/stack.interface';
-
 import {
   CertificateConstruct
-} from '../constructs/certificate/certificate.construct';
+} from '@constructs/certificate/certificate.construct';
 
 export class CertificateStack extends Stack {
   public readonly certificateConstruct: CertificateConstruct;

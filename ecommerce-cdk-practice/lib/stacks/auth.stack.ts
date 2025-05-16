@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 
 import { getLibrariesLayer } from '@helpers/layer.helper';
 import { BaseStackProps } from '@interfaces/stack.interface';
-
 import {
   CreateAuthChallengeLambdaConstruct,
   DefineAuthChallengeLambdaConstruct,
@@ -12,10 +11,12 @@ import {
   PostConfirmationLambdaConstruct,
   PreSignUpLambdaConstruct,
   CustomMessageLambdaConstruct
-} from '../constructs/lambda/cognito';
-import { UserPoolConstruct } from '../constructs/cognito/user-pool.construct';
-import { ProviderConstruct } from '../constructs/cognito/provider.construct';
-import { UserPoolDomainConstruct } from '../constructs/cognito/user-pool-domain.construct';
+} from '@constructs/lambda/cognito';
+import { UserPoolConstruct } from '@constructs/cognito/user-pool.construct';
+import { ProviderConstruct } from '@constructs/cognito/provider.construct';
+import {
+  UserPoolDomainConstruct
+} from '@constructs/cognito/user-pool-domain.construct';
 
 /**
  * AuthStack is responsible for provisioning all authentication-related resources

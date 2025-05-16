@@ -13,7 +13,7 @@ import {
   APIGatewayEventRequestUserResource
 } from '@interfaces/api-gateway-event.interface';
 
-const s3Client = new S3Client({ region: 'us-east-1' });
+const s3Client = new S3Client();
 
 /**
  * Generate path file in S3 will store image

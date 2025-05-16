@@ -3,9 +3,8 @@ import { Construct } from 'constructs';
 
 import { ApiStackProps } from '@interfaces/stack.interface';
 import { getLibrariesLayer } from '@helpers/layer.helper';
-
-import { RestApiConstruct } from '../constructs/api-gateway/rest-api.construct';
-import { ApiDomainConstruct } from '../constructs/api-gateway/api-domain.construct';
+import { RestApiConstruct } from '@constructs/api-gateway/rest-api.construct';
+import { ApiDomainConstruct } from '@constructs/api-gateway/api-domain.construct';
 
 /**
  * ApiStack is responsible for provisioning all API Gateway resources and

@@ -6,10 +6,10 @@ import {
   Stats
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
+import { Topic } from 'aws-cdk-lib/aws-sns';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 import { AlarmConstructProps } from '@interfaces/construct.interface';
-import { Topic } from 'aws-cdk-lib/aws-sns';
 import { API_METRIC_ERRORS } from '@constants/metric.constant';
 
 /**
@@ -38,6 +38,7 @@ export class AlarmConstruct extends Construct {
    * @returns The created metric
    */
   createMetric5XXError(restApiId: string, stage: string): Metric {
+    // Create a new metric
     const metric = new Metric({
       namespace: 'AWS/ApiGateway',
       metricName: API_METRIC_ERRORS.ERROR_5XX,
@@ -61,14 +62,17 @@ export class AlarmConstruct extends Construct {
    * @returns The created alarm
    */
   createAlarm5XXError(metric: Metric, snsTopic: Topic, stage: string): Alarm {
+    // Create new alarm
     const alarm = new Alarm(this, 'ApiGateway5XXAlarm', {
       metric: metric,
+      alarmName: `ApiGateway5XXAlarm-${stage}`,
       threshold: 0,
       evaluationPeriods: 1,
       comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
       alarmDescription: `Alarm when 5XX errors > 0 in stage ${stage}`,
     });
 
+    // Add alarm action
     alarm.addAlarmAction(new SnsAction(snsTopic));
 
     return alarm;

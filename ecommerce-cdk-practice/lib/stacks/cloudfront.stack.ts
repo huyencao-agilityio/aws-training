@@ -2,14 +2,13 @@ import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { CloudFrontStackProps } from '@interfaces/stack.interface';
-
 import {
   CloudFrontConstruct
-} from '../constructs/cloudfront/cloudfront.construct';
-import { ResizeImageLambdaConstruct } from '../constructs/lambda/cloudfront';
+} from '@constructs/cloudfront/cloudfront.construct';
+import { ResizeImageLambdaConstruct } from '@constructs/lambda/cloudfront';
 import {
   CloudFrontDomainConstruct
-} from '../constructs/cloudfront/cloudfront-domain.construct';
+} from '@constructs/cloudfront/cloudfront-domain.construct';
 
 /**
  * Define the CloudFront stack

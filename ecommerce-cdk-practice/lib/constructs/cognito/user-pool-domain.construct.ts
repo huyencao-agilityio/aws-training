@@ -8,7 +8,11 @@ import { UserPoolDomainConstructProps } from '@interfaces/construct.interface';
  * to a Cognito custom domain endpoint
  */
 export class UserPoolDomainConstruct extends Construct{
-  constructor(scope: Construct, id: string, props: UserPoolDomainConstructProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: UserPoolDomainConstructProps
+  ) {
     super(scope, id);
 
     const { hostedZone, domainName, cognitoDomain } = props;

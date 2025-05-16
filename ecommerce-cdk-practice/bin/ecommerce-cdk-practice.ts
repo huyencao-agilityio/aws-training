@@ -1,12 +1,12 @@
 import { App } from 'aws-cdk-lib';
 import 'dotenv/config';
 
-import { AppPipelineStack } from '../lib/pipelines/app.pipeline';
-import { TestingStage } from 'lib/stages/testing.stage';
+import { AppPipelineStack } from '@pipelines/app.pipeline';
+import { TestingStage } from '@stages/testing.stage';
+import { ProductionStage } from '@stages/production.stage';
 import { StageName } from '@enums/stage-name.enum';
 import { AppEnvironment } from '@interfaces/app-env.interface';
 import { ENVIRONMENTS } from '@constants/domain.constant';
-import { ProductionStage } from 'lib/stages/production.stage';
 import { EnvType } from '@app-types/environment.type';
 
 const app = new App();

@@ -6,7 +6,7 @@ import {
   JwksResponse,
   LambdaAuthorizerEvent,
   LambdaAuthorizerResponse
-} from 'src/interfaces/lambda-authorizer.interface';
+} from '@interfaces/lambda-authorizer.interface';
 
 // Decode and verify JWT
 const { decode, verify } = jwt;
