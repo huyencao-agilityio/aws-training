@@ -1,11 +1,11 @@
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
+  CodeBuildStep,
   CodePipeline,
   CodePipelineSource,
-  ShellStep
 } from 'aws-cdk-lib/pipelines';
-import 'dotenv/config';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 import { PipelineStackProps } from '@interfaces/stack.interface';
 
@@ -22,21 +22,43 @@ export class AppPipelineStack extends Stack {
 
     const { stage } = props;
 
-    const branchName = process.env.BRANCH_NAME || '';
-    const repoName = process.env.REPO_NAME || '';
-
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
-      synth: new ShellStep('Synth', {
-        input: CodePipelineSource.gitHub(repoName, branchName, {
-          authentication: SecretValue.secretsManager('github-token'),
-        }),
+      synth: new CodeBuildStep('Synth', {
+        input: CodePipelineSource.gitHub(
+          'huyencao-agilityio/aws-training',
+          'develop',
+          {
+            authentication: SecretValue.secretsManager('secret', {
+              jsonField: 'github_token',
+            }),
+          }
+        ),
         commands: [
+          // Need to build lambda layer first
+          'cd lambda-layer',
+          'npm ci',
+          'npm run build:layer',
+          'cd ..',
+          // Build the app
+          'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
           'npx cdk synth'
         ],
+        primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: [
+              'route53:ListHostedZonesByName',
+              'ec2:DescribeAvailabilityZones',
+            ],
+            resources: ['*'],
+            effect: Effect.ALLOW,
+          }),
+        ]
       }),
+
     });
 
     // Add stage
