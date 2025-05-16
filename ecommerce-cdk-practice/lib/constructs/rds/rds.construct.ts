@@ -70,7 +70,6 @@ export class PostgresRdsConstruct extends Construct {
       backupRetention: Duration.days(0),
       deletionProtection: false,
       deleteAutomatedBackups: true,
-      removalPolicy: RemovalPolicy.DESTROY,
       credentials: {
         username: 'postgres',
         password: SecretValue.unsafePlainText(dbPassword),

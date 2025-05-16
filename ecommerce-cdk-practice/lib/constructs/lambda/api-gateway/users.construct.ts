@@ -14,7 +14,7 @@ import {
   BaseConstructProps
 } from '@interfaces/construct.interface';
 import { BUCKET_NAME } from '@constants/bucket.constant';
-import { getDatabaseConfig } from '@helpers/database.helper';
+import { getDatabaseConfig } from '@shared/database.helper';
 import {
   DEFAULT_LAMBDA_HANDLER,
   LAMBDA_FUNCTION_NAME,

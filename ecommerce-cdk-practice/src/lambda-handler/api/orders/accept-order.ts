@@ -86,7 +86,7 @@ export const handler: Handler = async (
     console.error('Error accepting order:', error);
 
     throw new Error(JSON.stringify({
-      statusCode: HttpStatusCode.INTERNAL_SEVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: `Internal server error: ${error.message}`
     }));
   }

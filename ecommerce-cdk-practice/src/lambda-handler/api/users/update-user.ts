@@ -74,7 +74,7 @@ export const handler: Handler = async (
     }
 
     throw new Error(JSON.stringify({
-      statusCode: HttpStatusCode.INTERNAL_SEVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: `Has error when updating user profile ${error}`
     }));
   }

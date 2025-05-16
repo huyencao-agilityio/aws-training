@@ -58,7 +58,7 @@ export class BaseStage extends Stage {
     });
 
     // Create CloudFront stack
-    const cloudFrontStack = new CloudFrontStack(this, 'CloudFrontStack', {
+    new CloudFrontStack(this, 'CloudFrontStack', {
       stackName: `${stageName}-cloudfront-stack`,
       certificate,
       hostedZone,
@@ -91,18 +91,21 @@ export class BaseStage extends Stage {
     });
 
     // Create EventBridge stack
-    new EventBridgeStack(this, 'EventBridgeStack', {
+    const eventBridgeStack = new EventBridgeStack(this, 'EventBridgeStack', {
       stackName: `${stageName}-event-bridge-stack`
     });
 
     // Create monitoring stack
-    new MonitoringStack(this, 'MonitoringStack', {
+    const monitoringStack = new MonitoringStack(this, 'MonitoringStack', {
       stackName: `${stageName}-monitoring-stack`
     });
 
     // Explicit dependency
     apiStack.addDependency(authStack);
     apiStack.addDependency(queueStack);
+    monitoringStack.addDependency(apiStack);
     rdsStack.addDependency(vpcStack);
+    eventBridgeStack.addDependency(rdsStack);
+    queueStack.addDependency(rdsStack);
   }
 }

@@ -186,7 +186,7 @@ export const handler: Handler = async (
     console.error('Error:', error.message);
 
     throw new Error(JSON.stringify({
-      statusCode: HttpStatusCode.INTERNAL_SEVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: `Failed to create order: ${error.message}`
     }));
   } finally {

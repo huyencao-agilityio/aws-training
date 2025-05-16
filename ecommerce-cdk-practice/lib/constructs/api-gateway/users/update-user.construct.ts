@@ -5,18 +5,25 @@ import {
   IResource,
   LambdaIntegration,
   MethodResponse,
-  Model
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
 import { ApiGatewayModel } from '@interfaces/api-gateway-model.interface';
+import { BaseApiMethodConstruct } from '@shared/base-api-method.construct';
+import { HttpStatusCode } from '@enums/http-status-code.enum';
+import { HttpMethod } from '@enums/http-method.enum';
+import { COMMON_ERROR_CODE } from '@constants/common-error-code.constant';
+import {
+  COGNITO_AUTHORIZATION_SCOPES,
+  cognitoAuthorizerContext
+} from '@constants/authorize-api.constant';
 
 /**
  * Define the construct for API PATCH update user detail
  */
-export class UpdateUsersDetailApiConstruct extends Construct {
+export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
   constructor(
     scope: Construct,
     id: string,
@@ -31,7 +38,13 @@ export class UpdateUsersDetailApiConstruct extends Construct {
       models
     } = props;
     // Define the list error code that need to handle in API
-    const errorStatusCodes = [403, 404, 409, 500];
+    const errorStatusCodes = [
+      ...COMMON_ERROR_CODE,
+      HttpStatusCode.FORBIDDEN,
+      HttpStatusCode.NOT_FOUND,
+      HttpStatusCode.CONFLICT,
+      HttpStatusCode.UNAUTHORIZED
+    ];
 
     // Create integration response for API
     const integrationResponses = this.createIntegrationResponse(
@@ -40,7 +53,7 @@ export class UpdateUsersDetailApiConstruct extends Construct {
     // Create method response for API
     const methodResponses = this.createMethodResponse(
       errorStatusCodes,
-      models!
+      models!.updateUserModel
     );
 
     // Add the PATCH method to the API resource for updating user
@@ -53,56 +66,6 @@ export class UpdateUsersDetailApiConstruct extends Construct {
       methodResponses,
       models!
     );
-  }
-
-  /**
-   * Create the integration response for API
-   *
-   * @param errorStatusCodes - The list of error status codes
-   * @returns The integration response
-   */
-  createIntegrationResponse(
-    errorStatusCodes: number[]
-  ): IntegrationResponse[] {
-    return [
-      {
-        statusCode: '200',
-      },
-      ...errorStatusCodes.map(code => ({
-        selectionPattern: `.*"statusCode":${code}.*`,
-        statusCode: `${code}`,
-        responseTemplates: {
-          'application/json': '#set($inputRoot = $input.path("$"))\n$inputRoot.errorMessage'
-        }
-      })),
-    ];
-  }
-
-  /**
-   * Create the method response for API
-   *
-   * @param errorStatusCodes - The list of error status codes
-   * @param models - The models for the API
-   * @returns The method response
-   */
-  createMethodResponse(
-    errorStatusCodes: number[],
-    models: ApiGatewayModel
-  ): MethodResponse[] {
-    return [
-      {
-        statusCode: '200',
-        responseModels: {
-          'application/json': models.updateUserModel,
-        },
-      },
-      ...errorStatusCodes.map(code => ({
-        statusCode: `${code}`,
-        responseModels: {
-          'application/json': Model.ERROR_MODEL,
-        },
-      })),
-    ];
   }
 
   /**
@@ -123,19 +86,15 @@ export class UpdateUsersDetailApiConstruct extends Construct {
     methodResponses: MethodResponse[],
     models: ApiGatewayModel
   ) {
-    resource.addMethod('PATCH', new LambdaIntegration(
+    resource.addMethod(HttpMethod.PATCH, new LambdaIntegration(
       lambdaFunction!,
       {
         proxy: false,
         requestTemplates: {
           'application/json': `{
+            ${cognitoAuthorizerContext}
             "userId": "$input.params('userId')",
             "body": $input.json('$'),
-            "context" : {
-              "sub" : "$context.authorizer.claims.sub",
-              "email" : "$context.authorizer.claims.email",
-              "group": "$context.authorizer.claims['cognito:groups']"
-            }
           }`
         },
         integrationResponses: integrationResponses
@@ -146,7 +105,7 @@ export class UpdateUsersDetailApiConstruct extends Construct {
       },
       authorizer: cognitoAuthorizer,
       authorizationScopes: [
-        'aws.cognito.signin.user.admin',
+        COGNITO_AUTHORIZATION_SCOPES,
       ],
       methodResponses: methodResponses,
       requestParameters: {

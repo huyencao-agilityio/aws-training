@@ -3,7 +3,11 @@ import { Fn } from 'aws-cdk-lib';
 import { QueueResources } from '@app-types/queue.type';
 import { QueueNames } from '@constants/queue.constant';
 
-// Define the function to get the queue resources
+/**
+ * Get the queue resources
+ *
+ * @returns The queue resources
+ */
 export const getQueueResources = (): QueueResources => {
   return Object.fromEntries(
     Object.entries(QueueNames).map(([key, baseName]) => [

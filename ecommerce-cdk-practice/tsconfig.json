@@ -19,7 +19,8 @@
       "@constructs/*": ["lib/constructs/*"],
       "@stacks/*": ["lib/stacks/*"],
       "@stages/*": ["lib/stages/*"],
-      "@pipelines/*": ["lib/pipelines/*"]
+      "@pipelines/*": ["lib/pipelines/*"],
+      "@shared/*": ["lib/shared/*"]
     },
     "declaration": true,
     "strict": true,
