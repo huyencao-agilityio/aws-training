@@ -11,7 +11,7 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
-import { DEFAULT_LAMBDA_HANDLER, LAMBDA_PATH } from '@constants/lambda.constant';
+import { DEFAULT_LAMBDA_HANDLER, LAMBDA_FUNCTION_NAME, LAMBDA_PATH } from '@constants/lambda.constant';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import path from 'path';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
@@ -81,6 +81,7 @@ export class SqsLambdaConstruct extends Construct {
       layers: librariesLayer ? [librariesLayer] : [],
       timeout,
       environment,
+      functionName: `${LAMBDA_FUNCTION_NAME.QUEUE}-${handlerFile}`
     });
 
     // Optional: Add SES policy

@@ -6,7 +6,6 @@ import {
   Function,
   Runtime,
   Version,
-  ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -15,7 +14,8 @@ import { BUCKET_NAME } from '@constants/bucket.constant';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import {
   LAMBDA_PATH,
-  DEFAULT_LAMBDA_HANDLER
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 
 /**
@@ -54,7 +54,8 @@ export class ResizeImageLambdaConstruct extends Construct {
         externalModules: [],
         nodeModules: ['sharp', 'aws-sdk', '@types/aws-lambda']
       },
-      timeout: Duration.seconds(30)
+      timeout: Duration.seconds(30),
+      functionName: LAMBDA_FUNCTION_NAME.CLOUDFRONT_RESIZE_IMAGE
     });
 
     // Add IAM role policy for Lambda function

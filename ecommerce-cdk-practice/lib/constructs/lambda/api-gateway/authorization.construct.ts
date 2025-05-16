@@ -16,6 +16,7 @@ import {
 } from '@interfaces/construct.interface';
 import {
   DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME,
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 
@@ -69,6 +70,7 @@ export class AuthorizationConstruct extends Construct {
           COGNITO_USER_POOL_ID: userPool.userPoolId,
           COGNITO_REGION: userPool.env.region
         },
+        functionName: LAMBDA_FUNCTION_NAME.API_LAMBDA_AUTHENTICATION
       }
     );
 

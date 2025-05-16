@@ -6,7 +6,8 @@ import { Construct } from 'constructs';
 
 import {
   LAMBDA_PATH,
-  DEFAULT_LAMBDA_HANDLER
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
@@ -22,7 +23,6 @@ export class VerifyAuthChallengeLambdaConstruct extends Construct {
     // Lambda for Verify Auth Challenge
     this.verifyAuthChallenge = this.createVerifyAuthChallengeLambdaFunction();
   }
-
   /**
    * Create the Lambda function for Verify Auth Challenge
    *
@@ -41,6 +41,7 @@ export class VerifyAuthChallengeLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
+      functionName: LAMBDA_FUNCTION_NAME.COGNITO_VERIFY_AUTH
     });
 
     return lambdaFunction;

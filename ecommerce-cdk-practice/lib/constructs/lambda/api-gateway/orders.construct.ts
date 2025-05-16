@@ -16,6 +16,7 @@ import { getDatabaseConfig } from '@helpers/database.helper';
 import { QueueResources } from '@app-types/queue.type';
 import {
   DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME,
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
@@ -89,6 +90,7 @@ export class OrderLambdaConstruct extends Construct {
         ...dbInstance,
         ORDER_QUEUE_URL: queueResources.ORDER.url
       },
+      functionName: LAMBDA_FUNCTION_NAME.API_ORDER_PRODUCT
     });
 
     // Add IAM policy to allow Lambda access to SQS
@@ -131,6 +133,7 @@ export class OrderLambdaConstruct extends Construct {
         ...dbInstance,
         ACCEPT_QUEUE_URL: queueResources.ACCEPT.url
       },
+      functionName: LAMBDA_FUNCTION_NAME.API_ACCEPT_ORDER
     });
 
     // Add IAM policy to allow Lambda access to SQS
@@ -173,6 +176,7 @@ export class OrderLambdaConstruct extends Construct {
         ...dbInstance,
         REJECT_QUEUE_URL: queueResources.REJECT.url
       },
+      functionName: LAMBDA_FUNCTION_NAME.API_REJECT_ORDER
     });
 
     // Add IAM policy to allow Lambda access to SQS

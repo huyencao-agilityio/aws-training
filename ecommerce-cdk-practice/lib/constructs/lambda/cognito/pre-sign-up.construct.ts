@@ -15,7 +15,8 @@ import { UserPoolConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
 import {
   LAMBDA_PATH,
-  DEFAULT_LAMBDA_HANDLER
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
@@ -70,6 +71,7 @@ export class PreSignUpLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
+      functionName: LAMBDA_FUNCTION_NAME.COGNITO_PRE_SIGNUP
     });
 
     // Add IAM policy to allow Lambda access to Cognito

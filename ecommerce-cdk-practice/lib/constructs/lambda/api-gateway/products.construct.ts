@@ -16,6 +16,7 @@ import {
 import { getDatabaseConfig } from '@helpers/database.helper';
 import {
   DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME,
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
@@ -72,6 +73,7 @@ export class ProductsLambdaConstruct extends Construct {
         COGNITO_REGION: userPool.env.region,
         ...dbInstance
       },
+      functionName: LAMBDA_FUNCTION_NAME.API_GET_PRODUCTS
     });
 
     return lambdaFunction;
