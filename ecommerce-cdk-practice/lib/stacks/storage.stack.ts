@@ -1,8 +1,8 @@
-import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { BUCKET_NAME } from '../../src/constants/bucket.constant';
-import { StorageConstruct } from '../constructs/s3/storage.construct';
+import { BUCKET_NAME } from '@constants/bucket.constant';
+import { StorageConstruct } from '@constructs/s3/storage.construct';
 
 /**
  * StorageStack is responsible for provisioning all storage resources

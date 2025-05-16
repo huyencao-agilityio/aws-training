@@ -8,8 +8,8 @@ import {
   OrderNotificationLambdaConstruct,
   AcceptOrderNotificationLambdaConstruct,
   RejectOrderNotificationLambdaConstruct
-} from '../constructs/lambda/queue';
-import { QueueConstruct } from '../constructs/queue/queue.construct';
+} from '@constructs/lambda/queue';
+import { QueueConstruct } from '@constructs/queue/queue.construct';
 
 export class QueueStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {

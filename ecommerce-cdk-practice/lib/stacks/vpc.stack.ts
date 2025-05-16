@@ -2,7 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 
-import { VpcConstruct } from '../constructs/vpc/vpc.construct';
+import { VpcConstruct } from '@constructs/vpc/vpc.construct';
 
 /**
  * VPCStack is responsible for provisioning the Virtual Private Cloud (VPC)

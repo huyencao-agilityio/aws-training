@@ -11,12 +11,12 @@ import {
   VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
+import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 import {
   CognitoConstructProps
 } from '@interfaces/construct.interface';
 import { COGNITO } from '@constants/cognito.constant';
-import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 /**
  * Construct for managing Cognito User Pool and its associated resources

@@ -12,7 +12,7 @@ import { OrderProduct } from '@interfaces/order.interface';
 import { CartItemAndProduct } from '@interfaces/cart.interface';
 import { ApiResponseCommon } from '@interfaces/common-response.interface';
 
-const sqs = new AWS.SQS({});
+const sqs = new AWS.SQS();
 
 /**
  * Get cart detail by id

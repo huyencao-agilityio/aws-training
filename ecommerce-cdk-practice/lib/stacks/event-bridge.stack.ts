@@ -2,11 +2,10 @@ import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { getLibrariesLayer } from '@helpers/layer.helper';
-
 import {
   EventBridgeConstruct
-} from '../constructs/event-bridge/event-bridge.construct';
-import { SchedulerLambdaConstruct } from '../constructs/lambda/event-bridge';
+} from '@constructs/event-bridge/event-bridge.construct';
+import { SchedulerLambdaConstruct } from '@constructs/lambda/event-bridge';
 
 /**
  * EventBridgeStack is responsible for provisioning config for EventBridge

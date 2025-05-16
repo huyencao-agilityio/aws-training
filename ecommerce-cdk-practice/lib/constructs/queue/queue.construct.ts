@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import { QueueConstructProps } from '@interfaces/construct.interface';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 /**
  * Define the construct to create new queue and dead letter queue in SQS

@@ -2,18 +2,17 @@ import { Stage } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { BaseStageProps } from '@interfaces/stage.interface';
-
-import { ApiStack } from '../stacks/api.stack';
-import { AuthStack } from '../stacks/auth.stack';
-import { CloudFrontStack } from '../stacks/cloudfront.stack';
-import { EventBridgeStack } from '../stacks/event-bridge.stack';
-import { MonitoringStack } from '../stacks/monitoring.stack';
-import { QueueStack } from '../stacks/queue.stack';
-import { RdsStack } from '../stacks/rds.stack';
-import { StorageStack } from '../stacks/storage.stack';
-import { VPCStack } from '../stacks/vpc.stack';
-import { Route53Stack } from '../stacks/route53.stack';
-import { CertificateStack } from '../stacks/certificate.stack';
+import { ApiStack } from '@stacks/api.stack';
+import { AuthStack } from '@stacks/auth.stack';
+import { CloudFrontStack } from '@stacks/cloudfront.stack';
+import { EventBridgeStack } from '@stacks/event-bridge.stack';
+import { MonitoringStack } from '@stacks/monitoring.stack';
+import { QueueStack } from '@stacks/queue.stack';
+import { RdsStack } from '@stacks/rds.stack';
+import { StorageStack } from '@stacks/storage.stack';
+import { VPCStack } from '@stacks/vpc.stack';
+import { Route53Stack } from '@stacks/route53.stack';
+import { CertificateStack } from '@stacks/certificate.stack';
 
 /**
  * BaseStage is a class that groups common stacks used across different environments

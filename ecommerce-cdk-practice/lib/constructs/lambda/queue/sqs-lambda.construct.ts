@@ -1,19 +1,23 @@
+import path from 'path';
+
 import { Construct } from 'constructs';
 import {
   Function,
   Runtime,
-  Code,
   ILayerVersion,
 } from 'aws-cdk-lib/aws-lambda';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
-import { DEFAULT_LAMBDA_HANDLER, LAMBDA_FUNCTION_NAME, LAMBDA_PATH } from '@constants/lambda.constant';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import path from 'path';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME,
+  LAMBDA_PATH
+} from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
 /**

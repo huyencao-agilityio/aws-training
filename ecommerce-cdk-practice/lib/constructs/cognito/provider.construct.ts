@@ -5,12 +5,11 @@ import {
   ProviderAttribute,
   UserPool
 } from 'aws-cdk-lib/aws-cognito';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
-import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 /**
  * Construct for managing social identity providers (Facebook, Google)
