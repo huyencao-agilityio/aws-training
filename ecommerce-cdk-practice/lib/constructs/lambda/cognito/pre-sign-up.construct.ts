@@ -12,7 +12,7 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
-import { getDatabaseConfig } from '@helpers/database.helper';
+import { getDatabaseConfig } from '@shared/database.helper';
 import {
   LAMBDA_PATH,
   DEFAULT_LAMBDA_HANDLER,

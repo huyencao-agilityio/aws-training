@@ -2,7 +2,7 @@ import { Stack, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { ApiStackProps } from '@interfaces/stack.interface';
-import { getLibrariesLayer } from '@helpers/layer.helper';
+import { getLibrariesLayer } from 'lib/shared/layer.helper';
 import { RestApiConstruct } from '@constructs/api-gateway/rest-api.construct';
 import { ApiDomainConstruct } from '@constructs/api-gateway/api-domain.construct';
 

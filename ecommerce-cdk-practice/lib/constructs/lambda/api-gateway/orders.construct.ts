@@ -11,8 +11,8 @@ import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
-import { getQueueResources } from '@helpers/queue.helper';
-import { getDatabaseConfig } from '@helpers/database.helper';
+import { getQueueResources } from '@shared/queue.helper';
+import { getDatabaseConfig } from '@shared/database.helper';
 import { QueueResources } from '@app-types/queue.type';
 import {
   DEFAULT_LAMBDA_HANDLER,

@@ -4,7 +4,7 @@ import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
-import { getDatabaseConfig } from '@helpers/database.helper';
+import { getDatabaseConfig } from '@shared/database.helper';
 
 import { SqsLambdaConstruct } from './sqs-lambda.construct';
 

@@ -88,7 +88,7 @@ export const handler: Handler = async (
     console.error(error);
 
     throw new Error(JSON.stringify({
-      statusCode: HttpStatusCode.INTERNAL_SEVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: `Error get presigned url: ${error}`
     }));
   }

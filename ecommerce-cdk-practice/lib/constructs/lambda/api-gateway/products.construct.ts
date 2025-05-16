@@ -13,7 +13,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
-import { getDatabaseConfig } from '@helpers/database.helper';
+import { getDatabaseConfig } from '@shared/database.helper';
 import {
   DEFAULT_LAMBDA_HANDLER,
   LAMBDA_FUNCTION_NAME,

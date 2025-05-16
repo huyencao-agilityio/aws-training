@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import {
   HealthCheckApiConstructProps
 } from '@interfaces/construct.interface';
+import { HttpMethod } from '@enums/http-method.enum';
 
 /**
  * Define the construct for API health-check
@@ -35,7 +36,7 @@ export class HealthCheckApiConstruct extends Construct {
   addMethod(
     resource: IResource
   ): void {
-    resource.addMethod('GET', new MockIntegration({
+    resource.addMethod(HttpMethod.GET, new MockIntegration({
       integrationResponses: [{
         statusCode: '200',
         responseTemplates: {
