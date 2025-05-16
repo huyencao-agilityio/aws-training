@@ -17,6 +17,7 @@ import { BUCKET_NAME } from '@constants/bucket.constant';
 import { getDatabaseConfig } from '@helpers/database.helper';
 import {
   DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME,
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
@@ -72,6 +73,7 @@ export class UsersLambdaConstruct extends Construct {
       environment: {
         ...dbInstance
       },
+      functionName: LAMBDA_FUNCTION_NAME.API_UPDATE_USER
     });
 
     return lambdaFunction;
@@ -102,6 +104,7 @@ export class UsersLambdaConstruct extends Construct {
       environment: {
         BUCKET_NAME: BUCKET_NAME
       },
+      functionName: LAMBDA_FUNCTION_NAME.API_UPLOAD_AVATAR
     });
 
     // Add policy to can upload image to S3

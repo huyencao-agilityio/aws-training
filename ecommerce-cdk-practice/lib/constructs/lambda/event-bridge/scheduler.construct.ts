@@ -14,7 +14,8 @@ import { BaseConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@helpers/database.helper';
 import {
   LAMBDA_PATH,
-  DEFAULT_LAMBDA_HANDLER
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
@@ -65,6 +66,7 @@ export class SchedulerLambdaConstruct extends Construct {
       environment: {
         ...dbInstance
       },
+      functionName: LAMBDA_FUNCTION_NAME.EVENT_BRIDGE_WEEKLY_REPORT
     });
 
     // Add policy for Lambda function

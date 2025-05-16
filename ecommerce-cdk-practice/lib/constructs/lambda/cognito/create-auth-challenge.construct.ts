@@ -14,7 +14,8 @@ import { BaseConstructProps } from '@interfaces/construct.interface';
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 import {
   LAMBDA_PATH,
-  DEFAULT_LAMBDA_HANDLER
+  DEFAULT_LAMBDA_HANDLER,
+  LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 
@@ -66,6 +67,7 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
         DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
         CHALLENGE_CODE: challengeCode
       },
+      functionName: LAMBDA_FUNCTION_NAME.COGNITO_CREATE_AUTH
     });
 
     // Add IAM policy to allow sending emails via SES
