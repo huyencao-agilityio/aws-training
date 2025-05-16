@@ -12,7 +12,7 @@ import { PipelineStackProps } from '@interfaces/stack.interface';
 
 import { StagingStage } from '../stages/staging.stage';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
-import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 /**
  * The AppPipeline class defines the main CDK Stack responsible for
@@ -26,12 +26,6 @@ export class AppPipelineStack extends Stack {
     const { stage } = props;
 
     const env = process.env.ENV || 'staging';
-    const synthRole = new Role(this, 'SynthRole', {
-      assumedBy: new ServicePrincipal('codebuild.amazonaws.com'),
-    });
-
-    synthRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
-
 
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
@@ -59,16 +53,16 @@ export class AppPipelineStack extends Stack {
           'ls -la ecommerce-cdk-practice'
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
-        role: synthRole
-        // rolePolicyStatements: [
-        //   new PolicyStatement({
-        //     actions: [
-        //       'route53:ListHostedZonesByName',
-        //       'ec2:DescribeAvailabilityZones'
-        //     ],
-        //     resources: ['*']
-        //   })
-        // ]
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: [
+              'route53:ListHostedZonesByName',
+              'ec2:DescribeAvailabilityZones',
+            ],
+            resources: ['*'],
+            effect: Effect.ALLOW,
+          }),
+        ]
       }),
 
     });
