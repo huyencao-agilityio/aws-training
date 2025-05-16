@@ -45,6 +45,7 @@ export class AppPipelineStack extends Stack {
           'npm run build',
           'npx cdk synth'
         ],
+        primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out'
       }),
     });
 
