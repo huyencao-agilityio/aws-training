@@ -29,9 +29,18 @@ export class AppPipelineStack extends Stack {
       pipelineName: 'AppPipeline',
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub(repoName, branchName, {
-          authentication: SecretValue.secretsManager('github-token'),
+          authentication: SecretValue.secretsManager('secret', {
+            jsonField: 'github_token',
+          }),
         }),
         commands: [
+          // Need to build lambda layer first
+          'cd lambda-layer',
+          'npm ci',
+          'npm run build:layer',
+          'cd ..',
+          // Build the app
+          'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
           'npx cdk synth'

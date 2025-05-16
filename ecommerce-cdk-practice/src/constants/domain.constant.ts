@@ -3,7 +3,7 @@ export const DOMAIN_NAME = 'ecommerce-app.click';
 export const ENVIRONMENTS = {
   staging: {
     apiGateway: {
-      domainName: 'staging-api.ecommerce-app.click',
+      domainName: 'api.ecommerce-app.click',
       basePathApi: 'v1',
       stage: 'v1',
     },
