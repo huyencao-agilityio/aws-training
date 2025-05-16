@@ -30,7 +30,7 @@ export class AppPipelineStack extends Stack {
       synth: new CodeBuildStep('Synth', {
         input: CodePipelineSource.gitHub(
           'huyencao-agilityio/aws-training',
-          'develop',
+          'feature/debug-pipeline',
           {
             authentication: SecretValue.secretsManager('secret', {
               jsonField: 'github_token',
