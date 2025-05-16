@@ -11,6 +11,7 @@ import 'dotenv/config';
 import { PipelineStackProps } from '@interfaces/stack.interface';
 
 import { StagingStage } from '../stages/staging.stage';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 /**
  * The AppPipeline class defines the main CDK Stack responsible for
@@ -23,8 +24,8 @@ export class AppPipelineStack extends Stack {
 
     const { stage } = props;
 
-    const branchName = process.env.BRANCH_NAME || 'develop';
-    const repoName = process.env.REPO_NAME || '';
+    const branchName = StringParameter.valueForStringParameter(this, '/github/branch-name');
+    const repoName = StringParameter.valueForStringParameter(this, '/github/repo-name');
     const env = process.env.ENV || 'staging';
 
     const pipeline = new CodePipeline(this, 'AppPipeline', {
@@ -45,7 +46,7 @@ export class AppPipelineStack extends Stack {
           'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
-          `ENV=${env} npx cdk synth`,
+          `npx cdk synth`,
           'ls -la ecommerce-cdk-practice'
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
