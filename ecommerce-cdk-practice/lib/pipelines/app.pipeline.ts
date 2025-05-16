@@ -1,6 +1,7 @@
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
+  CodeBuildStep,
   CodePipeline,
   CodePipelineSource,
   ShellStep
@@ -28,7 +29,7 @@ export class AppPipelineStack extends Stack {
 
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
-      synth: new ShellStep('Synth', {
+      synth: new CodeBuildStep('Synth', {
         input: CodePipelineSource.gitHub(repoName, branchName, {
           authentication: SecretValue.secretsManager('secret', {
             jsonField: 'github_token',
@@ -47,7 +48,10 @@ export class AppPipelineStack extends Stack {
           `ENV=${env} npx cdk synth`,
           'ls -la ecommerce-cdk-practice'
         ],
-        primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out'
+        primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
+        env: {
+          ENV: env,
+        },
       }),
     });
 
