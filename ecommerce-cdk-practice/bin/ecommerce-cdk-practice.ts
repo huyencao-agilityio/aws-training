@@ -53,7 +53,7 @@ const stageMap: Record<EnvType, () => void> = {
 };
 
 // Get the environment type from the environment variable
-const envType: EnvType = process.env.ENV as EnvType || 'local';
+const envType: EnvType = process.env.ENV as EnvType || 'staging';
 
 // Initialize the stage
 stageMap[envType]();
