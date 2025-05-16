@@ -24,6 +24,7 @@ export class AppPipelineStack extends Stack {
 
     const branchName = process.env.BRANCH_NAME || 'develop';
     const repoName = process.env.REPO_NAME || '';
+    const env = process.env.ENV || 'staging';
 
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
@@ -43,7 +44,7 @@ export class AppPipelineStack extends Stack {
           'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
-          'npx cdk synth',
+          `ENV=${env} npx cdk synth`,
           'ls -la ecommerce-cdk-practice'
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out'
