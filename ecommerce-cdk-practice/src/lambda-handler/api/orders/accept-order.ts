@@ -32,11 +32,13 @@ export const handler: Handler = async (
       }));
     }
 
-    const orderCheckQuery = `
+    // Get order by id
+    const orderQuery = `
       SELECT id, status, owner_id FROM public.order WHERE id = $1
     `;
-    const orderResult = await PgPool.query(orderCheckQuery, [orderId]);
+    const orderResult = await PgPool.query(orderQuery, [orderId]);
 
+    // Show error if the order is not found
     if (orderResult.rows.length === 0) {
       throw new Error(JSON.stringify({
         statusCode: HttpStatusCode.NOT_FOUND,
@@ -48,6 +50,7 @@ export const handler: Handler = async (
 
     console.log(`Order ${JSON.stringify(order)}`);
 
+    // Show error if the order is rejected, accepted or completed
     if (order.status !== OrderStatus.PENDING) {
       throw new Error(JSON.stringify({
         statusCode: HttpStatusCode.BAD_REQUEST,
@@ -55,6 +58,7 @@ export const handler: Handler = async (
       }));
     }
 
+    // Update order status to accepted
     const updateQuery = `
       UPDATE public.order
       SET status = $1
@@ -63,17 +67,17 @@ export const handler: Handler = async (
     `;
     await PgPool.query(updateQuery, [OrderStatus.ACCEPTED, orderId]);
 
-    const message = {
-      orderId: orderId,
-      userId: order.owner_id,
-      message: 'Your order has been accepted.'
-    };
-
+    // Prepare message for SQS
     const sqsParams = {
       QueueUrl: queueUrl,
-      MessageBody: JSON.stringify(message),
+      MessageBody: JSON.stringify({
+        orderId: orderId,
+        userId: order.owner_id,
+        message: 'Your order has been accepted.'
+      }),
     };
 
+    // Send message to SQS
     await sqs.sendMessage(sqsParams).promise();
 
     console.log(`Message sent to SQS for order ${orderId}`);
