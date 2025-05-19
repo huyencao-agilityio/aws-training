@@ -19,3 +19,7 @@ export const cognitoAuthorizerContext = `
 `;
 
 export const COGNITO_AUTHORIZATION_SCOPES = 'aws.cognito.signin.user.admin';
+export const TOKEN_PREFIX = 'Bearer ';
+export const UNAUTHORIZED_ERROR = 'Unauthorized';
+export const ROLE_GUEST = 'guest';
+export const ROLE_AUTHENTICATED = 'authenticated';

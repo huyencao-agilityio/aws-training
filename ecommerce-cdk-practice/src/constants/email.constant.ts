@@ -1,4 +1,5 @@
 export const DEFAULT_EMAIL_ADDRESS = 'thanhhuyen11cntt1@gmail.com';
+export const ADMIN_EMAIL_ADDRESS = 'huyen.cao+1@asnet.com.vn';
 
 export const EMAIL_SUBJECT = {
   LOGIN_VERIFICATION_CODE: 'Ecommerce - Login Verification Code',

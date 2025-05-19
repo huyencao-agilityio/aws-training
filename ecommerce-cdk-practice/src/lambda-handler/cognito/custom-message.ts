@@ -5,6 +5,7 @@ import {
   passwordResetEmailTemplate,
   verifyNewEmailTemplate
 } from '@constants/email.constant';
+import { BASE_URL } from '@constants/domain.constant';
 import { CustomMessageTrigger } from '@enums/custom-message.enum';
 
 /**
@@ -22,13 +23,17 @@ export const handler: Handler = async (
   const email = request.usernameParameter;
   const code = request.codeParameter;
 
-  if (event.triggerSource === CustomMessageTrigger.FORGOT_PASSWORD) {
-    const resetLink = `https://ecommerce-app.com/reset-password?code=${code}&email=${email}`;
+  if (
+    event.triggerSource === CustomMessageTrigger.FORGOT_PASSWORD
+  ) {
+    const resetLink = `${BASE_URL}/reset-password?code=${code}&email=${email}`;
 
     event.response.emailSubject = EMAIL_SUBJECT.PASSWORD_RESET_VERIFICATION_CODE;
     event.response.emailMessage = passwordResetEmailTemplate(code, resetLink);
-  } else if (event.triggerSource === CustomMessageTrigger.UPDATE_USER_ATTRIBUTE) {
-    const verificationLink = `https://ecommerce-app.com/verify-email?code=${code}&email=${email}`
+  } else if (
+    event.triggerSource === CustomMessageTrigger.UPDATE_USER_ATTRIBUTE
+  ) {
+    const verificationLink = `${BASE_URL}/verify-email?code=${code}&email=${email}`
 
     event.response.emailSubject = EMAIL_SUBJECT.VERIFY_NEW_EMAIL;
     event.response.emailMessage = verifyNewEmailTemplate(code, verificationLink);

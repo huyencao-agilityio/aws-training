@@ -7,6 +7,11 @@ import {
   LambdaAuthorizerEvent,
   LambdaAuthorizerResponse
 } from '@interfaces/lambda-authorizer.interface';
+import {
+  ROLE_GUEST,
+  TOKEN_PREFIX,
+  UNAUTHORIZED_ERROR
+} from '@constants/auth.constant';
 
 // Decode and verify JWT
 const { decode, verify } = jwt;
@@ -23,9 +28,9 @@ const COGNITO_REGION = process.env.COGNITO_REGION || '';
  * @returns The decoded token
  */
 async function verifyCognitoToken(token: string): Promise<jwt.JwtPayload> {
-  const jwksUrl =
-    `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/` +
-    `${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
+  const cognitoIdpUrl = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/`;
+
+  const jwksUrl = `${cognitoIdpUrl}${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
   const response = await fetch(jwksUrl);
   const jwks: JwksResponse = await response.json();
 
@@ -43,7 +48,7 @@ async function verifyCognitoToken(token: string): Promise<jwt.JwtPayload> {
 
   const result = verify(token, pem, {
     algorithms: ['RS256'],
-    issuer: `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`,
+    issuer: `${cognitoIdpUrl}${COGNITO_USER_POOL_ID}`,
   }) as jwt.JwtPayload;
 
   return result;
@@ -95,32 +100,34 @@ export const handler: Handler = async (
   const { authorizationToken: token, methodArn} = event;
 
   // Check if token is provided
-  if (!token || token === 'Bearer') {
+  if (!token || token === TOKEN_PREFIX) {
     console.log('No token provided, allowing guest access');
 
-    return generatePolicy('guest', 'Allow', methodArn, { role: 'guest' });
+    return generatePolicy(ROLE_GUEST, 'Allow', methodArn, { role: ROLE_GUEST });
   }
 
   try {
     console.log('Token provided, allowing user access');
     // Verify Cognito token
-    const decoded = await verifyCognitoToken(token.replace('Bearer ', '')) as jwt.JwtPayload;
+    const decoded = await verifyCognitoToken(
+      token.replace(`${TOKEN_PREFIX} `, '')
+    ) as jwt.JwtPayload;
     // Additional claims verification
     const currentTime = Math.floor(Date.now() / 1000);
 
     // Verify expiration
     if (!decoded.exp || decoded.exp < currentTime) {
-      throw new Error('Unauthorized');
+      throw new Error(UNAUTHORIZED_ERROR);
     }
 
     // Verify token_use
     if (!decoded.token_use || !['id', 'access'].includes(decoded.token_use)) {
-      throw new Error('Unauthorized');
+      throw new Error(UNAUTHORIZED_ERROR);
     }
 
     // Verify sub
     if (!decoded.sub) {
-      throw new Error('Unauthorized');
+      throw new Error(UNAUTHORIZED_ERROR);
     }
 
     // Generate policy document

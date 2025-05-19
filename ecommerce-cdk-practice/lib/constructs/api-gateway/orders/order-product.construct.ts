@@ -17,7 +17,7 @@ import { HttpMethod } from '@enums/http-method.enum';
 import {
   COGNITO_AUTHORIZATION_SCOPES,
   cognitoAuthorizerContext
-} from '@constants/authorize-api.constant';
+} from '@constants/auth.constant';
 import { COMMON_ERROR_CODE } from '@constants/common-error-code.constant';
 
 /**

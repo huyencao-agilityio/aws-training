@@ -6,6 +6,7 @@ import { PaginationResponse } from '@interfaces/pagination.interface';
 import {
   APIGatewayEventRequestWithLambdaAuthorizer
  } from '@interfaces/api-gateway-event.interface';
+import { HttpStatusCode } from '@enums/http-status-code.enum';
 
 /**
  * Lambda handler for retrieving all products.
@@ -48,7 +49,7 @@ export const handler: Handler = async (
     console.error('Error when getting all products:', error);
 
     throw new Error(JSON.stringify({
-      statusCode: 500,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: `Internal server error: ${error.message}`
     }));
   }
