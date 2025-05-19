@@ -6,6 +6,8 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
+import { HttpStatusCode } from '@enums/http-status-code.enum';
+
 /**
  * Base class for API method constructs
  */
@@ -25,7 +27,7 @@ export abstract class BaseApiMethodConstruct extends Construct {
   ): IntegrationResponse[] {
     return [
       {
-        statusCode: '200',
+        statusCode: `${HttpStatusCode.SUCCESS}`,
       },
       ...errorStatusCodes.map(code => ({
         selectionPattern: `.*"statusCode":${code}.*`,
@@ -50,7 +52,7 @@ export abstract class BaseApiMethodConstruct extends Construct {
   ): MethodResponse[] {
     return [
       {
-        statusCode: '200',
+        statusCode: `${HttpStatusCode.SUCCESS}`,
         responseModels: {
           'application/json': model,
         },

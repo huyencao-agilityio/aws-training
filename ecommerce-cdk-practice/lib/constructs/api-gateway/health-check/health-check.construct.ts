@@ -8,6 +8,7 @@ import {
   HealthCheckApiConstructProps
 } from '@interfaces/construct.interface';
 import { HttpMethod } from '@enums/http-method.enum';
+import { HttpStatusCode } from '@enums/http-status-code.enum';
 
 /**
  * Define the construct for API health-check
@@ -38,19 +39,19 @@ export class HealthCheckApiConstruct extends Construct {
   ): void {
     resource.addMethod(HttpMethod.GET, new MockIntegration({
       integrationResponses: [{
-        statusCode: '200',
+        statusCode: `${HttpStatusCode.SUCCESS}`,
         responseTemplates: {
           'application/json': JSON.stringify({
-            statusCode: 200,
+            statusCode: HttpStatusCode.SUCCESS,
             message: 'API Gateway work well'
           })
         }
       }],
       requestTemplates: {
-        'application/json': '{ "statusCode": 200 }'
+        'application/json': `{ "statusCode": ${HttpStatusCode.SUCCESS} }`
       },
     }), {
-      methodResponses: [{ statusCode: '200' }],
+      methodResponses: [{ statusCode: `${HttpStatusCode.SUCCESS}` }],
       apiKeyRequired: false
     });
   }
