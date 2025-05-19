@@ -75,7 +75,8 @@ export class PostgresRdsConstruct extends Construct {
         password: SecretValue.unsafePlainText(dbPassword),
       },
       storageEncrypted: true,
-      enablePerformanceInsights: true
+      enablePerformanceInsights: true,
+      removalPolicy: RemovalPolicy.RETAIN
     });
 
     return instance;
