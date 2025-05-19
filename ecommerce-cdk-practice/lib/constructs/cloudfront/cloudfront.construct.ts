@@ -10,6 +10,7 @@ import {
   SigningProtocol,
   OriginAccessControlOriginType,
 } from 'aws-cdk-lib/aws-cloudfront';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Function } from 'aws-cdk-lib/aws-lambda';
@@ -22,7 +23,6 @@ import {
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { CloudFrontConstructProps } from '@interfaces/construct.interface';
-
 
 /**
  * Define the construct to create new CloudFront
@@ -113,6 +113,11 @@ export class CloudFrontConstruct extends Construct {
       'DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity',
       ''
     );
+
+    // Retains the CloudFront distribution when destroying the stack
+    // This is necessary because Lambda@Edge functions are replicated globally
+    // and require manual cleanup before the distribution can be deleted.
+    cfnDistribution.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
     return distribution;
   }
