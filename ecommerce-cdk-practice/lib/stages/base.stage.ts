@@ -104,6 +104,7 @@ export class BaseStage extends Stage {
     queueStack.addDependency(rdsStack);
     eventBridgeStack.addDependency(rdsStack);
     apiStack.addDependency(rdsStack);
+    authStack.addDependency(rdsStack);
     apiStack.addDependency(authStack);
     apiStack.addDependency(queueStack);
     monitoringStack.addDependency(apiStack);
