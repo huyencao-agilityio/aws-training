@@ -101,11 +101,11 @@ export class BaseStage extends Stage {
     });
 
     // Explicit dependency
+    queueStack.addDependency(rdsStack);
+    eventBridgeStack.addDependency(rdsStack);
+    apiStack.addDependency(rdsStack);
     apiStack.addDependency(authStack);
     apiStack.addDependency(queueStack);
     monitoringStack.addDependency(apiStack);
-    rdsStack.addDependency(vpcStack);
-    eventBridgeStack.addDependency(rdsStack);
-    queueStack.addDependency(rdsStack);
   }
 }
