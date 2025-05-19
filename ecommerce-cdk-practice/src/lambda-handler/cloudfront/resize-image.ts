@@ -8,6 +8,7 @@ import {
 } from 'aws-lambda';
 
 import { ImageFormat } from '@app-types/image.type';
+import { HttpStatusCode } from '@enums/http-status-code.enum';
 
 const S3 = new AWS.S3();
 
@@ -17,7 +18,10 @@ export const handler: Handler = async (
   const record = event.Records[0];
   const response = record.cf.response as CloudFrontResultResponse;
 
-  if (response.status !== '404' && response.status !== '403') {
+  if (
+    response.status !== `${HttpStatusCode.NOT_FOUND}` &&
+    response.status !== `${HttpStatusCode.FORBIDDEN}`
+  ) {
     return response;
   }
 
@@ -59,18 +63,25 @@ export const handler: Handler = async (
       CacheControl: 'max-age=31536000',
     }).promise();
 
-    response.status = '200';
+    response.status = `${HttpStatusCode.SUCCESS}`;
     response.statusDescription = 'OK';
     response.body = resizedBuffer.toString('base64');
     response.bodyEncoding = 'base64';
 
     response.headers = response.headers ?? {};
-    response.headers['content-type'] = [{ key: 'Content-Type', value: 'image/' + format }];
-    response.headers['cache-control'] = [{ key: 'Cache-Control', value: 'max-age=31536000' }];
+    response.headers['content-type'] = [{
+      key: 'Content-Type',
+      value: `image/${format}`
+    }];
+    response.headers['cache-control'] = [{
+      key: 'Cache-Control',
+      value: 'max-age=31536000'
+    }];
 
     return response;
   } catch (err) {
     console.log('Error resizing image:', err);
+
     return response;
   }
 };

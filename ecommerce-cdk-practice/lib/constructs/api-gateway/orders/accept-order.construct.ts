@@ -17,7 +17,7 @@ import { COMMON_ERROR_CODE } from '@constants/common-error-code.constant';
 import {
   COGNITO_AUTHORIZATION_SCOPES,
   cognitoAuthorizerContext
-} from '@constants/authorize-api.constant';
+} from '@constants/auth.constant';
 
 /**
  * Define the construct for API POST accept order

@@ -3,7 +3,10 @@ import { Handler, ScheduledEvent } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
-import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
+import {
+  ADMIN_EMAIL_ADDRESS,
+  DEFAULT_EMAIL_ADDRESS
+} from '@constants/email.constant';
 
 const ses = new AWS.SES();
 
@@ -59,7 +62,7 @@ export const handler: Handler = async (
 
     const emailParams = {
       Source: DEFAULT_EMAIL_ADDRESS,
-      Destination: { ToAddresses: ['huyen.cao+1@asnet.com.vn'] },
+      Destination: { ToAddresses: [ADMIN_EMAIL_ADDRESS] },
       Message: {
         Subject: { Data: 'Ecommerce - Weekly Top 10 Best-Selling Products Report' },
         Body: {

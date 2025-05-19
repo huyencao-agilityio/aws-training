@@ -107,13 +107,17 @@ export const handler: Handler = async (
     const { cartItemIds } = event.body;
     const { sub: currentUserId, email } = event.context;
 
+    // Get cart by id
     const cartId = await getByCartId(client, currentUserId);
+    // Get cart items by cart id
     const cartItems = await getCartItems(client, cartItemIds, cartId);
 
+    // Need to least one item in cart
     if (!cartItems.length) {
       throw new Error('No valid cart items found');
     }
 
+    // Check all cart items are valid or not
     if (cartItems.length !== cartItemIds.length) {
       const foundIds = cartItems.map(i => i.id);
       const invalidIds = cartItemIds.filter(id => !foundIds.includes(id));
@@ -121,10 +125,14 @@ export const handler: Handler = async (
       throw new Error(`Some cart items are invalid: ${invalidIds.join(', ')}`);
     }
 
-    const invalidItem = cartItems.find(item => item.quantity > item.product_quantity);
+    // Check all cart items have enough quantity or not
+    const invalidItem = cartItems.find(
+      item => item.quantity > item.product_quantity
+    );
     if (invalidItem) {
       throw new Error(
-        `Not enough quantity for product ${invalidItem.name}. Available: ${invalidItem.product_quantity}`
+        `Not enough quantity for product ${invalidItem.name}.
+        Available: ${invalidItem.product_quantity}`
       );
     }
 
@@ -139,6 +147,7 @@ export const handler: Handler = async (
     let totalAmount = 0;
     let totalQuantity = 0;
 
+    // Calculate total amount and total quantity
     const orderItems = cartItems.map(item => {
       const amount = item.price * item.quantity;
       totalAmount += amount;
@@ -151,6 +160,7 @@ export const handler: Handler = async (
       };
     });
 
+    // Insert order to database
     const orderResult = await client.query(`
       INSERT INTO public.order (owner_id, amount, quantity, status)
       VALUES ($1, $2, $3, 'PENDING') RETURNING id
@@ -158,21 +168,32 @@ export const handler: Handler = async (
 
     const orderId = orderResult.rows[0].id;
 
-    const values = orderItems.flatMap(item => [orderId, item.product_id, item.quantity, item.amount]);
+    const values = orderItems.flatMap(
+      item => [orderId, item.product_id, item.quantity, item.amount]
+    );
     const placeholders = orderItems.map((_, i) =>
       `($${i*4+1}, $${i*4+2}, $${i*4+3}, $${i*4+4})`
     ).join(', ');
 
+    // Insert order items to database
     await client.query(`
       INSERT INTO public.order_item (order_id, product_id, quantity, amount)
       VALUES ${placeholders}
     `, values);
 
+    // Delete cart items
     await client.query(`
       DELETE FROM public.cart_item WHERE id = ANY($1::uuid[])
     `, [cartItemIds]);
 
-    await sendOrderMessage(orderId, email, totalAmount, totalQuantity, cartItems)
+    // Send order message to SQS
+    await sendOrderMessage(
+      orderId,
+      email,
+      totalAmount,
+      totalQuantity,
+      cartItems
+    );
 
     await client.query('COMMIT');
 

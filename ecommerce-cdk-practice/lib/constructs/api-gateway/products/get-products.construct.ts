@@ -15,7 +15,7 @@ import {
 import { ApiGatewayModel } from '@interfaces/api-gateway-model.interface';
 import { BaseApiMethodConstruct } from '@shared/base-api-method.construct';
 import { COMMON_ERROR_CODE } from '@constants/common-error-code.constant';
-import { lambdaAuthorizerContext } from '@constants/authorize-api.constant';
+import { lambdaAuthorizerContext } from '@constants/auth.constant';
 import { HttpMethod } from '@enums/http-method.enum';
 
 /**

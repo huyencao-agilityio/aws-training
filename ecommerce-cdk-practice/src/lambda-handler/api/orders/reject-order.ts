@@ -26,6 +26,7 @@ export const handler: Handler = async (
 
     const isAdmin = group === UserGroup.ADMIN;
 
+    // Only admin can reject order
     if (!isAdmin) {
       throw new Error(JSON.stringify({
         statusCode: HttpStatusCode.FORBIDDEN,
@@ -33,11 +34,13 @@ export const handler: Handler = async (
       }));
     }
 
-    const orderCheckQuery = `
+    // Get order by id
+    const orderQuery = `
       SELECT id, status, owner_id FROM public.order WHERE id = $1
     `;
-    const orderResult = await PgPool.query(orderCheckQuery, [orderId]);
+    const orderResult = await PgPool.query(orderQuery, [orderId]);
 
+    // Show error if order not found
     if (orderResult.rows.length === 0) {
       throw new Error(JSON.stringify({
         statusCode: HttpStatusCode.NOT_FOUND,
@@ -47,6 +50,7 @@ export const handler: Handler = async (
 
     const order: Order = orderResult.rows[0];
 
+    // Show error if the order is rejected or completed
     if (
       order.status === OrderStatus.REJECTED ||
       order.status === OrderStatus.COMPLETED
@@ -57,6 +61,7 @@ export const handler: Handler = async (
       }));
     }
 
+    // Update order status to rejected
     const updateQuery = `
       UPDATE public.order
       SET status = $1
@@ -65,17 +70,17 @@ export const handler: Handler = async (
     `;
     await PgPool.query(updateQuery, [OrderStatus.REJECTED, orderId]);
 
-    const message = {
-      orderId: orderId,
-      userId: order.owner_id,
-      message: 'Your order has been rejected.'
-    };
-
+    // Prepare message for SQS
     const sqsParams = {
       QueueUrl: queueUrl,
-      MessageBody: JSON.stringify(message),
+      MessageBody: JSON.stringify({
+        orderId: orderId,
+        userId: order.owner_id,
+        message: 'Your order has been rejected.'
+      }),
     };
 
+    // Send message to SQS
     await sqs.sendMessage(sqsParams).promise();
 
     console.log(`Message sent to SQS for order ${orderId}`);
