@@ -3,7 +3,6 @@ import path from 'path';
 import { Function, Runtime, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
@@ -15,6 +14,7 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -63,13 +63,9 @@ export class PostConfirmationLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow add user to group in Cognito
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: [
-        'cognito-idp:AdminAddUserToGroup'
-      ],
-      resources: [userPool.userPoolArn],
-      effect: Effect.ALLOW
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.cognitoAddUserToGroup(userPool.userPoolArn)
+    );
 
     return lambdaFunction;
   }

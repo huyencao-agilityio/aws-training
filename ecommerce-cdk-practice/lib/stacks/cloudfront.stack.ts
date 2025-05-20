@@ -9,6 +9,7 @@ import { ResizeImageLambdaConstruct } from '@constructs/lambda/cloudfront';
 import {
   CloudFrontDomainConstruct
 } from '@constructs/cloudfront/cloudfront-domain.construct';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Define the CloudFront stack
@@ -25,34 +26,39 @@ export class CloudFrontStack extends Stack {
     } = props;
 
     // Create the Lambda function for resize image
-    const resizeLambdaConstruct = new ResizeImageLambdaConstruct(
+    const { resizeImageLambda} = new ResizeImageLambdaConstruct(
       this,
       'ResizeImageLambdaConstruct',
       {}
     );
 
     // Create CloudFront construct
-    const cloudFrontConstruct = new CloudFrontConstruct(
+    const { distribution } = new CloudFrontConstruct(
       this,
       'CloudFrontDistribution',
       {
-        lambdaFunction: resizeLambdaConstruct.resizeImageLambda,
+        lambdaFunction: resizeImageLambda,
         certificate,
         domainName,
         bucket
       }
     );
 
+    // Add IAM role policy for Lambda function
+    resizeImageLambda.addToRolePolicy(
+      PolicyHelper.cloudfrontManageDistribution(this, distribution.distributionId)
+    );
+
     // Custom domain for cloudfront
     new CloudFrontDomainConstruct(this, 'CloudFrontDomainConstruct', {
       hostedZone: hostedZone!,
       domainName: domainName!,
-      distribution: cloudFrontConstruct.distribution
+      distribution
     });
 
     // Create a CloudFormation output to export the domain name of the CloudFront Distribution
     new CfnOutput(this, 'CloudFrontDistributionDomainName', {
-      value: cloudFrontConstruct.distribution.distributionDomainName,
+      value: distribution.distributionDomainName,
       description: 'The domain name of the CloudFront Distribution',
       exportName: 'CloudFrontDomainName',
     });

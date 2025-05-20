@@ -1,7 +1,6 @@
 import path from 'path';
 
 import { Duration } from 'aws-cdk-lib';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import {
   Function,
   Runtime,
@@ -10,13 +9,13 @@ import {
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
-import { BUCKET_NAME } from '@constants/bucket.constant';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import {
   LAMBDA_PATH,
   DEFAULT_LAMBDA_HANDLER,
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Construct for creating Lambda function for resize image in Lambda@Edge
@@ -41,6 +40,8 @@ export class ResizeImageLambdaConstruct extends Construct {
    * @returns The Lambda function for resize image
    */
   createResizeImageLambdaFunction(): Function {
+    const lambdaFnName = LAMBDA_FUNCTION_NAME.CLOUDFRONT_RESIZE_IMAGE;
+
     // Create the Lambda function for resize image
     const lambdaFunction = new NodejsFunction(this, 'ResizeImage', {
       runtime: Runtime.NODEJS_20_X,
@@ -55,31 +56,16 @@ export class ResizeImageLambdaConstruct extends Construct {
         nodeModules: ['sharp', 'aws-sdk', '@types/aws-lambda']
       },
       timeout: Duration.seconds(30),
-      functionName: LAMBDA_FUNCTION_NAME.CLOUDFRONT_RESIZE_IMAGE
+      functionName: lambdaFnName
     });
 
     // Add IAM role policy for Lambda function
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        'lambda:GetFunction',
-        'lambda:EnableReplication',
-        'lambda:DisableReplication',
-        'cloudfront:UpdateDistribution',
-        'cloudfront:CreateDistribution',
-      ],
-      resources: ['*'],
-    }));
-
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        's3:GetObject',
-        's3:DeleteObject',
-        's3:PutObject',
-      ],
-      resources: [`arn:aws:s3:::${BUCKET_NAME}/*`],
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.lambdaFunctionAccess(this, lambdaFnName)
+    );
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.s3ObjectCrud()
+    );
 
     return lambdaFunction;
   }

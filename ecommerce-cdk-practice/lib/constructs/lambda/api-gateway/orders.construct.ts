@@ -1,7 +1,6 @@
 import path from 'path';
 
 import { Duration } from 'aws-cdk-lib';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import {
   Function,
   Runtime,
@@ -13,6 +12,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { getQueueResources } from '@shared/queue.helper';
 import { getDatabaseConfig } from '@shared/database.helper';
+import { PolicyHelper } from '@shared/policy.helper';
 import { QueueResources } from '@app-types/queue.type';
 import {
   DEFAULT_LAMBDA_HANDLER,
@@ -94,13 +94,9 @@ export class OrderLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow Lambda access to SQS
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: [
-        'sqs:SendMessage'
-      ],
-      resources: [queueResources.ORDER.arn],
-      effect: Effect.ALLOW
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.sqsSendMessage(queueResources.ORDER.arn)
+    );
 
     return lambdaFunction;
   }
@@ -137,13 +133,9 @@ export class OrderLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow Lambda access to SQS
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: [
-        'sqs:SendMessage'
-      ],
-      resources: [queueResources.ACCEPT.arn],
-      effect: Effect.ALLOW
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.sqsSendMessage(queueResources.ACCEPT.arn)
+    );
 
     return lambdaFunction;
   }
@@ -180,13 +172,9 @@ export class OrderLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow Lambda access to SQS
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: [
-        'sqs:SendMessage'
-      ],
-      resources: [queueResources.REJECT.arn],
-      effect: Effect.ALLOW
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.sqsSendMessage(queueResources.REJECT.arn)
+    );
 
     return lambdaFunction;
   }

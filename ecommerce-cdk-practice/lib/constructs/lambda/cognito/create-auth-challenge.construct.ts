@@ -6,7 +6,6 @@ import {
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
@@ -19,6 +18,7 @@ import {
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
 import { SecretHelper } from '@shared/secret.helper';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -76,11 +76,9 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     );
 
     // Add IAM policy to allow sending emails via SES
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: ['ses:SendEmail'],
-      resources: ['*'],
-      effect: Effect.ALLOW
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.sesSendEmail(this)
+    );
 
     return lambdaFunction;
   }

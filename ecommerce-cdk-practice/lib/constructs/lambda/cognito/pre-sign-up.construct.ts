@@ -8,7 +8,6 @@ import {
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
@@ -19,6 +18,7 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -75,15 +75,9 @@ export class PreSignUpLambdaConstruct extends Construct {
     });
 
     // Add IAM policy to allow Lambda access to Cognito
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: [
-        'cognito-idp:ListUsers',
-        'cognito-idp:AdminLinkProviderForUser',
-        'cognito-idp:AdminDeleteUser'
-      ],
-      resources: [userPool.userPoolArn],
-      effect: Effect.ALLOW
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.cognitoUserManagement(userPool.userPoolArn)
+    );
 
     return lambdaFunction;
   }
