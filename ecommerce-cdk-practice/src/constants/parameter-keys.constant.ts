@@ -1,0 +1,15 @@
+export const ParameterKeys = {
+  FacebookClientId: '/provider/facebook-client-id',
+  FacebookClientSecret: '/provider/facebook-client-secret',
+  GoogleClientId: '/provider/google-client-id',
+  GoogleClientSecret: '/provider/google-client-secret',
+  DbPassword: '/db/password',
+  DbIdentifier: '/db/identifier',
+  DbUser: '/db/user',
+  DbName: '/db/name',
+  ChallengeCode: '/cognito/challenge-code',
+  GithubRepo: '/github/repo-name',
+  GithubBranch: '/github/branch-name',
+  GithubToken: '/github/token',
+  LambdaLayer: '/lambda/layer/LibrariesLayerArn',
+};

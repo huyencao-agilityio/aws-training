@@ -8,6 +8,8 @@ import {
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 import { PipelineStackProps } from '@interfaces/stack.interface';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
+import { SecretHelper } from '@shared/secret.helper';
 
 import { StagingStage } from '../stages/staging.stage';
 
@@ -22,16 +24,29 @@ export class AppPipelineStack extends Stack {
 
     const { stage } = props;
 
+    // Get github repo and branch from SSM Parameter Store
+    const githubRepo = SecretHelper.getPlainTextParameter(
+      this,
+      ParameterKeys.GithubRepo
+    );
+    const githubBranch = SecretHelper.getPlainTextParameter(
+      this,
+      ParameterKeys.GithubBranch
+    );
+    // Get github token
+    const githubToken = SecretHelper.getSecretValue(
+      ParameterKeys.GithubToken
+    );
+
+    // Create the pipeline
     const pipeline = new CodePipeline(this, 'AppPipeline', {
       pipelineName: 'AppPipeline',
       synth: new CodeBuildStep('Synth', {
         input: CodePipelineSource.gitHub(
-          'huyencao-agilityio/aws-training',
-          'develop',
+          githubRepo,
+          githubBranch,
           {
-            authentication: SecretValue.secretsManager('secret', {
-              jsonField: 'github_token',
-            }),
+            authentication: githubToken
           }
         ),
         commands: [

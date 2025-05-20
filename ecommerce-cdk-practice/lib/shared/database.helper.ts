@@ -1,34 +1,40 @@
-import { Fn, SecretValue } from 'aws-cdk-lib';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { Fn } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 import { DB_CONSTANTS } from '@constants/database.constant';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
+
+import { SecretHelper } from './secret.helper';
 
 /**
  * Fetches the database configuration by reading environment variables and importing values for the host
  */
-export const getDatabaseConfig = (scope: Construct): Record<string, string> => {
-  const secret = Secret.fromSecretNameV2(
+export const getDatabaseConfig = (
+  scope: Construct
+): Record<string, string> => {
+  // Generate a random string for the database password and user
+  // This is to avoid conflicts the name
+  const random = Math.random().toString(36).substring(2, 8);
+  // Get the database password, name, user from the SSM Parameter Store
+  const dbPassword = SecretHelper.getSecureStringParameter(
     scope,
-    `Secret${Math.random().toString(36).substring(2, 8)}`,
-    'secret'
+    `DbPass${random}`,
+    ParameterKeys.DbPassword
   );
-  const dbPassword = secret.secretValueFromJson('db_password').unsafeUnwrap();
-
-  const dbName = StringParameter.valueForStringParameter(
+  const dbName = SecretHelper.getPlainTextParameter(
     scope,
-    '/db/name'
+    ParameterKeys.DbName
   );
-  const dbUser = StringParameter.valueForStringParameter(
+  const dbUser = SecretHelper.getSecureStringParameter(
     scope,
-    '/db/user'
+    `DbUser${random}`,
+    ParameterKeys.DbUser
   );
 
   return {
     DB_HOST: Fn.importValue(DB_CONSTANTS.HOST),
     DB_USER: dbUser,
-    DB_PASSWORD: SecretValue.unsafePlainText(dbPassword).unsafeUnwrap(),
+    DB_PASSWORD: dbPassword,
     DB_NAME: dbName,
   };
 };
