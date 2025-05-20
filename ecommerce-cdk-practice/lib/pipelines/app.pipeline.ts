@@ -1,15 +1,15 @@
-import { SecretValue, Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
   CodeBuildStep,
   CodePipeline,
   CodePipelineSource,
 } from 'aws-cdk-lib/pipelines';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 import { PipelineStackProps } from '@interfaces/stack.interface';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
 import { SecretHelper } from '@shared/secret.helper';
+import { PolicyHelper } from '@shared/policy.helper';
 
 import { StagingStage } from '../stages/staging.stage';
 
@@ -63,14 +63,7 @@ export class AppPipelineStack extends Stack {
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
         rolePolicyStatements: [
-          new PolicyStatement({
-            actions: [
-              'route53:ListHostedZonesByName',
-              'ec2:DescribeAvailabilityZones',
-            ],
-            resources: ['*'],
-            effect: Effect.ALLOW,
-          }),
+          PolicyHelper.pipelineAccess()
         ]
       }),
 

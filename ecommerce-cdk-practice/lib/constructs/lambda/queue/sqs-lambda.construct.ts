@@ -6,7 +6,6 @@ import {
   Runtime,
   ILayerVersion,
 } from 'aws-cdk-lib/aws-lambda';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
@@ -19,6 +18,7 @@ import {
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Construct for creating a common construct to create Lambda function for queue
@@ -91,10 +91,7 @@ export class SqsLambdaConstruct extends Construct {
     // Optional: Add SES policy
     if (withSesPolicy) {
       lambdaFunction.addToRolePolicy(
-        new PolicyStatement({
-          actions: ['ses:SendEmail'],
-          resources: ['*'],
-        }),
+        PolicyHelper.sesSendEmail(this)
       );
     }
 

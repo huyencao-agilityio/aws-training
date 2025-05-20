@@ -5,7 +5,6 @@ import {
   Runtime,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
@@ -58,13 +57,6 @@ export class CustomMessageLambdaConstruct extends Construct {
       },
       functionName: LAMBDA_FUNCTION_NAME.COGNITO_CUSTOM_MESSAGE
     });
-
-    // Add IAM policy to allow sending emails via SES
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      actions: ['ses:SendEmail'],
-      resources: ['*'],
-      effect: Effect.ALLOW
-    }));
 
     return lambdaFunction;
   }

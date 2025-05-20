@@ -15,14 +15,10 @@ import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Function } from 'aws-cdk-lib/aws-lambda';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
-import {
-  Effect,
-  PolicyStatement,
-  ServicePrincipal
-} from 'aws-cdk-lib/aws-iam';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { CloudFrontConstructProps } from '@interfaces/construct.interface';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Define the construct to create new CloudFront
@@ -130,18 +126,10 @@ export class CloudFrontConstruct extends Construct {
   addBucketResourcePolicy(bucket: Bucket): void {
     // Add resource policy to the bucket
     bucket.addToResourcePolicy(
-      new PolicyStatement({
-        sid: 'AllowCloudFrontServicePrincipal',
-        effect: Effect.ALLOW,
-        actions: ['s3:GetObject'],
-        resources: [`${bucket.bucketArn}/*`],
-        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
-        conditions: {
-          StringEquals: {
-            'AWS:SourceArn': this.distribution.distributionArn,
-          },
-        },
-      })
+      PolicyHelper.cloudfrontS3Access(
+        bucket.bucketArn,
+        this.distribution.distributionArn
+      )
     );
   }
 }

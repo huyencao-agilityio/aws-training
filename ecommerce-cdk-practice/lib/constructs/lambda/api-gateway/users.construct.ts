@@ -8,7 +8,6 @@ import {
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 import {
   BaseConstructProps
@@ -21,6 +20,7 @@ import {
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Construct for creating Lambda function for API update user profile
@@ -102,17 +102,15 @@ export class UsersLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       timeout: Duration.seconds(3),
       environment: {
-        BUCKET_NAME: BUCKET_NAME
+        BUCKET_NAME
       },
       functionName: LAMBDA_FUNCTION_NAME.API_UPLOAD_AVATAR
     });
 
     // Add policy to can upload image to S3
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['s3:PutObject'],
-      resources: [`arn:aws:s3:::${BUCKET_NAME}/*`],
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.s3PutObject()
+    );
 
     return lambdaFunction
   }

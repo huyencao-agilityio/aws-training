@@ -6,12 +6,12 @@ import {
   Runtime,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
-import { Duration } from 'aws-cdk-lib';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Duration, Stack } from 'aws-cdk-lib';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@shared/database.helper';
+import { PolicyHelper } from '@shared/policy.helper';
 import {
   LAMBDA_PATH,
   DEFAULT_LAMBDA_HANDLER,
@@ -70,11 +70,9 @@ export class SchedulerLambdaConstruct extends Construct {
     });
 
     // Add policy for Lambda function
-    lambdaFunction.addToRolePolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['ses:SendEmail'],
-      resources: ['*']
-    }));
+    lambdaFunction.addToRolePolicy(
+      PolicyHelper.sesSendEmail(this)
+    );
 
     return lambdaFunction;
   }

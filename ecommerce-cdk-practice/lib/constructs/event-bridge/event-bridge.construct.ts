@@ -1,11 +1,12 @@
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { SCHEDULE_EXPRESSIONS, TIMEZONES } from '@constants/schedule.constant';
+import { PolicyHelper } from '@shared/policy.helper';
 
 /**
  * Define the construct to create new scheduler in EventBridge
@@ -39,10 +40,9 @@ export class EventBridgeConstruct extends Construct {
       }),
     });
 
-    role.addToPolicy(new PolicyStatement({
-      actions: ['lambda:InvokeFunction'],
-      resources: [functionArn],
-    }));
+    role.addToPolicy(
+      PolicyHelper.lambdaInvoke(functionArn)
+    );
 
     return role;
   }
