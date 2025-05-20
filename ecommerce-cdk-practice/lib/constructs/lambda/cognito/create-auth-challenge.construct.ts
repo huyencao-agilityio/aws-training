@@ -8,7 +8,6 @@ import {
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
@@ -18,6 +17,8 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
+import { SecretHelper } from '@shared/secret.helper';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -46,29 +47,33 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
     librariesLayer: ILayerVersion
   ): Function {
     // Get challenge code
-    const challengeCode = StringParameter.valueForStringParameter(
+    const challengeCode = SecretHelper.getPlainTextParameter(
       this,
-      '/cognito/challenge-code',
+      ParameterKeys.ChallengeCode
     );
 
     // Create new Lambda function
-    const lambdaFunction = new NodejsFunction(this, 'CreateAuthChallengeLambda', {
-      runtime: Runtime.NODEJS_20_X,
-      handler: DEFAULT_LAMBDA_HANDLER,
-      layers: [librariesLayer!],
-      entry: path.join(
-        __dirname,
-        `${LAMBDA_PATH.COGNITO}/create-auth-challenge.ts`
-      ),
-      bundling: {
-        externalModules: EXTERNAL_MODULES,
-      },
-      environment: {
-        DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
-        CHALLENGE_CODE: challengeCode
-      },
-      functionName: LAMBDA_FUNCTION_NAME.COGNITO_CREATE_AUTH
-    });
+    const lambdaFunction = new NodejsFunction(
+      this,
+      'CreateAuthChallengeLambda',
+      {
+        runtime: Runtime.NODEJS_20_X,
+        handler: DEFAULT_LAMBDA_HANDLER,
+        layers: [librariesLayer!],
+        entry: path.join(
+          __dirname,
+          `${LAMBDA_PATH.COGNITO}/create-auth-challenge.ts`
+        ),
+        bundling: {
+          externalModules: EXTERNAL_MODULES,
+        },
+        environment: {
+          DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
+          CHALLENGE_CODE: challengeCode
+        },
+        functionName: LAMBDA_FUNCTION_NAME.COGNITO_CREATE_AUTH
+      }
+    );
 
     // Add IAM policy to allow sending emails via SES
     lambdaFunction.addToRolePolicy(new PolicyStatement({

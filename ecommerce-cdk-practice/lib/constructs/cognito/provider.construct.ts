@@ -5,11 +5,12 @@ import {
   ProviderAttribute,
   UserPool
 } from 'aws-cdk-lib/aws-cognito';
-import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
+import { SecretHelper } from '@shared/secret.helper';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
 
 /**
  * Construct for managing social identity providers (Facebook, Google)
@@ -24,12 +25,10 @@ export class ProviderConstruct extends Construct {
 
     const { userPool } = props;
 
-    const secret = Secret.fromSecretNameV2(this, 'Secret', 'secret');
-
     // Configure Facebook provider
-    this.facebookProvider = this.createFacebookProvider(userPool, secret);
+    this.facebookProvider = this.createFacebookProvider(userPool);
     // Configure Google provider
-    this.googleProvider = this.createGoogleProvider(userPool, secret);
+    this.googleProvider = this.createGoogleProvider(userPool);
   }
 
   /**
@@ -39,16 +38,19 @@ export class ProviderConstruct extends Construct {
    * @returns The created provider
    */
   createFacebookProvider(
-    userPool: UserPool,
-    secret: ISecret
+    userPool: UserPool
   ): UserPoolIdentityProviderFacebook {
-    // Get client credentials from environment variables
-    const fbClientId = secret.secretValueFromJson(
-      'fb_client_id'
-    ).unsafeUnwrap();
-    const fbClientSecret = secret.secretValueFromJson(
-      'fb_client_secret'
-    ).unsafeUnwrap();
+    // Get facebook client id and secret from SSM Parameter Store
+    const fbClientId = SecretHelper.getSecureStringParameter(
+      this,
+      'FacebookClientId',
+      ParameterKeys.FacebookClientId
+    );
+    const fbClientSecret = SecretHelper.getSecureStringParameter(
+      this,
+      'FacebookClientSecret',
+      ParameterKeys.FacebookClientSecret
+    );
 
     // Create provider
     const provider = new UserPoolIdentityProviderFacebook(
@@ -76,15 +78,19 @@ export class ProviderConstruct extends Construct {
    * @returns The created provider
    */
   createGoogleProvider(
-    userPool: UserPool,
-    secret: ISecret
+    userPool: UserPool
   ): UserPoolIdentityProviderGoogle {
-    const googleClientId = secret.secretValueFromJson(
-      'google_client_id'
-    ).unsafeUnwrap();
-    const googleClientSecret = secret.secretValueFromJson(
-      'google_client_secret'
-    ).unsafeUnwrap();
+    // Get google client id and secret from SSM Parameter Store
+    const googleClientId = SecretHelper.getSecureStringParameter(
+      this,
+      'GoogleClientId',
+      ParameterKeys.GoogleClientId
+    );
+    const googleClientSecret = SecretHelper.getSecureStringParameter(
+      this,
+      'GoogleClientSecret',
+      ParameterKeys.GoogleClientSecret
+    );
 
     // Create google provider
     const provider = new UserPoolIdentityProviderGoogle(
