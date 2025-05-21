@@ -8,8 +8,6 @@ export const ParameterKeys = {
   DbUser: '/db/user',
   DbName: '/db/name',
   ChallengeCode: '/cognito/challenge-code',
-  GithubRepo: '/github/repo-name',
-  GithubBranch: '/github/branch-name',
   GithubToken: '/github/token',
   LambdaLayer: '/lambda/layer/LibrariesLayerArn',
 };

@@ -61,6 +61,8 @@ export class PolicyHelper {
         'route53:ListHostedZonesByName',
         'ec2:DescribeAvailabilityZones',
       ],
+      // These AWS API actions do not support resource-level permissions,
+      // so the resource must be set to '*' to grant the necessary access
       resources: ['*'],
     });
   }

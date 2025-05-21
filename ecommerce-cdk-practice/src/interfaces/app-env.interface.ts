@@ -1,5 +1,7 @@
 import { Environment } from 'aws-cdk-lib/core';
 
+import { StageNameType } from '@app-types/stage.type';
+
 /**
  * Define the interface for an individual service in a specific environment
  */
@@ -15,7 +17,7 @@ export interface ServiceEnvironment {
  */
 export interface AppEnvironment {
   env: Environment;
-  stageName: string;
+  stageName: StageNameType;
   services?: {
     apiGateway?: ServiceEnvironment;
     cloudFront?: ServiceEnvironment;

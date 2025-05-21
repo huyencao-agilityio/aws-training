@@ -5,9 +5,9 @@ import { BaseStageProps } from '@interfaces/stage.interface';
 import { BaseStage } from './base.stage';
 
 /**
- * TestingStage represents the deployment stage for the testing environment
+ * DevStage represents the deployment stage for the dev environment
  */
-export class TestingStage extends BaseStage {
+export class DevStage extends BaseStage {
   constructor(scope: Construct, id: string, props: BaseStageProps) {
     super(scope, id, props);
   }

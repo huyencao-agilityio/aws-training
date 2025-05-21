@@ -1,13 +1,13 @@
 import { App } from 'aws-cdk-lib';
 import 'dotenv/config';
 
-import { AppPipelineStack } from '@pipelines/app.pipeline';
-import { TestingStage } from '@stages/testing.stage';
-import { ProductionStage } from '@stages/production.stage';
+import { StagingPipelineStack } from '@pipelines/staging.pipeline';
+import { ProductionPipelineStack } from '@pipelines/production.pipeline';
+import { DevStage } from '@stages/dev.stage';
 import { StageName } from '@enums/stage-name.enum';
 import { AppEnvironment } from '@interfaces/app-env.interface';
 import { ENVIRONMENTS } from '@constants/domain.constant';
-import { EnvType } from '@app-types/environment.type';
+import { StageNameType } from '@app-types/stage.type';
 
 const app = new App();
 
@@ -17,7 +17,7 @@ const env =  {
 }
 
 // Define environment-specific configuration
-const stage: Record<StageName, AppEnvironment> = {
+const stageConfig: Record<StageName, AppEnvironment> = {
   [StageName.STAGING]: {
     env,
     stageName: StageName.STAGING,
@@ -30,30 +30,38 @@ const stage: Record<StageName, AppEnvironment> = {
   [StageName.PROD]: {
     env,
     stageName: StageName.PROD,
-  },
-  [StageName.TESTING]: {
-    env,
-    stageName: StageName.TESTING,
     services: {
-      apiGateway: ENVIRONMENTS.testing.apiGateway,
-      cloudFront: ENVIRONMENTS.testing.cloudFront,
-      cognito: ENVIRONMENTS.testing.cognito,
+      apiGateway: ENVIRONMENTS.prod.apiGateway,
+      cloudFront: ENVIRONMENTS.prod.cloudFront,
+      cognito: ENVIRONMENTS.prod.cognito,
+    },
+  },
+  [StageName.DEV]: {
+    env,
+    stageName: StageName.DEV,
+    services: {
+      apiGateway: ENVIRONMENTS.dev.apiGateway,
+      cloudFront: ENVIRONMENTS.dev.cloudFront,
+      cognito: ENVIRONMENTS.dev.cognito,
     },
   },
 };
 
 // Define the stage map for the different environments
-const stageMap: Record<EnvType, () => void> = {
-  local: () => new TestingStage(app, 'TestingStage', stage[StageName.TESTING]),
-  staging: () => new AppPipelineStack(app, 'AppPipelineStack', {
+const stageMap: Record<StageNameType, () => void> = {
+  dev: () => new DevStage(app, 'DevStage', stageConfig[StageName.DEV]),
+  staging: () => new StagingPipelineStack(app, 'StagingPipelineStack', {
     env,
-    stage: stage[StageName.STAGING],
+    stage: stageConfig[StageName.STAGING],
   }),
-  prod: () => new ProductionStage(app, 'ProductionStage', stage[StageName.PROD]),
+  prod: () => new ProductionPipelineStack(app, 'ProductionPipelineStack', {
+    env,
+    stage: stageConfig[StageName.PROD],
+  }),
 };
 
 // Get the environment type from the environment variable
-const envType: EnvType = process.env.ENV as EnvType || 'staging';
+const stageName: StageNameType = app.node.tryGetContext('stage') || 'dev';
 
 // Initialize the stage
-stageMap[envType]();
+stageMap[stageName]();
