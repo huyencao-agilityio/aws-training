@@ -15,7 +15,7 @@ export const ENVIRONMENTS = {
       domainName: 'auth-staging.ecommerce-app.click',
     },
   },
-  testing: {
+  dev: {
     apiGateway: {
       domainName: 'api-testing.ecommerce-app.click',
       basePathApi: 'v1',
@@ -28,5 +28,17 @@ export const ENVIRONMENTS = {
       domainName: 'auth-testing.ecommerce-app.click',
     },
   },
-  // Add more environments here as needed
+  prod: {
+    apiGateway: {
+      domainName: 'api.ecommerce-app.click',
+      basePathApi: 'v1',
+      stage: 'v1',
+    },
+    cloudFront: {
+      domainName: 'cdn.ecommerce-app.click',
+    },
+    cognito: {
+      domainName: 'auth.ecommerce-app.click',
+    },
+  },
 };

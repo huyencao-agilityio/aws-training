@@ -18,6 +18,16 @@
   },
   "context": {
     "stage": "staging",
+    "github": {
+      "staging": {
+        "repositoryName": "huyencao-agilityio/aws-training",
+        "branch": "develop"
+      },
+      "prod": {
+        "repositoryName": "huyencao-agilityio/aws-training",
+        "branch": "main"
+      }
+    },
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [

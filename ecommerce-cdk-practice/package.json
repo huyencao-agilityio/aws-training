@@ -9,12 +9,12 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "synth:testing": "ENV=local npx cdk synth",
-    "deploy:testing": "ENV=local cdk deploy TestingStage/*",
-    "synth:prod": "ENV=prod npx cdk synth",
-    "deploy:prod": "ENV=prod npx cdk deploy",
-    "synth:staging": "ENV=staging npx cdk synth",
-    "deploy:staging": "ENV=staging npx cdk deploy --require-approval never"
+    "synth:dev": "npx cdk synth -c stage=dev",
+    "deploy:dev": "npx cdk deploy -c stage=dev",
+    "synth:prod": "npx cdk synth -c stage=prod",
+    "deploy:prod": "npx cdk deploy -c stage=prod",
+    "synth:staging": "npx cdk synth -c stage=staging",
+    "deploy:staging": "npx cdk deploy -c stage=staging"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.798.0",
