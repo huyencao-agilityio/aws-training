@@ -29,7 +29,7 @@ export class HealthCheckApiConstruct extends Construct {
   }
 
   /**
-   * Add the GET method to the API resource
+   * Add the GET method to check api status
    *
    * @param resource - The API resource
    * @param methodResponses - The method responses
