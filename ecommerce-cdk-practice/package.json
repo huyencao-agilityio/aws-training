@@ -8,6 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "cdk": "cdk",
     "synth:dev": "npx cdk synth -c stage=dev",
     "deploy:dev": "npx cdk deploy 'DevStage/*' -c stage=dev",
@@ -17,6 +19,7 @@
     "deploy:staging": "npx cdk deploy -c stage=staging"
   },
   "devDependencies": {
+    "@aws-cdk/assertions": "^1.204.0",
     "@aws-sdk/client-s3": "^3.798.0",
     "@aws-sdk/s3-presigned-post": "^3.798.0",
     "@types/aws-lambda": "^8.10.149",
@@ -29,9 +32,9 @@
     "aws-cdk": "2.1004.0",
     "aws-sdk": "^2.1692.0",
     "jest": "^29.7.0",
-    "sharp": "^0.34.1",
     "jsonwebtoken": "^9.0.2",
     "jwk-to-pem": "^2.0.7",
+    "sharp": "^0.34.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

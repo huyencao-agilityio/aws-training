@@ -1,8 +1,32 @@
 module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/test'],
   testMatch: ['**/*.test.ts'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
-  }
+    '^.+\\.tsx?$': 'ts-jest',
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['html', 'text'],
+  collectCoverageFrom: [
+    'lib/**/*.{ts,tsx}',
+    'src/**/*.{ts,tsx}',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/cdk.out/**',
+  ],
+  moduleNameMapper: {
+    '^@constants/(.*)$': '<rootDir>/src/constants/$1',
+    '^@interfaces/(.*)$': '<rootDir>/src/interfaces/$1',
+    '^@enums/(.*)$': '<rootDir>/src/enums/$1',
+    '^@helpers/(.*)$': '<rootDir>/src/helpers/$1',
+    '^@app-types/(.*)$': '<rootDir>/src/types/$1',
+    '^@constructs/(.*)$': '<rootDir>/lib/constructs/$1',
+    '^@stacks/(.*)$': '<rootDir>/lib/stacks/$1',
+    '^@stages/(.*)$': '<rootDir>/lib/stages/$1',
+    '^@pipelines/(.*)$': '<rootDir>/lib/pipelines/$1',
+    '^@shared/(.*)$': '<rootDir>/lib/shared/$1',
+  },
 };
