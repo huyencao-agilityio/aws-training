@@ -10,6 +10,7 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -41,7 +42,9 @@ export class VerifyAuthChallengeLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
-      functionName: LAMBDA_FUNCTION_NAME.COGNITO_VERIFY_AUTH
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.COGNITO_VERIFY_AUTH
+      )
     });
 
     return lambdaFunction;

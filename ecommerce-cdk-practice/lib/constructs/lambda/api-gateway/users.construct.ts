@@ -21,6 +21,7 @@ import {
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for API update user profile
@@ -73,7 +74,9 @@ export class UsersLambdaConstruct extends Construct {
       environment: {
         ...dbInstance
       },
-      functionName: LAMBDA_FUNCTION_NAME.API_UPDATE_USER
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.API_UPDATE_USER
+      )
     });
 
     return lambdaFunction;
@@ -104,7 +107,9 @@ export class UsersLambdaConstruct extends Construct {
       environment: {
         BUCKET_NAME
       },
-      functionName: LAMBDA_FUNCTION_NAME.API_UPLOAD_AVATAR
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.API_UPLOAD_AVATAR
+      )
     });
 
     // Add policy to can upload image to S3

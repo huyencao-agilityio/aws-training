@@ -20,6 +20,7 @@ import {
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for API order
@@ -90,7 +91,9 @@ export class OrderLambdaConstruct extends Construct {
         ...dbInstance,
         ORDER_QUEUE_URL: queueResources.ORDER.url
       },
-      functionName: LAMBDA_FUNCTION_NAME.API_ORDER_PRODUCT
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.API_ORDER_PRODUCT
+      )
     });
 
     // Add IAM policy to allow Lambda access to SQS
@@ -129,7 +132,9 @@ export class OrderLambdaConstruct extends Construct {
         ...dbInstance,
         ACCEPT_QUEUE_URL: queueResources.ACCEPT.url
       },
-      functionName: LAMBDA_FUNCTION_NAME.API_ACCEPT_ORDER
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.API_ACCEPT_ORDER
+      )
     });
 
     // Add IAM policy to allow Lambda access to SQS
@@ -168,7 +173,9 @@ export class OrderLambdaConstruct extends Construct {
         ...dbInstance,
         REJECT_QUEUE_URL: queueResources.REJECT.url
       },
-      functionName: LAMBDA_FUNCTION_NAME.API_REJECT_ORDER
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.API_REJECT_ORDER
+      )
     });
 
     // Add IAM policy to allow Lambda access to SQS

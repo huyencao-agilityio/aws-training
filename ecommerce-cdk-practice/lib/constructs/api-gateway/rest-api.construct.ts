@@ -12,6 +12,7 @@ import { Construct } from 'constructs';
 import {
   RestApiConstructProps
 } from '@interfaces/construct.interface';
+import { buildResourceName } from '@shared/resource.helper';
 
 import {
   AuthorizationConstruct
@@ -65,8 +66,8 @@ export class RestApiConstruct extends Construct {
    * @returns The REST API
    */
   createRestApi(stage: string): RestApi {
-    const api = new RestApi(this, 'EcommerceApi', {
-      restApiName: 'Ecommerce API CDK',
+    const api = new RestApi(this, 'RestApi', {
+      restApiName: buildResourceName(this, 'api'),
       description: 'API for Ecommerce application',
       endpointConfiguration: {
         types: [EndpointType.REGIONAL],

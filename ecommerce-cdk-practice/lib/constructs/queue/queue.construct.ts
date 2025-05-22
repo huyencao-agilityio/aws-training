@@ -57,7 +57,7 @@ export class QueueConstruct extends Construct {
    */
   createDeadLetterQueue(baseName: string, isFifo: boolean): Queue {
     const dlq = new Queue(this, `${baseName}DLQ`, {
-      queueName: isFifo ? `${baseName}-DLQ.fifo` : `${baseName}DLQ`,
+      queueName: isFifo ? `${baseName}-dlq.fifo` : `${baseName}dlq`,
       retentionPeriod: Duration.days(4),
       fifo: isFifo
     });

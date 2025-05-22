@@ -14,11 +14,11 @@ import {
   StorageType
 } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { PostgresRdsConstructProps } from '@interfaces/construct.interface';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
 import { SecretHelper } from '@shared/secret.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Define the construct to create a new RDS
@@ -42,17 +42,13 @@ export class PostgresRdsConstruct extends Construct {
    * @returns The created DatabaseInstance.
    */
   createRdsInstance(vpc: Vpc, securityGroup: SecurityGroup): DatabaseInstance {
+    // Get the db password from the SSM Parameter Store
     const dbPassword = SecretHelper.getSecretValue(
       ParameterKeys.DbPassword
     );
-    // Get the db identifier from the SSM Parameter Store
-    const dbIdentifier = SecretHelper.getPlainTextParameter(
-      this,
-      ParameterKeys.DbIdentifier
-    );
 
     const instance = new DatabaseInstance(this, 'PostgresInstance', {
-      instanceIdentifier: dbIdentifier,
+      instanceIdentifier: buildResourceName(this, 'db'),
       engine: DatabaseInstanceEngine.postgres({
         version: PostgresEngineVersion.VER_17,
       }),

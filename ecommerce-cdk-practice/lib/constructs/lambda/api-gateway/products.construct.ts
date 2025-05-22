@@ -20,6 +20,7 @@ import {
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for API products
@@ -73,7 +74,9 @@ export class ProductsLambdaConstruct extends Construct {
         COGNITO_REGION: userPool.env.region,
         ...dbInstance
       },
-      functionName: LAMBDA_FUNCTION_NAME.API_GET_PRODUCTS
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.API_GET_PRODUCTS
+      )
     });
 
     return lambdaFunction;

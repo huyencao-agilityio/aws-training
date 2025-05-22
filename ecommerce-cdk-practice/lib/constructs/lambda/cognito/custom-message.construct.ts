@@ -15,6 +15,7 @@ import {
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -55,7 +56,9 @@ export class CustomMessageLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
-      functionName: LAMBDA_FUNCTION_NAME.COGNITO_CUSTOM_MESSAGE
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.COGNITO_CUSTOM_MESSAGE
+      )
     });
 
     return lambdaFunction;

@@ -1,5 +1,5 @@
 export const QueueNames = {
-  ORDER: 'OrderNotificationQueueCdk',
-  ACCEPT: 'AcceptOrderNotificationQueueCdk',
-  REJECT: 'RejectOrderNotificationQueueCdk',
+  ORDER: 'order-notification-queue',
+  ACCEPT: 'accept-order-notification-queue',
+  REJECT: 'reject-order-notification-queue',
 }

@@ -8,6 +8,8 @@ import {
   SecurityGroup
 } from 'aws-cdk-lib/aws-ec2';
 
+import { buildResourceName } from '@shared/resource.helper';
+
 /**
  * Define the construct to create a new VPC
  */
@@ -29,7 +31,7 @@ export class VpcConstruct extends Construct {
    */
   createVpc(): Vpc {
     const vpc = new Vpc(this, 'CdkAppVpc', {
-      vpcName: 'CdkAppVpc',
+      vpcName: buildResourceName(this, 'vpc'),
       ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
       maxAzs: 2,
       subnetConfiguration: [
@@ -60,6 +62,7 @@ export class VpcConstruct extends Construct {
     const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
       vpc: this.vpc,
       allowAllOutbound: true,
+      securityGroupName: buildResourceName(this, 'security-group'),
     });
 
     securityGroup.addIngressRule(

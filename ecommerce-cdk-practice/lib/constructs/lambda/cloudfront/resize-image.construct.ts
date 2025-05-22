@@ -16,6 +16,7 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for resize image in Lambda@Edge
@@ -40,7 +41,9 @@ export class ResizeImageLambdaConstruct extends Construct {
    * @returns The Lambda function for resize image
    */
   createResizeImageLambdaFunction(): Function {
-    const lambdaFnName = LAMBDA_FUNCTION_NAME.CLOUDFRONT_RESIZE_IMAGE;
+    const lambdaFnName = buildResourceName(
+      this, LAMBDA_FUNCTION_NAME.CLOUDFRONT_RESIZE_IMAGE
+    );
 
     // Create the Lambda function for resize image
     const lambdaFunction = new NodejsFunction(this, 'ResizeImage', {

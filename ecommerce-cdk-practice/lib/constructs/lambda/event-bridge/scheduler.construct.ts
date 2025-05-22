@@ -18,6 +18,7 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for scheduler in Event Bridge
@@ -66,7 +67,9 @@ export class SchedulerLambdaConstruct extends Construct {
       environment: {
         ...dbInstance
       },
-      functionName: LAMBDA_FUNCTION_NAME.EVENT_BRIDGE_WEEKLY_REPORT
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.EVENT_BRIDGE_WEEKLY_REPORT
+      )
     });
 
     // Add policy for Lambda function
