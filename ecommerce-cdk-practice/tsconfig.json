@@ -40,13 +40,17 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
   },
-  "include": ["src/**/*", "lib/**/*", "bin/**/*"],
+  "include": [
+    "src/**/*",
+    "lib/**/*",
+    "bin/**/*",
+    "test/**/*"
+  ],
   "exclude": [
     "node_modules",
     "cdk.out",
-    "dist",
-    "**/*.test.ts"
+    "dist"
   ]
 }
