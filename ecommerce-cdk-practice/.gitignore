@@ -5,4 +5,4 @@ node_modules
 cdk.out
 .env
 dist
-.coverage
+coverage
