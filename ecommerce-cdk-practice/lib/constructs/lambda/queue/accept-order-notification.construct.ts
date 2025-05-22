@@ -5,6 +5,7 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@shared/database.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 import { SqsLambdaConstruct } from './sqs-lambda.construct';
 
@@ -43,7 +44,7 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
       this,
       'AcceptOrderNotificationConstruct',
       {
-        queue: queue,
+        queue:queue,
         librariesLayer: librariesLayer,
         handlerFile: 'accept-order-notification',
         environment: {

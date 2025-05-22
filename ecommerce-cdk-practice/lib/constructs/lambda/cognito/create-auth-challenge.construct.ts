@@ -19,6 +19,7 @@ import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
 import { SecretHelper } from '@shared/secret.helper';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct sets up a Lambda function that implements custom authentication flow
@@ -71,7 +72,9 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
           DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
           CHALLENGE_CODE: challengeCode
         },
-        functionName: LAMBDA_FUNCTION_NAME.COGNITO_CREATE_AUTH
+        functionName: buildResourceName(
+          this, LAMBDA_FUNCTION_NAME.COGNITO_CREATE_AUTH
+        )
       }
     );
 

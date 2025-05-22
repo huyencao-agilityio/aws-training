@@ -19,7 +19,7 @@ import { lambdaAuthorizerContext } from '@constants/auth.constant';
 import { HttpMethod } from '@enums/http-method.enum';
 
 /**
- * Define the construct for API POST order product
+ * Define the construct for API GET products
  */
 export class GetProductsApiConstruct extends BaseApiMethodConstruct {
   constructor(
@@ -63,7 +63,7 @@ export class GetProductsApiConstruct extends BaseApiMethodConstruct {
   }
 
   /**
-   * Add the GET method to the API resource
+   * Add the GET method to get all products
    *
    * @param resource - The API resource
    * @param lambdaFunction - The Lambda function

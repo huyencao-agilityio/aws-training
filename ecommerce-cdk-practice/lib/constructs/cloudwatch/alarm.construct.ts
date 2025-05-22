@@ -22,29 +22,29 @@ export class AlarmConstruct extends Construct {
     const { snsTopic } = props;
 
     const restApiId = Fn.importValue('ApiGatewayRestApiId');
-    const stage = Fn.importValue('ApiGatewayRestApiStage');
+    const stageApi = Fn.importValue('ApiGatewayRestApiStage');
 
     // Create metric for 5xx error
-    const metric = this.createMetric5XXError(restApiId, stage);
+    const metric = this.createMetric5XXError(restApiId, stageApi);
     // Create alarm for 5xx error
-    this.createAlarm5XXError(metric, snsTopic, stage);
+    this.createAlarm5XXError(metric, snsTopic, stageApi);
   }
 
   /**
    * Creates a CloudWatch metric for monitoring 5XX errors in the API Gateway
    *
    * @param restApiId - The id of the rest api
-   * @param stage - The stage of the rest api
+   * @param stageApi - The stage of the rest api
    * @returns The created metric
    */
-  createMetric5XXError(restApiId: string, stage: string): Metric {
+  createMetric5XXError(restApiId: string, stageApi: string): Metric {
     // Create a new metric
     const metric = new Metric({
       namespace: 'AWS/ApiGateway',
       metricName: API_METRIC_ERRORS.ERROR_5XX,
       dimensionsMap: {
         ApiId: restApiId,
-        Stage: stage,
+        Stage: stageApi,
       },
       statistic: Stats.SUM,
       period: Duration.minutes(1),

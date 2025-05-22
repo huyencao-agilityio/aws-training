@@ -10,6 +10,7 @@ import {
   RejectOrderNotificationLambdaConstruct
 } from '@constructs/lambda/queue';
 import { QueueConstruct } from '@constructs/queue/queue.construct';
+import { buildResourceName } from '@shared/resource.helper';
 
 export class QueueStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
@@ -21,15 +22,15 @@ export class QueueStack extends Stack {
     // Define all queues that need to create
     const queues = [
       {
-        baseName: QueueNames.ORDER,
+        baseName: buildResourceName(this, QueueNames.ORDER),
         lambdaConstructName: OrderNotificationLambdaConstruct
       },
       {
-        baseName: QueueNames.ACCEPT,
+        baseName: buildResourceName(this, QueueNames.ACCEPT),
         lambdaConstructName: AcceptOrderNotificationLambdaConstruct
       },
       {
-        baseName: QueueNames.REJECT,
+        baseName: buildResourceName(this, QueueNames.REJECT),
         lambdaConstructName: RejectOrderNotificationLambdaConstruct
       },
     ];

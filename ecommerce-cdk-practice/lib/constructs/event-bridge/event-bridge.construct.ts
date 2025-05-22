@@ -7,6 +7,7 @@ import { Stack } from 'aws-cdk-lib';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { SCHEDULE_EXPRESSIONS, TIMEZONES } from '@constants/schedule.constant';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Define the construct to create new scheduler in EventBridge
@@ -58,7 +59,7 @@ export class EventBridgeConstruct extends Construct {
     const role = this.createRoleForSchedule(functionArn);
 
     const schedule = new CfnSchedule(this, 'EventBridgeScheduler', {
-      name: 'WeeklyReport',
+      name: buildResourceName(this, 'weekly-report-product'),
       scheduleExpression: SCHEDULE_EXPRESSIONS.WEEKLY_REPORT,
       flexibleTimeWindow: {
         mode: 'OFF',

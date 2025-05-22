@@ -19,6 +19,7 @@ import {
   LAMBDA_FUNCTION_NAME,
   LAMBDA_PATH
 } from '@constants/lambda.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct create Lambda function to validates JWT tokens from Cognito User Pool
@@ -70,7 +71,9 @@ export class AuthorizationConstruct extends Construct {
           COGNITO_USER_POOL_ID: userPool.userPoolId,
           COGNITO_REGION: userPool.env.region
         },
-        functionName: LAMBDA_FUNCTION_NAME.API_LAMBDA_AUTHENTICATION
+        functionName: buildResourceName(
+          this, LAMBDA_FUNCTION_NAME.API_LAMBDA_AUTHENTICATION
+        )
       }
     );
 

@@ -66,6 +66,16 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
     );
   }
 
+  /**
+   * Add the POST method to the API resource to upload image
+   *
+   * @param resource - The API resource
+   * @param lambdaFunction - The lambda function
+   * @param cognitoAuthorizer - The cognito authorizer
+   * @param integrationResponses - The integration responses
+   * @param methodResponses - The method responses
+   * @param models - The models
+   */
   addMethod(
     resource: IResource,
     lambdaFunction: IFunction,

@@ -19,6 +19,7 @@ import {
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -71,7 +72,9 @@ export class PreSignUpLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
-      functionName: LAMBDA_FUNCTION_NAME.COGNITO_PRE_SIGNUP
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.COGNITO_PRE_SIGNUP
+      )
     });
 
     // Add IAM policy to allow Lambda access to Cognito

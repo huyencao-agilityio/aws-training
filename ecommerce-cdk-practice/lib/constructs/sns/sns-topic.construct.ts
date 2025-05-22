@@ -2,7 +2,8 @@ import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Construct } from 'constructs';
 import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 
-import { SnsAlarmTopicProps } from '@interfaces/construct.interface';
+import { buildResourceName } from '@shared/resource.helper';
+import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 
 /**
  * Define the construct to create new topic in SNS
@@ -10,12 +11,10 @@ import { SnsAlarmTopicProps } from '@interfaces/construct.interface';
 export class SnsTopicConstruct extends Construct {
   public readonly topic: Topic;
 
-  constructor(scope: Construct, id: string, props: SnsAlarmTopicProps) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const { email, topicName } = props;
-
-    this.topic = this.createTopic(topicName!, email);
+    this.topic = this.createTopic();
   }
 
   /**
@@ -25,13 +24,13 @@ export class SnsTopicConstruct extends Construct {
    * @param email - The email address to subscribe to the topic
    * @returns The created topic instance
    */
-  createTopic(topicName: string, email: string): Topic {
+  createTopic(): Topic {
     const topic = new Topic(this, 'AlarmTopic', {
-      displayName: topicName ?? 'Alarm Topic',
+      displayName: buildResourceName(this, '5xx-alarm'),
     });
 
     topic.addSubscription(
-      new EmailSubscription(email)
+      new EmailSubscription(DEFAULT_EMAIL_ADDRESS)
     );
 
     return topic;

@@ -1,1 +1,1 @@
-export const BUCKET_NAME = 'cdk-ecommerce-user-assets'
+export const BUCKET_NAME = 'user-assets'

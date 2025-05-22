@@ -69,7 +69,7 @@ export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
   }
 
   /**
-   * Add the PATCH method to the API resource
+   * Add the PATCH method to update user detail
    *
    * @param resource - The API resource
    * @param lambdaFunction - The Lambda function

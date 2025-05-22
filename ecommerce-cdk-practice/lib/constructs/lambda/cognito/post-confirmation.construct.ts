@@ -15,6 +15,7 @@ import {
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -59,7 +60,9 @@ export class PostConfirmationLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
-      functionName: LAMBDA_FUNCTION_NAME.COGNITO_POST_CONFIRMATION
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.COGNITO_POST_CONFIRMATION
+      )
     });
 
     // Add IAM policy to allow add user to group in Cognito

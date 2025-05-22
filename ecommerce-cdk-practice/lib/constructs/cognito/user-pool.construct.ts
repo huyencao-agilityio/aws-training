@@ -17,6 +17,7 @@ import {
   CognitoConstructProps
 } from '@interfaces/construct.interface';
 import { COGNITO } from '@constants/cognito.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for managing Cognito User Pool and its associated resources
@@ -60,7 +61,7 @@ export class UserPoolConstruct extends Construct {
     region: string
   ): UserPool {
     const userPool = new UserPool(this, 'UserPool', {
-      userPoolName: COGNITO.USER_POOL_NAME,
+      userPoolName: buildResourceName(this, COGNITO.USER_POOL_NAME),
       selfSignUpEnabled: true,
       signInAliases: {
         email: true,
@@ -149,7 +150,7 @@ export class UserPoolConstruct extends Construct {
    * @returns The created user pool client
    */
   createUserPoolClient(): UserPoolClient {
-    const client = this.userPool.addClient('AppClient', {
+    const client = this.userPool.addClient('UserPoolClient', {
       userPoolClientName: COGNITO.CLIENT_NAME,
       accessTokenValidity: Duration.minutes(60),
       idTokenValidity: Duration.minutes(60),

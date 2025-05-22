@@ -1,7 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { BUCKET_NAME } from '@constants/bucket.constant';
 import { StorageConstruct } from '@constructs/s3/storage.construct';
 
 /**
@@ -13,8 +12,6 @@ export class StorageStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    this.storageConstruct = new StorageConstruct(this, 'StorageConstruct', {
-      bucketName: BUCKET_NAME,
-    });
+    this.storageConstruct = new StorageConstruct(this, 'StorageConstruct');
   }
 }

@@ -60,7 +60,7 @@ export class AcceptOrderApiConstruct extends BaseApiMethodConstruct {
   }
 
   /**
-   * Add the POST method to the API resource
+   * Add the POST method to accept order
    *
    * @param resource - The API resource
    * @param lambdaFunction - The Lambda function

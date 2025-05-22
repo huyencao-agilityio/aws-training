@@ -16,6 +16,7 @@ import {
   LAMBDA_FUNCTION_NAME,
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -57,7 +58,9 @@ export class DefineAuthChallengeLambdaConstruct extends Construct {
       bundling: {
         externalModules: EXTERNAL_MODULES,
       },
-      functionName: LAMBDA_FUNCTION_NAME.COGNITO_DEFINE_AUTH
+      functionName: buildResourceName(
+        this, LAMBDA_FUNCTION_NAME.COGNITO_DEFINE_AUTH
+      )
     });
 
     return lambdaFunction;

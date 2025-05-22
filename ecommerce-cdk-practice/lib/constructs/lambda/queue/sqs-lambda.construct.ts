@@ -19,6 +19,7 @@ import {
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating a common construct to create Lambda function for queue
@@ -85,7 +86,9 @@ export class SqsLambdaConstruct extends Construct {
       layers: librariesLayer ? [librariesLayer] : [],
       timeout,
       environment,
-      functionName: `${LAMBDA_FUNCTION_NAME.QUEUE}-${handlerFile}`
+      functionName: buildResourceName(
+        this, `${LAMBDA_FUNCTION_NAME.QUEUE}-${handlerFile}`
+      )
     });
 
     // Optional: Add SES policy

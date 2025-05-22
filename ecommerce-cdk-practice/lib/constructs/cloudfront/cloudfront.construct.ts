@@ -19,6 +19,7 @@ import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { CloudFrontConstructProps } from '@interfaces/construct.interface';
 import { PolicyHelper } from '@shared/policy.helper';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Define the construct to create new CloudFront
@@ -50,7 +51,7 @@ export class CloudFrontConstruct extends Construct {
   createOriginAccessControl(): CfnOriginAccessControl {
     const oac = new CfnOriginAccessControl(this, 'OAC', {
       originAccessControlConfig: {
-        name: `${BUCKET_NAME}-OAC`,
+        name: buildResourceName(this, `${BUCKET_NAME}-oac`),
         description: 'OAC for CloudFront to access S3',
         originAccessControlOriginType: OriginAccessControlOriginType.S3,
         signingBehavior: SigningBehavior.ALWAYS,

@@ -14,8 +14,7 @@ export class VPCStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    const vpcConstruct = new VpcConstruct(this, 'VpcConstruct');
-    const {vpc, securityGroup } = vpcConstruct
+    const { vpc, securityGroup } = new VpcConstruct(this, 'VpcConstruct');
 
     this.vpc = vpc;
     this.securityGroup = securityGroup;

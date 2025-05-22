@@ -2,8 +2,8 @@ export const COGNITO = {
   DOMAIN_PREFIX: 'ecommerce-cdk-app',
   REDIRECT_URI: 'https://ecommerce-app.com',
   LOGOUT_URI: 'https://ecommerce-app.com/logout',
-  USER_POOL_NAME: 'EcommerceUserPoolCDK',
-  CLIENT_NAME: 'EcommerceUserPool',
+  USER_POOL_NAME: 'user-pool',
+  CLIENT_NAME: 'ecommerce-client',
   EMAIL: {
     FROM: 'thanhhuyen11cntt1@gmail.com',
     SUBJECT: 'Ecommerce - Verification email address',

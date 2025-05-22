@@ -7,7 +7,8 @@ import {
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
-import { StorageBucketConstructProps } from '@interfaces/construct.interface';
+import { BUCKET_NAME } from '@constants/bucket.constant';
+import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Define the construct to create new S3 bucket
@@ -15,13 +16,11 @@ import { StorageBucketConstructProps } from '@interfaces/construct.interface';
 export class StorageConstruct extends Construct {
   public readonly bucket: Bucket;
 
-  constructor(scope: Construct, id: string, props: StorageBucketConstructProps) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const { bucketName } = props;
-
     // Create new bucket on S3
-    this.bucket = this.createBucket(bucketName);
+    this.bucket = this.createBucket();
   }
 
   /**
@@ -30,7 +29,7 @@ export class StorageConstruct extends Construct {
    * @param bucketName - The name of the bucket to create
    * @returns The created bucket instance
    */
-  createBucket(bucketName: string): Bucket {
+  createBucket(): Bucket {
     const corsRules: CorsRule[] = [
       {
         allowedMethods: [
@@ -47,8 +46,7 @@ export class StorageConstruct extends Construct {
 
     // Create new bucket on S3
     const bucket = new Bucket(this, 'S3Bucket', {
-      bucketName: bucketName,
-      encryption: BucketEncryption.S3_MANAGED,
+      bucketName: buildResourceName(this, BUCKET_NAME),
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       cors: corsRules,
     });
