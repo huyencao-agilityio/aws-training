@@ -6,7 +6,7 @@ import {
   Runtime,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
@@ -19,6 +19,7 @@ import {
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { buildResourceName } from '@shared/resource.helper';
+import { SecretHelper } from '@shared/secret.helper';
 
 /**
  * Construct for creating Lambda function for scheduler in Event Bridge
@@ -51,6 +52,16 @@ export class SchedulerLambdaConstruct extends Construct {
     librariesLayer: ILayerVersion,
     dbInstance: Record<string, string>
   ): Function {
+    // Get the default and admin email addresses
+    const defaultEmailAddress = SecretHelper.getPlainTextParameter(
+      this,
+      'DefaultEmailAddress'
+    );
+    const adminEmailAddress = SecretHelper.getPlainTextParameter(
+      this,
+      'AdminEmailAddress'
+    );
+
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'SchedulerEvent', {
       runtime: Runtime.NODEJS_20_X,
@@ -65,7 +76,9 @@ export class SchedulerLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       timeout: Duration.seconds(3),
       environment: {
-        ...dbInstance
+        ...dbInstance,
+        DEFAULT_EMAIL_ADDRESS: defaultEmailAddress,
+        ADMIN_EMAIL_ADDRESS: adminEmailAddress
       },
       functionName: buildResourceName(
         this, LAMBDA_FUNCTION_NAME.EVENT_BRIDGE_WEEKLY_REPORT

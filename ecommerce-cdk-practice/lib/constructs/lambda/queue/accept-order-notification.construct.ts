@@ -5,7 +5,8 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@shared/database.helper';
-import { buildResourceName } from '@shared/resource.helper';
+import { SecretHelper } from '@shared/secret.helper';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
 
 import { SqsLambdaConstruct } from './sqs-lambda.construct';
 
@@ -40,6 +41,12 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
     dbInstance: Record<string, string>,
     queue: Queue
   ): SqsLambdaConstruct {
+    // Get the default email address
+    const defaultEmailAddress = SecretHelper.getPlainTextParameter(
+      this,
+      ParameterKeys.DefaultEmailAddress
+    );
+
     const construct = new SqsLambdaConstruct(
       this,
       'AcceptOrderNotificationConstruct',
@@ -48,7 +55,8 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
         librariesLayer: librariesLayer,
         handlerFile: 'accept-order-notification',
         environment: {
-          ...dbInstance
+          ...dbInstance,
+          DEFAULT_EMAIL_ADDRESS: defaultEmailAddress
         },
         timeout: Duration.seconds(5),
         withSesPolicy: true,

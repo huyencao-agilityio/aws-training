@@ -9,7 +9,6 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 import { BaseConstructProps } from '@interfaces/construct.interface';
-import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 import {
   LAMBDA_PATH,
   DEFAULT_LAMBDA_HANDLER,
@@ -52,6 +51,11 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
       this,
       ParameterKeys.ChallengeCode
     );
+    // Get default email from SSM Parameter Store
+    const defaultEmail = SecretHelper.getPlainTextParameter(
+      this,
+      ParameterKeys.DefaultEmailAddress
+    );
 
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(
@@ -69,7 +73,7 @@ export class CreateAuthChallengeLambdaConstruct extends Construct {
           externalModules: EXTERNAL_MODULES,
         },
         environment: {
-          DEFAULT_EMAIL: DEFAULT_EMAIL_ADDRESS,
+          DEFAULT_EMAIL: defaultEmail,
           CHALLENGE_CODE: challengeCode
         },
         functionName: buildResourceName(

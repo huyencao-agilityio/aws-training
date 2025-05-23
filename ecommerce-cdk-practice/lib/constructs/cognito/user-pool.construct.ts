@@ -18,6 +18,8 @@ import {
 } from '@interfaces/construct.interface';
 import { COGNITO } from '@constants/cognito.constant';
 import { buildResourceName } from '@shared/resource.helper';
+import { SecretHelper } from '@shared/secret.helper';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
 
 /**
  * Construct for managing Cognito User Pool and its associated resources
@@ -60,6 +62,12 @@ export class UserPoolConstruct extends Construct {
   createUserPool(
     region: string
   ): UserPool {
+    // Get default email from SSM Parameter Store
+    const defaultEmail = SecretHelper.getPlainTextParameter(
+      this,
+      ParameterKeys.DefaultEmailAddress
+    );
+
     const userPool = new UserPool(this, 'UserPool', {
       userPoolName: buildResourceName(this, COGNITO.USER_POOL_NAME),
       selfSignUpEnabled: true,
@@ -84,7 +92,7 @@ export class UserPoolConstruct extends Construct {
       },
       mfa: Mfa.OFF,
       email: UserPoolEmail.withSES({
-        fromEmail: COGNITO.EMAIL.FROM,
+        fromEmail: defaultEmail,
         sesRegion: region
       }),
       removalPolicy: RemovalPolicy.DESTROY,

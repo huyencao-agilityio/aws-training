@@ -10,4 +10,6 @@ export const ParameterKeys = {
   ChallengeCode: '/cognito/challenge-code',
   GithubToken: '/github/token',
   LambdaLayer: '/lambda/layer/LibrariesLayerArn',
+  DefaultEmailAddress: '/config/default-email-address',
+  AdminEmailAddress: '/config/admin-email-address'
 };
