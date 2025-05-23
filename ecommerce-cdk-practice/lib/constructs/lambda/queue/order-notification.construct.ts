@@ -4,6 +4,7 @@ import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import { QueueLambdaConstructProps } from '@interfaces/construct.interface';
+import { SecretHelper } from '@shared/secret.helper';
 
 import { SqsLambdaConstruct } from './sqs-lambda.construct';
 
@@ -34,6 +35,16 @@ export class OrderNotificationLambdaConstruct extends Construct {
     librariesLayer: ILayerVersion,
     queue: Queue
   ): SqsLambdaConstruct {
+    // Get the default and admin email addresses
+    const defaultEmailAddress = SecretHelper.getPlainTextParameter(
+      this,
+      'DefaultEmailAddress'
+    );
+    const adminEmailAddress = SecretHelper.getPlainTextParameter(
+      this,
+      'AdminEmailAddress'
+    );
+
     const construct = new SqsLambdaConstruct(
       this,
       'OrderNotificationConstruct',
@@ -42,9 +53,13 @@ export class OrderNotificationLambdaConstruct extends Construct {
         librariesLayer: librariesLayer,
         handlerFile: 'order-notification',
         timeout: Duration.seconds(3),
+        environment: {
+          DEFAULT_EMAIL_ADDRESS: defaultEmailAddress,
+          ADMIN_EMAIL_ADDRESS: adminEmailAddress
+        },
         withSesPolicy: true
       }
-  );
+    );
 
     return construct;
   }

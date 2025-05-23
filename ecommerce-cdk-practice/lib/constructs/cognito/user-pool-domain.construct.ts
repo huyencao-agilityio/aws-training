@@ -20,7 +20,7 @@ export class UserPoolDomainConstruct extends Construct{
     // Get the CloudFront endpoint that Cognito assigns
     const cloudFrontEndpoint = cognitoDomain.cloudFrontEndpoint;
     // Get record name from domain name
-    const recordName = domainName?.split('.')[0] || '';
+    const recordName = domainName?.split('.')[0];
 
     // Add Route 53 record pointing to the Cognito domain
     new CnameRecord(this, 'CognitoCnameRecord', {

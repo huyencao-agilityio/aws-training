@@ -3,17 +3,15 @@ import { Handler, ScheduledEvent } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
 
-import {
-  ADMIN_EMAIL_ADDRESS,
-  DEFAULT_EMAIL_ADDRESS
-} from '@constants/email.constant';
-
 const ses = new AWS.SES();
 
 export const handler: Handler = async (
   event: ScheduledEvent
 ): Promise<ScheduledEvent> => {
   console.log('Generating weekly top products report:', JSON.stringify(event));
+
+  const defaultEmailAddress = process.env.DEFAULT_EMAIL_ADDRESS || '';
+  const adminEmailAddress = process.env.ADMIN_EMAIL_ADDRESS || '';
 
   try {
     const weeklyQuery = `
@@ -46,8 +44,12 @@ export const handler: Handler = async (
     for (const product of weeklyResult.rows) {
       emailBody += `
         <tr>
-          <td style="border: 1px solid #ddd; padding: 8px;">${product.name}</td>
-          <td style="border: 1px solid #ddd; padding: 8px;">${product.total_sold}</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">
+            ${product.name}
+            </td>
+          <td style="border: 1px solid #ddd; padding: 8px;">
+            ${product.total_sold}
+          </td>
         </tr>
       `;
     }
@@ -61,10 +63,14 @@ export const handler: Handler = async (
     `;
 
     const emailParams = {
-      Source: DEFAULT_EMAIL_ADDRESS,
-      Destination: { ToAddresses: [ADMIN_EMAIL_ADDRESS] },
+      Source: defaultEmailAddress,
+      Destination: {
+        ToAddresses: [adminEmailAddress]
+      },
       Message: {
-        Subject: { Data: 'Ecommerce - Weekly Top 10 Best-Selling Products Report' },
+        Subject: {
+          Data: 'Ecommerce - Weekly Top 10 Best-Selling Products Report'
+        },
         Body: {
           Html: { Data: emailBody }
         },

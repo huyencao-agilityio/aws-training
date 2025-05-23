@@ -6,8 +6,10 @@ import {
 } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
-import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
 import { BUCKET_NAME } from '@constants/bucket.constant';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
+
+import { SecretHelper } from './secret.helper';
 
 /**
  * Helper class for creating IAM policies
@@ -36,7 +38,14 @@ export class PolicyHelper {
    * @returns The policy statement for sending emails
    */
   static sesSendEmail(scope: Construct): PolicyStatement {
+    // Get the region and account of the stack
     const { region, account } = PolicyHelper.getAccountContext(scope);
+
+    // Get the default email address
+    const defaultEmailAddress = SecretHelper.getPlainTextParameter(
+      scope,
+      ParameterKeys.DefaultEmailAddress
+    );
 
     return new PolicyStatement({
       effect: Effect.ALLOW,
@@ -44,7 +53,7 @@ export class PolicyHelper {
         'ses:SendEmail'
       ],
       resources: [
-        `arn:aws:ses:${region}:${account}:identity/${DEFAULT_EMAIL_ADDRESS}`
+        `arn:aws:ses:${region}:${account}:identity/${defaultEmailAddress}`
       ],
     });
   }
