@@ -2,7 +2,15 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 
 import { SnsTopicConstruct } from '@constructs/sns/sns-topic.construct';
-import { DEFAULT_EMAIL_ADDRESS } from '@constants/email.constant';
+import { SecretHelper } from '@shared/secret.helper';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
+
+// Mock SecretHelper
+jest.mock('@shared/secret.helper', () => ({
+  SecretHelper: {
+    getPlainTextParameter: jest.fn().mockReturnValue('test@example.com')
+  }
+}));
 
 describe('SnsTopicConstruct', () => {
   let app: App;
@@ -34,7 +42,16 @@ describe('SnsTopicConstruct', () => {
   it('should subscribe the default email address', () => {
     template.hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'email',
-      Endpoint: DEFAULT_EMAIL_ADDRESS,
+      Endpoint: 'test@example.com',
     });
+
+    expect(SecretHelper.getPlainTextParameter).toHaveBeenCalledWith(
+      expect.any(Object),
+      ParameterKeys.DefaultEmailAddress
+    );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 });
