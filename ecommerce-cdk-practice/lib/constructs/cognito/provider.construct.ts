@@ -86,9 +86,7 @@ export class ProviderConstruct extends Construct {
       'GoogleClientId',
       ParameterKeys.GoogleClientId
     );
-    const googleClientSecret = SecretHelper.getSecureStringParameter(
-      this,
-      'GoogleClientSecret',
+    const googleClientSecret = SecretHelper.getSecretValue(
       ParameterKeys.GoogleClientSecret
     );
 
@@ -98,7 +96,7 @@ export class ProviderConstruct extends Construct {
       'GoogleProvider',
       {
         clientId: googleClientId,
-        clientSecret: googleClientSecret,
+        clientSecretValue: googleClientSecret,
         userPool: userPool,
         scopes: ['profile', 'email', 'openid'],
         attributeMapping: {

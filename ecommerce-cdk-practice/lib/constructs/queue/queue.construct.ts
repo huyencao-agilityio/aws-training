@@ -64,5 +64,4 @@ export class QueueConstruct extends Construct {
 
     return dlq;
   }
-
 }
