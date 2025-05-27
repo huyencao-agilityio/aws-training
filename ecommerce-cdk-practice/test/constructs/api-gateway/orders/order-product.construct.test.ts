@@ -2,17 +2,18 @@ import { Stack, App } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import {
   RestApi,
-  Model,
-  RequestAuthorizer
+  CognitoUserPoolsAuthorizer,
+  Model
 } from 'aws-cdk-lib/aws-apigateway';
 import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 import {
-  GetProductsApiConstruct
-} from '@constructs/api-gateway/products/get-products.construct';
+  OrderProductApiConstruct
+} from '@constructs/api-gateway/orders/order-product.construct';
 
-describe('GetProductsApiConstruct', () => {
+describe('OrderProductApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
@@ -21,65 +22,74 @@ describe('GetProductsApiConstruct', () => {
     const api = new RestApi(stack, 'Api');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'GetProductsLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'UpdateUserLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}')
     });
 
-    // Create Lambda Function Authorizer
-    const lambdaFunctionAuthorizer = new NodejsFunction(
+    // Create Cognito User Pool
+    const userPool = new UserPool(stack, 'UserPool');
+    const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'LambdaFunctionAuthorizer',
+      'CognitoAuthorization',
       {
-        handler: 'index.handler',
-        code: Code.fromInline('exports.handler = async () => {}')
+        authorizerName: 'CognitoAuthorization',
+        cognitoUserPools: [userPool],
       }
     );
-    const lambdaAuthorizer = new RequestAuthorizer(stack, 'LambdaAuthorizer', {
-      handler: lambdaFunctionAuthorizer,
-      identitySources: ['method.request.header.Authorization'],
-    });
 
-    // Create product model
-    const productModel = new Model(stack, 'ProductsResponseModel', {
+    // Create common response model
+    const commonResponseModel = new Model(stack, 'CommonResponseModel', {
       restApi: api,
-      modelName: 'ProductsResponseModel',
+      modelName: 'CommonResponseModel',
       schema: {}
     });
 
-    // Create Resource
+    // Create order model
+    const orderModel = new Model(stack, 'OrderModel', {
+      restApi: api,
+      modelName: 'OrderModel',
+      schema: {}
+    });
+
+    // Create resource
     const resource = api.root
       .addResource('api')
-      .addResource('products')
+      .addResource('orders')
+      .addResource('{orderId}')
+      .addResource('accept');
 
-    // Create Update User API
-    new GetProductsApiConstruct(stack, 'GetProductsApiConstruct', {
+    // Create order product API
+    new OrderProductApiConstruct(stack, 'OrderProductApiConstruct', {
+      restApi: api,
       resource,
       lambdaFunction,
-      lambdaAuthorizer,
+      cognitoAuthorizer,
       models: {
-        productModel,
+        orderModel,
+        commonResponseModel,
       },
     });
 
     template = Template.fromStack(stack);
   });
 
-  it('should create one API Gateway method', () => {
+  it('should create exactly one API Gateway method', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 
   describe('Method Request', () => {
-    it('should config method request with GET method', () => {
+    it('should config method request with POST method', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
-        HttpMethod: 'GET'
+        HttpMethod: 'POST'
       });
     });
 
     it('should config method request with correct authorization', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
-        AuthorizationType: 'CUSTOM',
+        AuthorizationType: 'COGNITO_USER_POOLS',
+        AuthorizationScopes: ['aws.cognito.signin.user.admin'],
         ApiKeyRequired: false
       });
     });
@@ -87,20 +97,14 @@ describe('GetProductsApiConstruct', () => {
     it('should config method request with parameters', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         RequestParameters: {
-          'method.request.querystring.limit': false,
-          'method.request.querystring.page': false,
           'method.request.header.Authorization': true
         }
       });
     });
 
-    it('should config method request with request model', () => {
-      template.hasResourceProperties('AWS::ApiGateway::Method', {
-        RequestModels: {
-          'application/json': {
-            Ref: Match.stringLikeRegexp('.*ProductsResponseModel.*')
-          }
-        }
+    it('should configure method request validator body', () => {
+      template.hasResourceProperties('AWS::ApiGateway::RequestValidator', {
+        ValidateRequestBody: true
       });
     });
   });
@@ -115,20 +119,17 @@ describe('GetProductsApiConstruct', () => {
       })
     });
 
-    it('should config integration request with correct request template', () => {
+    it('should config correct for integration request template', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': `{
-              "requestContext": {
-                "authorizer": {
-                  "role": "$util.escapeJavaScript($context.authorizer.role)",
-                  "principalId": "$util.escapeJavaScript($context.authorizer.principalId)",
-                  "user": "$util.escapeJavaScript($context.authorizer.user)"
-                }
+              "context": {
+                "sub": "$context.authorizer.claims.sub",
+                "email": "$context.authorizer.claims.email",
+                "group": "$context.authorizer.claims['cognito:groups']"
               },
-              "page": "$util.escapeJavaScript($input.params('page'))",
-              "limit": "$util.escapeJavaScript($input.params('limit'))"
+              "body": $input.json('$'),
             }`.replace(/\s+/g, ' ')
           }
         }
@@ -159,6 +160,21 @@ describe('GetProductsApiConstruct', () => {
               StatusCode: '500',
               SelectionPattern: '.*"statusCode":500.*',
               ResponseTemplates: responseTemplates
+            },
+            {
+              StatusCode: '403',
+              SelectionPattern: '.*"statusCode":403.*',
+              ResponseTemplates: responseTemplates
+            },
+            {
+              StatusCode: '404',
+              SelectionPattern: '.*"statusCode":404.*',
+              ResponseTemplates: responseTemplates
+            },
+            {
+              StatusCode: '401',
+              SelectionPattern: '.*"statusCode":401.*',
+              ResponseTemplates: responseTemplates
             }
           ]
         }
@@ -178,7 +194,7 @@ describe('GetProductsApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*ProductsResponseModel.*')
+                Ref: Match.stringLikeRegexp('.*CommonResponseModel.*')
               }
             }
           },
@@ -188,6 +204,18 @@ describe('GetProductsApiConstruct', () => {
           },
           {
             StatusCode: '500',
+            ResponseModels: responseModelsErr
+          },
+          {
+            StatusCode: '403',
+            ResponseModels: responseModelsErr
+          },
+          {
+            StatusCode: '404',
+            ResponseModels: responseModelsErr
+          },
+          {
+            StatusCode: '401',
             ResponseModels: responseModelsErr
           }
         ]
