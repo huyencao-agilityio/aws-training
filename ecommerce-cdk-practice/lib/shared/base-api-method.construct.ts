@@ -1,8 +1,11 @@
 import {
   IModel,
   IntegrationResponse,
+  IRestApi,
   MethodResponse,
-  Model
+  Model,
+  RequestValidator,
+  RequestValidatorOptions,
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
@@ -64,5 +67,25 @@ export abstract class BaseApiMethodConstruct extends Construct {
         },
       })),
     ];
+  }
+
+  /**
+   * Create a request validator
+   *
+   * @param id - The id of the request validator
+   * @param api - The rest API
+   * @param options - The options for the request validator
+   * @returns The request validator
+   */
+  createRequestValidator(
+    id: string,
+    api: IRestApi,
+    options: RequestValidatorOptions
+  ): RequestValidator {
+    return new RequestValidator(this, id, {
+      restApi: api,
+      validateRequestBody: true,
+      ...options,
+    });
   }
 }

@@ -179,18 +179,19 @@ export class RestApiConstruct extends Construct {
   ): void {
     const {
       uploadAvatarModel,
-      presignedS3Response
+      presignedS3ResponseModel
     } = this.models.uploadAvatarModelConstruct;
 
     // Create the users API
     new UsersResourceConstruct(this, 'UsersResourceConstruct', {
+      restApi: this.restApi,
       resource: this.apiResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: this.cognitoAuthorizer,
       models: {
         updateUserModel: this.models.userModelConstruct.updateUserProfileModel,
         uploadAvatarModel: uploadAvatarModel,
-        presignedS3Response: presignedS3Response,
+        presignedS3ResponseModel: presignedS3ResponseModel,
       }
     });
   }
@@ -207,6 +208,7 @@ export class RestApiConstruct extends Construct {
     const { orderProductRequestModel } = this.models.orderModelConstruct;
 
     new OrderProductResourceConstruct(this, 'OrderProductResourceConstruct', {
+      restApi: this.restApi,
       resource: this.apiResource,
       librariesLayer: librariesLayer,
       cognitoAuthorizer: this.cognitoAuthorizer,

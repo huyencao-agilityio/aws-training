@@ -80,17 +80,21 @@ export class GetProductsApiConstruct extends BaseApiMethodConstruct {
     methodResponses: MethodResponse[],
     models: ApiGatewayModel
   ) {
+    // Format the request template
+    const requestTemplates = {
+      'application/json': `{
+        ${lambdaAuthorizerContext}
+        "page": "$util.escapeJavaScript($input.params('page'))",
+        "limit": "$util.escapeJavaScript($input.params('limit'))"
+      }`.replace(/\s+/g, ' ')
+    };
+
+    // Add the GET method to the API resource
     resource.addMethod(HttpMethod.GET, new LambdaIntegration(
       lambdaFunction!,
       {
         proxy: false,
-        requestTemplates: {
-          'application/json': `{
-            ${lambdaAuthorizerContext}
-            "page": "$util.escapeJavaScript($input.params('page'))",
-            "limit": "$util.escapeJavaScript($input.params('limit'))"
-          }`
-        },
+        requestTemplates,
         integrationResponses: integrationResponses
       }
     ), {

@@ -62,6 +62,7 @@ export interface RestApiConstructProps extends UserPoolConstructProps {
  * Defines interface for base API Gateway Construct
  */
 export interface BaseApiGatewayConstructProps extends BaseConstructProps {
+  restApi?: IRestApi;
   resource: IResource;
   userPool?: UserPool;
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
@@ -170,5 +171,4 @@ export interface CloudFrontDomainConstructProps {
 export interface CloudFrontConstructProps extends BaseConstructProps {
   certificate: ICertificate;
   domainName: string;
-  bucket: Bucket;
 }

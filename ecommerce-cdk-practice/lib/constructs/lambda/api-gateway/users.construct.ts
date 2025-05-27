@@ -105,7 +105,7 @@ export class UsersLambdaConstruct extends Construct {
       layers: [librariesLayer!],
       timeout: Duration.seconds(3),
       environment: {
-        BUCKET_NAME
+        BUCKET_NAME: buildResourceName(this, BUCKET_NAME)
       },
       functionName: buildResourceName(
         this, LAMBDA_FUNCTION_NAME.API_UPLOAD_AVATAR
@@ -114,7 +114,7 @@ export class UsersLambdaConstruct extends Construct {
 
     // Add policy to can upload image to S3
     lambdaFunction.addToRolePolicy(
-      PolicyHelper.s3PutObject()
+      PolicyHelper.s3PutObject(this)
     );
 
     return lambdaFunction

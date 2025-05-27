@@ -6,6 +6,7 @@ import {
   IntegrationResponse,
   LambdaIntegration,
   MethodResponse,
+  RequestValidator,
 } from 'aws-cdk-lib/aws-apigateway';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
@@ -31,12 +32,20 @@ export class OrderProductApiConstruct extends BaseApiMethodConstruct {
   ) {
     super(scope, id);
 
-    const { resource, lambdaFunction, cognitoAuthorizer, models } = props;
+    const {
+      restApi,
+      resource,
+      lambdaFunction,
+      cognitoAuthorizer,
+      models
+    } = props;
+
     // Define the list error code that need to handle in API
     const errorStatusCodes = [
       ...COMMON_ERROR_CODE,
       HttpStatusCode.FORBIDDEN,
-      HttpStatusCode.NOT_FOUND
+      HttpStatusCode.NOT_FOUND,
+      HttpStatusCode.UNAUTHORIZED
     ];
 
     // Create integration response for API
@@ -49,6 +58,15 @@ export class OrderProductApiConstruct extends BaseApiMethodConstruct {
       models!.commonResponseModel
     );
 
+    // Create the request validator
+    const requestValidator = this.createRequestValidator(
+      'OrderProductValidator',
+      restApi!,
+      {
+        requestValidatorName: 'OrderProductValidator'
+      }
+    );
+
     // Add the POST method to the API resource to order product
     // This creates the POST /orders endpoint
     this.addMethod(
@@ -57,7 +75,8 @@ export class OrderProductApiConstruct extends BaseApiMethodConstruct {
       cognitoAuthorizer!,
       integrationResponses,
       methodResponses,
-      models!
+      models!,
+      requestValidator
     );
   }
 
@@ -75,18 +94,23 @@ export class OrderProductApiConstruct extends BaseApiMethodConstruct {
     cognitoAuthorizer: CognitoUserPoolsAuthorizer,
     integrationResponses: IntegrationResponse[],
     methodResponses: MethodResponse[],
-    models: ApiGatewayModel
+    models: ApiGatewayModel,
+    requestValidator: RequestValidator
   ) {
+    // Format the request template
+    const requestTemplates = {
+      'application/json': `{
+        ${cognitoAuthorizerContext}
+        "body": $input.json('$'),
+      }`.replace(/\s+/g, ' ')
+    };
+
+    // Add the POST method to the API resource
     resource.addMethod(HttpMethod.POST, new LambdaIntegration(
       lambdaFunction!,
       {
         proxy: false,
-        requestTemplates: {
-          'application/json': `{
-            ${cognitoAuthorizerContext}
-            "body": $input.json('$'),
-          }`
-        },
+        requestTemplates,
         integrationResponses: integrationResponses
       }
     ), {
@@ -102,7 +126,8 @@ export class OrderProductApiConstruct extends BaseApiMethodConstruct {
         'method.request.header.Authorization': true
       },
       apiKeyRequired: false,
-      authorizationType: AuthorizationType.COGNITO
+      authorizationType: AuthorizationType.COGNITO,
+      requestValidator
     });
   }
 }

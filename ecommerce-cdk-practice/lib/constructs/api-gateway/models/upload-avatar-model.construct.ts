@@ -15,7 +15,7 @@ import {
  */
 export class UploadAvatarModelConstruct extends Construct {
   public readonly uploadAvatarModel: IModel;
-  public readonly presignedS3Response: IModel;
+  public readonly presignedS3ResponseModel: IModel;
 
   constructor(
     scope: Construct,
@@ -30,7 +30,7 @@ export class UploadAvatarModelConstruct extends Construct {
     this.uploadAvatarModel = this.createUploadAvatarModel(restApi);
 
     // Create model to defines the fields to upload avatar
-    this.presignedS3Response = this.createPresignedS3ResponseModel(restApi);
+    this.presignedS3ResponseModel = this.createPresignedS3ResponseModel(restApi);
   }
 
   /**
@@ -66,10 +66,10 @@ export class UploadAvatarModelConstruct extends Construct {
    * @returns The presigned S3 response model
    */
   createPresignedS3ResponseModel(restApi: IRestApi): IModel {
-    const model = new Model(this, 'PresignedS3Response', {
+    const model = new Model(this, 'PresignedS3ResponseModel', {
       restApi: restApi,
       contentType: 'application/json',
-      modelName: 'presignedS3Response',
+      modelName: 'PresignedS3ResponseModel',
       description: 'This model defines the standard structure of a response containing a presigned S3',
       schema: {
         type: JsonSchemaType.OBJECT,
