@@ -6,7 +6,7 @@ export const lambdaAuthorizerContext = `
       "principalId": "$util.escapeJavaScript($context.authorizer.principalId)",
       "user": "$util.escapeJavaScript($context.authorizer.user)"
     }
-  }
+  },
 `;
 
 // Cognito authorizer context
@@ -15,7 +15,7 @@ export const cognitoAuthorizerContext = `
     "sub": "$context.authorizer.claims.sub",
     "email": "$context.authorizer.claims.email",
     "group": "$context.authorizer.claims['cognito:groups']"
-  }
+  },
 `;
 
 export const COGNITO_AUTHORIZATION_SCOPES = 'aws.cognito.signin.user.admin';

@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import {
   CognitoUserPoolsAuthorizer,
-  IResource
+  IResource,
+  IRestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 
 import { BaseApiGatewayConstructProps } from '@interfaces/construct.interface';
@@ -25,13 +26,20 @@ export class OrderProductResourceConstruct extends Construct {
   ) {
     super(scope, id);
 
-    const { resource, librariesLayer, cognitoAuthorizer, models } = props;
+    const {
+      restApi,
+      resource,
+      librariesLayer,
+      cognitoAuthorizer,
+      models
+    } = props;
 
     // Create the Lambda function
     const orderLambdaConstruct = this.createLambdas(librariesLayer!);
 
     // Create the API resources
     this.createApiResources(
+      restApi!,
       resource,
       models!,
       orderLambdaConstruct,
@@ -65,6 +73,7 @@ export class OrderProductResourceConstruct extends Construct {
    * @param cognitoAuthorizer - The Cognito user pools authorizer
    */
   createApiResources(
+    restApi: IRestApi,
     resource: IResource,
     models: ApiGatewayModel,
     orderLambdaConstruct: OrderLambdaConstruct,
@@ -107,6 +116,7 @@ export class OrderProductResourceConstruct extends Construct {
     // Create new construct for each resource
     resources.forEach(resource => {
       new resource.construct(this, `${resource.construct.name}`, {
+        restApi,
         resource: resource.resource,
         lambdaFunction: resource.lambdaFunction,
         cognitoAuthorizer,

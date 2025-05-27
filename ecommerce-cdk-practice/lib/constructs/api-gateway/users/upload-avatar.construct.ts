@@ -6,7 +6,7 @@ import {
   IntegrationResponse,
   LambdaIntegration,
   MethodResponse,
-  Model
+  RequestValidator,
 } from 'aws-cdk-lib/aws-apigateway';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
@@ -33,6 +33,7 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
     super(scope, id);
 
     const {
+      restApi,
       resource,
       lambdaFunction,
       cognitoAuthorizer,
@@ -42,6 +43,7 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
     // Define the list error code that need to handle in API
     const errorStatusCodes = [
       ...COMMON_ERROR_CODE,
+      HttpStatusCode.UNAUTHORIZED,
       HttpStatusCode.FORBIDDEN
     ];
     // Create integration response for API
@@ -51,7 +53,16 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
     // Create method response for API
     const methodResponses = this.createMethodResponse(
       errorStatusCodes,
-      models!.presignedS3Response
+      models!.presignedS3ResponseModel
+    );
+
+    // Create the request validator
+    const requestValidator = this.createRequestValidator(
+      'UploadAvatarValidator',
+      restApi!,
+      {
+        requestValidatorName: 'UploadAvatarRequestValidator'
+      }
     );
 
     // Add the POST method to the API resource to upload image
@@ -62,7 +73,8 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
       cognitoAuthorizer!,
       integrationResponses,
       methodResponses,
-      models!
+      models!,
+      requestValidator
     );
   }
 
@@ -82,19 +94,24 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
     cognitoAuthorizer: CognitoUserPoolsAuthorizer,
     integrationResponses: IntegrationResponse[],
     methodResponses: MethodResponse[],
-    models: ApiGatewayModel
+    models: ApiGatewayModel,
+    requestValidator: RequestValidator
   ) {
+    // Format the request template
+    const requestTemplates = {
+      'application/json': `{
+        ${cognitoAuthorizerContext}
+        "userId": "$input.params('userId')",
+        "body": $input.json('$'),
+      }`.replace(/\s+/g, ' ')
+    };
+
+    // Add the POST method to the API resource
     resource.addMethod(HttpMethod.POST, new LambdaIntegration(
       lambdaFunction!,
       {
         proxy: false,
-        requestTemplates: {
-          'application/json': `{
-            ${cognitoAuthorizerContext}
-            "userId": "$input.params('userId')",
-            "body": $input.json('$'),
-          }`
-        },
+        requestTemplates,
         integrationResponses: integrationResponses
       }
     ), {
@@ -111,7 +128,8 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
         'method.request.header.Authorization': true
       },
       apiKeyRequired: false,
-      authorizationType: AuthorizationType.COGNITO
+      authorizationType: AuthorizationType.COGNITO,
+      requestValidator: requestValidator,
     });
   }
 }

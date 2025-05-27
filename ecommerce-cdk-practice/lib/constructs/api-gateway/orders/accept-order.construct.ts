@@ -35,7 +35,8 @@ export class AcceptOrderApiConstruct extends BaseApiMethodConstruct {
     const errorStatusCodes = [
       ...COMMON_ERROR_CODE,
       HttpStatusCode.FORBIDDEN,
-      HttpStatusCode.NOT_FOUND
+      HttpStatusCode.NOT_FOUND,
+      HttpStatusCode.UNAUTHORIZED
     ];
 
     // Create integration response for API
@@ -76,17 +77,20 @@ export class AcceptOrderApiConstruct extends BaseApiMethodConstruct {
     integrationResponses: IntegrationResponse[],
     methodResponses: MethodResponse[]
   ) {
+    // Format the request template
+    const requestTemplates = {
+      'application/json': `{
+        ${cognitoAuthorizerContext}
+        "orderId": "$input.params('orderId')",
+      }`.replace(/\s+/g, ' ')
+    };
+
     // Add the POST method to the API resource
     resource.addMethod(HttpMethod.POST, new LambdaIntegration(
       lambdaFunction!,
       {
         proxy: false,
-        requestTemplates: {
-          'application/json': `{
-            ${cognitoAuthorizerContext}
-            "orderId": "$input.params('orderId')",
-          }`
-        },
+        requestTemplates: requestTemplates,
         integrationResponses: integrationResponses
       }
     ), {

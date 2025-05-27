@@ -5,6 +5,7 @@ import {
   IResource,
   LambdaIntegration,
   MethodResponse,
+  RequestValidator
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -32,6 +33,7 @@ export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
     super(scope, id);
 
     const {
+      restApi,
       resource,
       lambdaFunction,
       cognitoAuthorizer,
@@ -56,6 +58,15 @@ export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
       models!.updateUserModel
     );
 
+    // Create the request validator
+    const requestValidator = this.createRequestValidator(
+      'UpdateUserValidator',
+      restApi!,
+      {
+        requestValidatorName: 'UpdateUserRequestValidator'
+      }
+    );
+
     // Add the PATCH method to the API resource for updating user
     // This creates the PATCH /users/{userId} endpoint
     this.addMethod(
@@ -64,7 +75,8 @@ export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
       cognitoAuthorizer!,
       integrationResponses,
       methodResponses,
-      models!
+      models!,
+      requestValidator
     );
   }
 
@@ -84,19 +96,24 @@ export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
     cognitoAuthorizer: CognitoUserPoolsAuthorizer,
     integrationResponses: IntegrationResponse[],
     methodResponses: MethodResponse[],
-    models: ApiGatewayModel
+    models: ApiGatewayModel,
+    requestValidator: RequestValidator
   ) {
+    // Format the request template
+    const requestTemplates = {
+      'application/json': `{
+        ${cognitoAuthorizerContext}
+        "userId": "$input.params('userId')",
+        "body": $input.json('$'),
+      }`.replace(/\s+/g, ' ')
+    };
+
+    // Add the PATCH method to the API resource
     resource.addMethod(HttpMethod.PATCH, new LambdaIntegration(
       lambdaFunction!,
       {
         proxy: false,
-        requestTemplates: {
-          'application/json': `{
-            ${cognitoAuthorizerContext}
-            "userId": "$input.params('userId')",
-            "body": $input.json('$'),
-          }`
-        },
+        requestTemplates,
         integrationResponses: integrationResponses
       }
     ), {
@@ -113,7 +130,8 @@ export class UpdateUsersDetailApiConstruct extends BaseApiMethodConstruct {
         'method.request.header.Authorization': true
       },
       apiKeyRequired: false,
-      authorizationType: AuthorizationType.COGNITO
+      authorizationType: AuthorizationType.COGNITO,
+      requestValidator: requestValidator,
     });
   }
 }

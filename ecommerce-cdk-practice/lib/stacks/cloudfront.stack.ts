@@ -1,7 +1,7 @@
 import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import { CloudFrontStackProps } from '@interfaces/stack.interface';
+import { BaseStackProps } from '@interfaces/stack.interface';
 import {
   CloudFrontConstruct
 } from '@constructs/cloudfront/cloudfront.construct';
@@ -15,14 +15,13 @@ import { PolicyHelper } from '@shared/policy.helper';
  * Define the CloudFront stack
  */
 export class CloudFrontStack extends Stack {
-  constructor(scope: Construct, id: string, props: CloudFrontStackProps) {
+  constructor(scope: Construct, id: string, props: BaseStackProps) {
     super(scope, id, props);
 
     const {
       hostedZone,
       domainName,
-      certificate,
-      bucket
+      certificate
     } = props;
 
     // Create the Lambda function for resize image
@@ -39,8 +38,7 @@ export class CloudFrontStack extends Stack {
       {
         lambdaFunction: resizeImageLambda,
         certificate,
-        domainName,
-        bucket
+        domainName
       }
     );
 
@@ -48,7 +46,6 @@ export class CloudFrontStack extends Stack {
     resizeImageLambda.addToRolePolicy(
       PolicyHelper.cloudfrontManageDistribution(this, distribution.distributionId)
     );
-
     // Custom domain for cloudfront
     new CloudFrontDomainConstruct(this, 'CloudFrontDomainConstruct', {
       hostedZone: hostedZone!,

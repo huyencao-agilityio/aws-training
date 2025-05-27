@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IResource } from 'aws-cdk-lib/aws-apigateway';
+import { IResource, IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { CognitoUserPoolsAuthorizer } from 'aws-cdk-lib/aws-apigateway';
 
@@ -23,6 +23,7 @@ export class UsersResourceConstruct extends Construct {
     super(scope, id);
 
     const {
+      restApi,
       resource,
       librariesLayer,
       cognitoAuthorizer,
@@ -33,6 +34,7 @@ export class UsersResourceConstruct extends Construct {
     const usersLambdaConstruct = this.createLambdas(librariesLayer!);
     // Create the API resources
     this.createApiResources(
+      restApi!,
       resource,
       models!,
       usersLambdaConstruct,
@@ -69,6 +71,7 @@ export class UsersResourceConstruct extends Construct {
    * @param librariesLayer - The libraries layer
    */
   createApiResources(
+    restApi: IRestApi,
     resource: IResource,
     models: ApiGatewayModel,
     usersLambdaConstruct: UsersLambdaConstruct,
@@ -96,7 +99,7 @@ export class UsersResourceConstruct extends Construct {
         cognitoAuthorizer,
         models: {
           uploadAvatarModel: models!.uploadAvatarModel,
-          presignedS3Response: models!.presignedS3Response
+          presignedS3ResponseModel: models!.presignedS3ResponseModel
         }
       },
     ];
@@ -104,6 +107,7 @@ export class UsersResourceConstruct extends Construct {
     // Create new construct for each resource
     resources.forEach(resource => {
       new resource.construct(this, `${resource.construct.name}`, {
+        restApi,
         resource: resource.resource,
         lambdaFunction: resource.lambdaFunction,
         userPool: resource.userPool,

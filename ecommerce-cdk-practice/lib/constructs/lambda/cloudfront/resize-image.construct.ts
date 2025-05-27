@@ -67,7 +67,7 @@ export class ResizeImageLambdaConstruct extends Construct {
       PolicyHelper.lambdaFunctionAccess(this, lambdaFnName)
     );
     lambdaFunction.addToRolePolicy(
-      PolicyHelper.s3ObjectCrud()
+      PolicyHelper.s3ObjectCrud(this)
     );
 
     return lambdaFunction;

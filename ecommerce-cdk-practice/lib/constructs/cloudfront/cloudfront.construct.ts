@@ -12,7 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-cloudfront';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Function } from 'aws-cdk-lib/aws-lambda';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
@@ -30,13 +30,21 @@ export class CloudFrontConstruct extends Construct {
   constructor(scope: Construct, id: string, props: CloudFrontConstructProps) {
     super(scope, id);
 
-    const { lambdaFunction, certificate, domainName, bucket } = props;
+    const { lambdaFunction, certificate, domainName } = props;
+
+    // Get bucket name
+    const bucket = Bucket.fromBucketName(
+      this,
+      'FromBucketName',
+      buildResourceName(this, BUCKET_NAME)
+    );
 
     // Create new a distribution in CloudFront
     this.distribution = this.createDistribution(
       certificate,
       lambdaFunction!,
-      domainName
+      domainName,
+      bucket
     );
 
     // Add bucket resource policy to allow CloudFront to access the bucket
@@ -73,10 +81,9 @@ export class CloudFrontConstruct extends Construct {
   createDistribution(
     certificate: ICertificate,
     lambdaFunction: Function,
-    domainName: string
+    domainName: string,
+    bucket: IBucket
   ): Distribution {
-    // Get bucket name
-    const bucket = Bucket.fromBucketName(this, 'FromBucketName', BUCKET_NAME);
     // Create OAC
     const oac = this.createOriginAccessControl();
 
@@ -124,7 +131,7 @@ export class CloudFrontConstruct extends Construct {
    *
    * @param bucket - The bucket to add the resource policy
    */
-  addBucketResourcePolicy(bucket: Bucket): void {
+  addBucketResourcePolicy(bucket: IBucket): void {
     // Add resource policy to the bucket
     bucket.addToResourcePolicy(
       PolicyHelper.cloudfrontS3Access(

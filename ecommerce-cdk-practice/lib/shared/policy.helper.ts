@@ -10,6 +10,7 @@ import { BUCKET_NAME } from '@constants/bucket.constant';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
 
 import { SecretHelper } from './secret.helper';
+import { buildResourceName } from './resource.helper';
 
 /**
  * Helper class for creating IAM policies
@@ -129,16 +130,19 @@ export class PolicyHelper {
   /**
    * Create a policy statement for putting objects in a bucket
    *
+   * @param scope - The scope of the stack
    * @returns The policy statement for putting objects in a bucket
    */
-  static s3PutObject(): PolicyStatement {
+  static s3PutObject(scope: Construct): PolicyStatement {
     return new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
         's3:PutObject'
       ],
       resources: [
-        `arn:aws:s3:::${BUCKET_NAME}/*`
+        `arn:aws:s3:::${
+          buildResourceName(scope, BUCKET_NAME)
+        }/*`
       ],
     });
   }
@@ -146,9 +150,10 @@ export class PolicyHelper {
   /**
    * Create a policy statement for S3 object CRUD operations
    *
+   * @param scope - The scope of the stack
    * @returns The policy statement for S3 object CRUD operations
    */
-  static s3ObjectCrud(): PolicyStatement {
+  static s3ObjectCrud(scope: Construct): PolicyStatement {
     return new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
@@ -157,7 +162,9 @@ export class PolicyHelper {
         's3:DeleteObject',
       ],
       resources: [
-        `arn:aws:s3:::${BUCKET_NAME}/*`
+        `arn:aws:s3:::${
+          buildResourceName(scope, BUCKET_NAME)
+        }/*`
       ],
     });
   }
