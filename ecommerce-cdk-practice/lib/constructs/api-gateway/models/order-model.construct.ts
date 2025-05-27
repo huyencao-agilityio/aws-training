@@ -42,7 +42,8 @@ export class OrderModelConstruct extends Construct {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'OrderProductRequestModel',
-      description: 'This model defines the format data for body request when user order product',
+      description: 'This model defines the format data' +
+        'for body request when user order product',
       schema: {
         type: JsonSchemaType.OBJECT,
         properties: {

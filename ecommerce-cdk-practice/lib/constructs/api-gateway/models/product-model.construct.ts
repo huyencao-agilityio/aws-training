@@ -40,8 +40,9 @@ export class ProductModelConstruct extends Construct {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'ProductsResponseModel',
-      description: 'This model defines the standard response structure for retrieving a paginated list of products, ' +
-      'including product details and pagination metadata',
+      description: 'This model defines the standard response structure' +
+        'for retrieving a paginated list of products, ' +
+        'including product details and pagination metadata',
       schema: {
         type: JsonSchemaType.OBJECT,
         properties: {

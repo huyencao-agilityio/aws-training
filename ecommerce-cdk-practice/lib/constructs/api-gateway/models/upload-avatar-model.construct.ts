@@ -44,7 +44,8 @@ export class UploadAvatarModelConstruct extends Construct {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'UploadAvatarModel',
-      description: 'This model defines the fields when user upload their avatar',
+      description: 'This model defines the fields' +
+        'when user upload their avatar',
       schema: {
         type: JsonSchemaType.OBJECT,
         properties: {
@@ -70,7 +71,8 @@ export class UploadAvatarModelConstruct extends Construct {
       restApi: restApi,
       contentType: 'application/json',
       modelName: 'PresignedS3ResponseModel',
-      description: 'This model defines the standard structure of a response containing a presigned S3',
+      description: 'This model defines the standard structure of a response' +
+        'containing a presigned S3',
       schema: {
         type: JsonSchemaType.OBJECT,
         properties: {
