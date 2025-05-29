@@ -4,8 +4,8 @@ import {
   InstanceType,
   InstanceClass,
   InstanceSize,
-  Vpc,
-  SecurityGroup,
+  IVpc,
+  ISecurityGroup
 } from 'aws-cdk-lib/aws-ec2';
 import {
   DatabaseInstance,
@@ -41,7 +41,7 @@ export class PostgresRdsConstruct extends Construct {
    * @param securityGroup - The security group to attach to the RDS instance.
    * @returns The created DatabaseInstance.
    */
-  createRdsInstance(vpc: Vpc, securityGroup: SecurityGroup): DatabaseInstance {
+  createRdsInstance(vpc: IVpc, securityGroup: ISecurityGroup): DatabaseInstance {
     // Get the db password from the SSM Parameter Store
     const dbPassword = SecretHelper.getSecretValue(
       ParameterKeys.DbPassword

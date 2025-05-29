@@ -1,6 +1,6 @@
 import { IResource } from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import {
   CognitoUserPoolsAuthorizer,
   RequestAuthorizer
@@ -14,7 +14,7 @@ export interface ResourceConfig {
   resource: IResource;
   lambdaFunction: IFunction;
   models: ApiGatewayModel;
-  userPool?: UserPool;
+  userPool?: IUserPool;
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
   lambdaAuthorizer?: RequestAuthorizer,
 }

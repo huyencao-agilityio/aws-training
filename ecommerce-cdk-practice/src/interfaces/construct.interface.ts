@@ -5,12 +5,12 @@ import {
   IRestApi,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { UserPool, UserPoolDomain } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool, UserPoolDomain } from 'aws-cdk-lib/aws-cognito';
 import { Function, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Duration } from 'aws-cdk-lib';
-import { Topic } from 'aws-cdk-lib/aws-sns';
-import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
+import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
@@ -47,7 +47,8 @@ export interface UserPoolDomainConstructProps {
  * Defines interface for the construct that need to related to User Pool.
  */
 export interface UserPoolConstructProps extends BaseConstructProps {
-  userPool: UserPool;
+  userPool?: IUserPool;
+  userPoolArn?: string;
 }
 
 /**
@@ -63,7 +64,7 @@ export interface RestApiConstructProps extends UserPoolConstructProps {
 export interface BaseApiGatewayConstructProps extends BaseConstructProps {
   restApi?: IRestApi;
   resource: IResource;
-  userPool?: UserPool;
+  userPool?: IUserPool;
   cognitoAuthorizer?: CognitoUserPoolsAuthorizer
   lambdaAuthorizer?: RequestAuthorizer,
   models?: ApiGatewayModel;
@@ -116,7 +117,7 @@ export interface StorageBucketConstructProps {
  * Defines interface for the Alarm Construct
  */
 export interface AlarmConstructProps {
-  snsTopic: Topic;
+  snsTopic: ITopic;
 }
 
 /**
@@ -131,8 +132,8 @@ export interface SnsAlarmTopicProps {
  * Defines interface for the RDS Construct
  */
 export interface PostgresRdsConstructProps {
-  vpc: Vpc;
-  securityGroup: SecurityGroup;
+  vpc: IVpc;
+  securityGroup: ISecurityGroup;
 }
 
 /**

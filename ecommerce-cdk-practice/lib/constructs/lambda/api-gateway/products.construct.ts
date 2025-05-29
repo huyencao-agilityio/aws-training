@@ -7,7 +7,7 @@ import {
 } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import {
@@ -40,7 +40,7 @@ export class ProductsLambdaConstruct extends Construct {
     this.getProductsLambda = this.createGetProductsLambdaFunction(
       librariesLayer!,
       dbInstance,
-      userPool
+      userPool!
     );
   }
 
@@ -55,7 +55,7 @@ export class ProductsLambdaConstruct extends Construct {
   createGetProductsLambdaFunction(
     librariesLayer: ILayerVersion,
     dbInstance: Record<string, string>,
-    userPool: UserPool
+    userPool: IUserPool
   ): Function {
     const lambdaFunction = new NodejsFunction(this, 'GetProducts', {
       runtime: Runtime.NODEJS_20_X,
