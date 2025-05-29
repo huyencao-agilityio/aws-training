@@ -5,7 +5,6 @@ import {
   Runtime,
   ILayerVersion
 } from 'aws-cdk-lib/aws-lambda';
-import { RequestAuthorizer } from 'aws-cdk-lib/aws-apigateway';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
@@ -22,11 +21,11 @@ import {
 import { buildResourceName } from '@shared/resource.helper';
 
 /**
- * Construct create Lambda function to validates JWT tokens from Cognito User Pool
- * and create method authorizer for API Gateway
+ * Construct create Lambda function to validates JWT tokens
+ * from Cognito User Pool and create method authorizer for API Gateway
  */
-export class AuthorizationConstruct extends Construct {
-  public readonly lambdaAuthorizer: RequestAuthorizer;
+export class AuthorizationLambdaConstruct extends Construct {
+  public readonly authorizationLambda: Function;
 
   constructor(scope: Construct, id: string, props: UserPoolConstructProps) {
     super(scope, id);
@@ -34,12 +33,9 @@ export class AuthorizationConstruct extends Construct {
     const { librariesLayer, userPool } = props;
 
     // Create the Lambda function for token validation
-    const lambdaAuthorization = this.createLambdaAuthorizationFunction(
-      librariesLayer!, userPool
-    );
-    // Create the API Gateway authorizer
-    this.lambdaAuthorizer = this.createRequestAuthorizer(
-      lambdaAuthorization
+    this.authorizationLambda = this.createLambdaAuthorizationFunction(
+      librariesLayer!,
+      userPool
     );
   }
 
@@ -78,24 +74,5 @@ export class AuthorizationConstruct extends Construct {
     );
 
     return lambdaFunction;
-  }
-
-  /**
-   * Create the API Gateway authorizer
-   *
-   * @param lambdaFunction - The Lambda function
-   * @returns The API Gateway authorizer
-   */
-  createRequestAuthorizer(
-    lambdaFunction: Function
-  ): RequestAuthorizer {
-    const authorize = new RequestAuthorizer(this, 'LambdaAuthorizer', {
-      authorizerName: 'LambdaAuthorization',
-      handler: lambdaFunction,
-      identitySources: ['method.request.header.Authorization'],
-      resultsCacheTtl: Duration.seconds(0)
-    });
-
-    return authorize;
   }
 }

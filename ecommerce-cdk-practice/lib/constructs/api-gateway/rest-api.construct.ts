@@ -8,6 +8,7 @@ import {
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+import { Duration } from 'aws-cdk-lib';
 
 import {
   RestApiConstructProps
@@ -15,13 +16,14 @@ import {
 import { buildResourceName } from '@shared/resource.helper';
 
 import {
-  AuthorizationConstruct
+  AuthorizationLambdaConstruct
 } from '../lambda/api-gateway';
 import { HealthCheckResourceConstruct } from './health-check';
 import { UsersResourceConstruct } from './users';
 import { ProductsResourceConstruct } from './products';
 import { OrderProductResourceConstruct } from './orders';
 import { ModelRestApiConstruct } from './models';
+
 
 /**
  * Define the construct to new a REST API
@@ -101,7 +103,7 @@ export class RestApiConstruct extends Construct {
   }
 
   /**
-   * Create the Lambda Authorizer
+   * Create the Lambda Authorizer in API Gateway
    *
    * @param librariesLayer - The libraries layer
    * @param userPool - The user pool
@@ -111,17 +113,25 @@ export class RestApiConstruct extends Construct {
     librariesLayer: ILayerVersion,
     userPool: UserPool
   ): RequestAuthorizer {
-    const authorization = new AuthorizationConstruct(
+    // Create the Lambda authorizer function
+    const { authorizationLambda } = new AuthorizationLambdaConstruct(
       this,
-      'AuthorizationConstruct',
+      'AuthorizationLambdaConstruct',
       {
         librariesLayer: librariesLayer,
         userPool: userPool
       }
     );
-    const lambdaAuthorizer = authorization.lambdaAuthorizer;
 
-    return lambdaAuthorizer;
+    // Create the Lambda authorizer in API Gateway
+    const authorize = new RequestAuthorizer(this, 'RequestAuthorizer', {
+      authorizerName: 'LambdaAuthorization',
+      handler: authorizationLambda,
+      identitySources: ['method.request.header.Authorization'],
+      resultsCacheTtl: Duration.seconds(0)
+    });
+
+    return authorize;
   }
 
   /**
