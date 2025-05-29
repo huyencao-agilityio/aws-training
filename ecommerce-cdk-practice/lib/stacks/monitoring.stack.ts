@@ -1,20 +1,20 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { AlarmConstruct } from '@constructs/cloudwatch/alarm.construct';
-import { SnsTopicConstruct } from '@constructs/sns/sns-topic.construct';
+import { MonitoringStackProps } from '@interfaces/stack.interface';
 
 /**
  * MonitoringStack is responsible for provisioning all monitoring in app.
  */
 export class MonitoringStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props: MonitoringStackProps) {
     super(scope, id, props);
 
-    const snsConstruct = new SnsTopicConstruct(this, 'SnsTopicConstruct');
+    const { snsTopic } = props;
 
     new AlarmConstruct(this, 'AlarmConstruct', {
-      snsTopic: snsConstruct.topic,
+      snsTopic,
     });
   }
 }
