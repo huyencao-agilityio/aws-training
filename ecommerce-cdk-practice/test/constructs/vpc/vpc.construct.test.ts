@@ -3,14 +3,14 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 
 import { VpcConstruct } from '@constructs/vpc/vpc.construct';
 
-describe('VpcConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestVpcConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestVpcStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // Create VPC Construct
     new VpcConstruct(stack, 'TestVpcConstruct');
 
     template = Template.fromStack(stack);

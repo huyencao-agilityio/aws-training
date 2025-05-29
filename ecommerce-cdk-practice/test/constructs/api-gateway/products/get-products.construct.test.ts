@@ -12,16 +12,16 @@ import {
   GetProductsApiConstruct
 } from '@constructs/api-gateway/products/get-products.construct';
 
-describe('GetProductsApiConstruct', () => {
+describe('TestGetProductsApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'GetProductsLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestGetProductsLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}')
@@ -30,31 +30,35 @@ describe('GetProductsApiConstruct', () => {
     // Create Lambda Function Authorizer
     const lambdaFunctionAuthorizer = new NodejsFunction(
       stack,
-      'LambdaFunctionAuthorizer',
+      'TestLambdaFunctionAuthorizer',
       {
         handler: 'index.handler',
         code: Code.fromInline('exports.handler = async () => {}')
       }
     );
-    const lambdaAuthorizer = new RequestAuthorizer(stack, 'LambdaAuthorizer', {
-      handler: lambdaFunctionAuthorizer,
-      identitySources: ['method.request.header.Authorization'],
-    });
+    const lambdaAuthorizer = new RequestAuthorizer(
+      stack,
+      'TestLambdaAuthorizer',
+      {
+        handler: lambdaFunctionAuthorizer,
+        identitySources: ['method.request.header.Authorization'],
+      }
+    );
 
     // Create product model
-    const productModel = new Model(stack, 'ProductsResponseModel', {
-      restApi: api,
-      modelName: 'ProductsResponseModel',
+    const productModel = new Model(stack, 'TestProductsResponseModel', {
+      restApi,
+      modelName: 'TestProductsResponseModel',
       schema: {}
     });
 
     // Create Resource
-    const resource = api.root
+    const resource = restApi.root
       .addResource('api')
       .addResource('products')
 
     // Create Update User API
-    new GetProductsApiConstruct(stack, 'GetProductsApiConstruct', {
+    new GetProductsApiConstruct(stack, 'TestGetProductsApiConstruct', {
       resource,
       lambdaFunction,
       lambdaAuthorizer,
@@ -98,7 +102,7 @@ describe('GetProductsApiConstruct', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         RequestModels: {
           'application/json': {
-            Ref: Match.stringLikeRegexp('.*ProductsResponseModel.*')
+            Ref: Match.stringLikeRegexp('.*TestProductsResponseModel.*')
           }
         }
       });
@@ -178,7 +182,7 @@ describe('GetProductsApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*ProductsResponseModel.*')
+                Ref: Match.stringLikeRegexp('.*TestProductsResponseModel.*')
               }
             }
           },

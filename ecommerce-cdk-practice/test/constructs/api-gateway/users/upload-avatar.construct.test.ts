@@ -13,13 +13,13 @@ import {
   UploadAvatarApiConstruct
 } from '@constructs/api-gateway/users/upload-avatar.construct';
 
-describe('UploadAvatarApiConstruct', () => {
+describe('TestUploadAvatarApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
     const lambdaFunction = new NodejsFunction(stack, 'UploadAvatarLambda', {
@@ -29,8 +29,13 @@ describe('UploadAvatarApiConstruct', () => {
       functionName: 'ecommerce-api-upload-avatar-dev'
     });
 
-    // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
+    // Create Cognito authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
       'CognitoAuthorization',
@@ -41,29 +46,33 @@ describe('UploadAvatarApiConstruct', () => {
     );
 
     // Create Upload Avatar Model
-    const uploadAvatarModel = new Model(stack, 'UploadAvatarModel', {
-      restApi: api,
-      modelName: 'UploadAvatarModel',
+    const uploadAvatarModel = new Model(stack, 'TestUploadAvatarModel', {
+      restApi,
+      modelName: 'TestUploadAvatarModel',
       schema: {}
     });
 
     // Create Presigned S3 Response Model
-    const presignedS3ResponseModel = new Model(stack, 'PresignedS3ResponseModel', {
-      restApi: api,
-      modelName: 'PresignedS3ResponseModel',
-      schema: {}
-    });
+    const presignedS3ResponseModel = new Model(
+      stack,
+      'TestPresignedS3ResponseModel',
+      {
+        restApi,
+        modelName: 'TestPresignedS3ResponseModel',
+        schema: {}
+      }
+    );
 
     // Create Resource
-    const resource = api.root
+    const resource = restApi.root
       .addResource('api')
       .addResource('users')
       .addResource('{userId}')
       .addResource('avatar');
 
     // Create Upload Avatar API
-    new UploadAvatarApiConstruct(stack, 'UploadAvatarApiConstruct', {
-      restApi: api,
+    new UploadAvatarApiConstruct(stack, 'TestUploadAvatarApiConstruct', {
+      restApi,
       resource,
       lambdaFunction,
       cognitoAuthorizer,
@@ -76,18 +85,18 @@ describe('UploadAvatarApiConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one API Gateway method', () => {
+  it('should create one API Gateway method', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 
   describe('Method Request', () => {
-    it('should configure method request with POST method', () => {
+    it('should config method request with POST method', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         HttpMethod: 'POST'
       });
     });
 
-    it('should configure method request with correct authorization', () => {
+    it('should config method request with correct authorization', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         AuthorizationType: 'COGNITO_USER_POOLS',
         AuthorizationScopes: ['aws.cognito.signin.user.admin'],
@@ -95,7 +104,7 @@ describe('UploadAvatarApiConstruct', () => {
       });
     });
 
-    it('should configure method request with parameters', () => {
+    it('should config method request with parameters', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         RequestParameters: {
           'method.request.path.userId': true,
@@ -104,17 +113,17 @@ describe('UploadAvatarApiConstruct', () => {
       });
     });
 
-    it('should configure method request with request model', () => {
+    it('should config method request with request model', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         RequestModels: {
           'application/json': {
-            Ref: Match.stringLikeRegexp('.*UploadAvatarModel.*')
+            Ref: Match.stringLikeRegexp('.*TestUploadAvatarModel.*')
           }
         }
       });
     });
 
-    it('should configure method request validator body', () => {
+    it('should config method request validator body', () => {
       template.hasResourceProperties('AWS::ApiGateway::RequestValidator', {
         ValidateRequestBody: true
       });
@@ -122,7 +131,7 @@ describe('UploadAvatarApiConstruct', () => {
   });
 
   describe('Integration Request', () => {
-    it('should configure integration request with Lambda and correct request template', () => {
+    it('should config integration request with a Lambda function', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           IntegrationHttpMethod: 'POST',
@@ -131,7 +140,7 @@ describe('UploadAvatarApiConstruct', () => {
       })
     });
 
-    it('should configure integration request with correct request template', () => {
+    it('should config request template in integration request', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
@@ -151,7 +160,7 @@ describe('UploadAvatarApiConstruct', () => {
   });
 
   describe('Integration Response', () => {
-    it('should configure integration response with correct status codes', () => {
+    it('should config integration response with correct status codes', () => {
       const responseTemplates = {
         'application/json':
           '#set($inputRoot = $input.path(\"$\"))\n' +
@@ -202,7 +211,7 @@ describe('UploadAvatarApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*PresignedS3ResponseModel.*')
+                Ref: Match.stringLikeRegexp('.*TestPresignedS3ResponseModel.*')
               }
             }
           },

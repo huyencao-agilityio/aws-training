@@ -9,32 +9,38 @@ import {
   CloudFrontDomainConstruct
 } from '@constructs/cloudfront/cloudfront-domain.construct';
 
-describe('CloudFrontDomainConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestCloudFrontDomainConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestCloudFrontDomainStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestCloudFrontDomainStack');
 
+    // Get hosted zone from existing hosted zone
     const hostedZone = HostedZone.fromHostedZoneAttributes(
       stack,
-      'HostedZone',
+      'TestHostedZone',
       {
         hostedZoneId: 'Z0344904LOXNYZARXRJA',
         zoneName: 'example.com',
       }
     );
 
-    const bucket = new Bucket(stack, 'TestBucket');
+    // Get bucket from existing bucket
+    const bucket = Bucket.fromBucketName(stack, 'TestBucket', 'test-bucket');
 
-    const distribution = new Distribution(stack, 'CloudFrontDistribution', {
-      defaultBehavior: {
-        origin: S3BucketOrigin.withOriginAccessControl(bucket)
-      },
-    });
+    // Create distribution
+    const distribution = new Distribution(
+      stack,
+      'TestCloudFrontDistribution',
+      {
+        defaultBehavior: {
+          origin: S3BucketOrigin.withOriginAccessControl(bucket)
+        },
+      }
+    );
 
+    // Create cloudfront domain construct
     new CloudFrontDomainConstruct(stack, 'TestCloudFrontDomainConstruct', {
       hostedZone,
       domainName: 'cdn.example.com',
@@ -44,7 +50,7 @@ describe('CloudFrontDomainConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly two records', () => {
+  it('should create two records', () => {
     template.resourceCountIs('AWS::Route53::RecordSet', 2);
   });
 
@@ -57,7 +63,7 @@ describe('CloudFrontDomainConstruct', () => {
       AliasTarget: {
         DNSName: {
           'Fn::GetAtt': [
-            Match.stringLikeRegexp('CloudFrontDistribution.*'),
+            Match.stringLikeRegexp('.*TestCloudFrontDistribution.*'),
             'DomainName',
           ],
         }
@@ -74,7 +80,7 @@ describe('CloudFrontDomainConstruct', () => {
       AliasTarget: {
         DNSName: {
           'Fn::GetAtt': [
-            Match.stringLikeRegexp('CloudFrontDistribution.*'),
+            Match.stringLikeRegexp('.*TestCloudFrontDistribution.*'),
             'DomainName',
           ],
         }

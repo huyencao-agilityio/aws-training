@@ -1,29 +1,44 @@
-import { App, Stack, Fn } from 'aws-cdk-lib';
+import { App, Stack, Fn, Token } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 
 import { AlarmConstruct } from '@constructs/cloudwatch/alarm.construct';
-import { API_METRIC_ERRORS } from '@constants/metric.constant';
 
-describe('AlarmConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestAlarmConstruct', () => {
   let template: Template;
-  let snsTopic: Topic;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestAlarmStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1'
+      }
+    });
 
-    // Mock Fn.importValue
+    // Mock value for Rest API Id and Stage
     jest.spyOn(Fn, 'importValue').mockImplementation((value) => {
-      if (value === 'ApiGatewayRestApiId') return 'restApiId123';
-      if (value === 'ApiGatewayRestApiStage') return 'dev';
+      if (value === 'ApiGatewayRestApiId') {
+        return Token.asString({ 'Fn::ImportValue': 'ApiGatewayRestApiId' });
+      }
+      if (value === 'ApiGatewayRestApiStage') {
+        return Token.asString({
+          'Fn::ImportValue': 'ApiGatewayRestApiStage'
+        });
+      }
       return '';
     });
 
-    snsTopic = new Topic(stack, 'TestTopic');
+    // Get SNS Topic from existing topic
+    const snsTopic = Topic.fromTopicArn(
+      stack,
+      'TestFromTopic',
+      Token.asString({
+        'Fn::ImportValue': 'arn:aws:sns:us-east-1:123456789012:TestTopic'
+      })
+    );
+
+    // Create Alarm Construct
     new AlarmConstruct(stack, 'TestAlarmConstruct', {
       snsTopic
     });
@@ -31,34 +46,58 @@ describe('AlarmConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one alarm', () => {
+  it('should create one alarm', () => {
     template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
   });
 
   it('should create CloudWatch metric for 5xx errors', () => {
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
-      MetricName: API_METRIC_ERRORS.ERROR_5XX,
+      MetricName: '5XXError',
       Namespace: 'AWS/ApiGateway',
       Dimensions: [
         {
           Name: 'ApiId',
-          Value: 'restApiId123'
+          Value: {
+            'Fn::ImportValue': 'ApiGatewayRestApiId'
+          }
         },
         {
           Name: 'Stage',
-          Value: 'dev'
+          Value: {
+            'Fn::ImportValue': 'ApiGatewayRestApiStage'
+          }
         }
       ],
-      Statistic: Stats.SUM,
+      Statistic: 'Sum',
       Period: 60,
       Threshold: 0,
       ComparisonOperator: 'GreaterThanThreshold',
       EvaluationPeriods: 1,
-      AlarmDescription: 'Alarm when 5XX errors > 0 in stage dev',
-      AlarmName: 'ApiGateway5XXAlarm-dev',
+      AlarmDescription: {
+        'Fn::Join': [
+          '',
+          [
+            'Alarm when 5XX errors > 0 in stage ',
+            {
+              'Fn::ImportValue': 'ApiGatewayRestApiStage'
+            }
+          ]
+        ]
+      },
+      AlarmName: {
+        'Fn::Join': [
+          '',
+          [
+            'ApiGateway5XXAlarm-',
+            {
+              'Fn::ImportValue': 'ApiGatewayRestApiStage'
+            }
+          ]
+        ]
+      },
       AlarmActions: [
         {
-          Ref: Match.stringLikeRegexp('TestTopic')
+          'Fn::ImportValue': Match.stringLikeRegexp('.*TestTopic.*')
         }
       ]
     });

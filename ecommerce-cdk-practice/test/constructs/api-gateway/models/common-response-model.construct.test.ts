@@ -6,21 +6,20 @@ import {
   CommonResponseModelConstruct
 } from '@constructs/api-gateway/models/common-response-model.construct';
 
-describe('CommonResponseModelConstruct', () => {
+describe('TestCommonResponseModelConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const restApi = new RestApi(stack, 'RestApi', {
-      restApiName: 'RestApi',
-    });
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Add this fake method to pass validation
     const resource = restApi.root.addResource('test');
     resource.addMethod('GET', new MockIntegration());
 
-    new CommonResponseModelConstruct(stack, 'CommonResponseConstruct', {
+    // Create common response model construct
+    new CommonResponseModelConstruct(stack, 'TestCommonResponseConstruct', {
       restApi,
     });
 

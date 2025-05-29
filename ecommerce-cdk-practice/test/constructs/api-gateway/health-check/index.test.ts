@@ -6,22 +6,26 @@ import {
   HealthCheckResourceConstruct
 } from '@constructs/api-gateway/health-check';
 
-describe('HealthCheckResourceConstruct', () => {
+describe('TestHealthCheckResourceConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const api = new RestApi(stack, 'TestRestApi');
 
-    new HealthCheckResourceConstruct(stack, 'HealthCheckResourceConstruct', {
-      resource: api.root,
-    });
+    new HealthCheckResourceConstruct(
+      stack,
+      'TestHealthCheckResourceConstruct',
+      {
+        resource: api.root,
+      }
+    );
 
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one API Gateway method', () => {
+  it('should create one API Gateway method', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 

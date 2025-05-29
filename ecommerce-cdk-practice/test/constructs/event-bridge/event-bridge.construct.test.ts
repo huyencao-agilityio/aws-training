@@ -6,40 +6,37 @@ import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import {
   EventBridgeConstruct
 } from '@constructs/event-bridge/event-bridge.construct';
-import { SCHEDULE_EXPRESSIONS, TIMEZONES } from '@constants/schedule.constant';
+import {
+  SCHEDULE_EXPRESSIONS,
+  TIMEZONES
+} from '@constants/schedule.constant';
 
-describe('EventBridgeConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestEventBridgeConstruct', () => {
   let template: Template;
-  let lambdaFunctionId: string;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestEventBridgeStack', {
+    const app = new App();
+    const stack = new Stack(app, 'TestEventBridgeStack', {
       env: {
         account: '123456789012',
         region: 'us-east-1'
       }
     });
 
-    const lambdaFunction = new NodejsFunction(stack, 'TestLambda', {
+    // Create Lambda Function
+    const lambdaFunction = new NodejsFunction(stack, 'TestLambdaFunction', {
       functionName: 'test-lambda',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {};'),
     });
+
+    // Create EventBridge Construct
     new EventBridgeConstruct(stack, 'TestEventBridgeConstruct', {
       lambdaFunction
     });
 
     template = Template.fromStack(stack);
-
-    // Get the lambda function id
-    lambdaFunctionId = Object.keys(
-      template.findResources('AWS::Lambda::Function')
-    )[0];
-
   });
 
   it('should create EventBridge schedule', () => {
@@ -58,7 +55,7 @@ describe('EventBridgeConstruct', () => {
       Target: {
         Arn: {
           'Fn::GetAtt': [
-            lambdaFunctionId,
+            Match.stringLikeRegexp('.*TestLambdaFunction.*'),
             'Arn'
           ]
         },
@@ -101,7 +98,7 @@ describe('EventBridgeConstruct', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                lambdaFunctionId,
+                Match.stringLikeRegexp('.*TestLambdaFunction.*'),
                 'Arn'
               ]
             }

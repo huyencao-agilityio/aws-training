@@ -6,21 +6,19 @@ import {
   ProductModelConstruct
 } from '@constructs/api-gateway/models/product-model.construct';
 
-describe('ProductModelConstruct', () => {
+describe('TestProductModelConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const restApi = new RestApi(stack, 'RestApi', {
-      restApiName: 'RestApi',
-    });
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Add this fake method to pass validation
     const resource = restApi.root.addResource('test');
     resource.addMethod('GET', new MockIntegration());
 
-    new ProductModelConstruct(stack, 'ProductModelConstruct', {
+    new ProductModelConstruct(stack, 'TestProductModelConstruct', {
       restApi,
     });
 
@@ -44,10 +42,18 @@ describe('ProductModelConstruct', () => {
           pagination: {
             type: 'object',
             properties: {
-              currentPage: { type: 'number' },
-              totalPages: { type: 'number' },
-              totalItems: { type: 'number' },
-              itemsPerPage: { type: 'number' }
+              currentPage: {
+                type: 'number'
+              },
+              totalPages: {
+                type: 'number'
+              },
+              totalItems: {
+                type: 'number'
+              },
+              itemsPerPage: {
+                type: 'number'
+              }
             }
           },
           items: {
@@ -55,13 +61,24 @@ describe('ProductModelConstruct', () => {
             items: {
               type: 'object',
               properties: {
-                id: { type: 'string' },
-                name: { type: 'string' },
-                description: { type: 'string' },
-                price: { type: 'number' },
-                quantity: { type: 'number' },
-                createdAt: { type: 'string' },
-                updatedAt: { type: 'string' }
+                id: {
+                  type: 'string'
+                },
+                name: {
+                  type: 'string'
+                },
+                description: {
+                  type: 'string'
+                },
+                price: {
+                  type: 'number'
+                },
+                quantity: {
+                  type: 'number'
+                },
+                createdAt: {
+                  type: 'string'
+                }
               }
             }
           }

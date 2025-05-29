@@ -6,21 +6,19 @@ import {
   UserModelConstruct
 } from '@constructs/api-gateway/models/user-model.construct';
 
-describe('UserModelConstruct', () => {
+describe('TestUserModelConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const restApi = new RestApi(stack, 'RestApi', {
-      restApiName: 'RestApi',
-    });
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Add this fake method to pass validation
     const resource = restApi.root.addResource('test');
     resource.addMethod('GET', new MockIntegration());
 
-    new UserModelConstruct(stack, 'UserModelConstruct', {
+    new UserModelConstruct(stack, 'TestUserModelConstruct', {
       restApi,
     });
 

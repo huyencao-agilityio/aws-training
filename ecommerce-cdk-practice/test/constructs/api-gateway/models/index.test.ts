@@ -4,21 +4,19 @@ import { Template } from 'aws-cdk-lib/assertions';
 
 import { ModelRestApiConstruct } from '@constructs/api-gateway/models';
 
-describe('ModelRestApiConstruct', () => {
+describe('TestModelRestApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const restApi = new RestApi(stack, 'RestApi', {
-      restApiName: 'RestApi',
-    });
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Add this fake method to pass validation
     const resource = restApi.root.addResource('test');
     resource.addMethod('GET', new MockIntegration());
 
-    new ModelRestApiConstruct(stack, 'ModelRestApiConstruct', {
+    new ModelRestApiConstruct(stack, 'TestModelRestApiConstruct', {
       restApi,
     });
 
