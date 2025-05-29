@@ -37,7 +37,7 @@ describe('TestOrderProductResourceConstruct', () => {
     );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
 
     // Create common response model
     const commonResponseModel = new Model(stack, 'TestCommonResponseModel', {

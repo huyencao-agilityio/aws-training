@@ -6,12 +6,12 @@ import {
 } from '@constructs/lambda/cognito/create-auth-challenge.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('CreateAuthChallengeLambdaConstruct', () => {
+describe('TestCreateAuthChallengeLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack', {
+    const stack = new Stack(app, 'TestStack', {
       env: {
         account: '123456789012',
         region: 'us-east-1'
@@ -19,12 +19,12 @@ describe('CreateAuthChallengeLambdaConstruct', () => {
     });
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
 
     // Create auth challenge lambda construct
     new CreateAuthChallengeLambdaConstruct(
       stack,
-      'CreateAuthChallengeLambdaConstruct',
+      'TestCreateAuthChallengeLambdaConstruct',
       {
         librariesLayer,
       }

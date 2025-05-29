@@ -21,7 +21,7 @@ describe('TestRestApiConstruct', () => {
     );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
 
     new RestApiConstruct(stack, 'TestRestApiConstruct', {
       userPool,

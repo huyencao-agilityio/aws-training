@@ -7,12 +7,12 @@ import {
 } from '@constructs/lambda/queue/accept-order-notification.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('AcceptOrderNotificationLambdaConstruct', () => {
+describe('TestAcceptOrderNotificationLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack', {
+    const stack = new Stack(app, 'TestStack', {
       env: {
         account: '123456789012',
         region: 'us-east-1',
@@ -20,14 +20,14 @@ describe('AcceptOrderNotificationLambdaConstruct', () => {
     });
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
     // Create queue
-    const queue = new Queue(stack, 'Queue');
+    const queue = new Queue(stack, 'TestQueue');
 
     // Create accept order notification lambda construct
     new AcceptOrderNotificationLambdaConstruct(
       stack,
-      'AcceptOrderNotificationLambdaConstruct',
+      'TestAcceptOrderNotificationLambdaConstruct',
       {
         librariesLayer,
         queue,
@@ -104,13 +104,13 @@ describe('AcceptOrderNotificationLambdaConstruct', () => {
     template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       EventSourceArn: {
         'Fn::GetAtt': [
-          Match.stringLikeRegexp('Queue.*'),
+          Match.stringLikeRegexp('.*TestQueue.*'),
           'Arn'
         ]
       },
       FunctionName: {
         Ref: Match.stringLikeRegexp(
-          '.*AcceptOrderNotificationConstruct.*'
+          '.*TestAcceptOrderNotificationLambdaConstruct.*'
         )
       }
     });

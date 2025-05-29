@@ -7,22 +7,26 @@ import {
 } from '@constructs/lambda/api-gateway/authorization.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('AuthorizationLambdaConstruct', () => {
+describe('TestAuthorizationLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack(app, 'TestStack');
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
-    // Get user pool
-    const userPool = new UserPool(stack, 'UserPool');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
+    // Get user pool from user pool id
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
 
     // Create authorization lambda construct
     new AuthorizationLambdaConstruct(
       stack,
-      'AuthorizationLambdaConstruct',
+      'TestAuthorizationLambdaConstruct',
       {
         librariesLayer,
         userPool

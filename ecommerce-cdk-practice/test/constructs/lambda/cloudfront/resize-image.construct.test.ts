@@ -5,12 +5,12 @@ import {
   ResizeImageLambdaConstruct
 } from '@constructs/lambda/cloudfront/resize-image.construct';
 
-describe('ResizeImageLambdaConstruct', () => {
+describe('TestResizeImageLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack', {
+    const stack = new Stack(app, 'TestStack', {
       env: {
         account: '123456789012',
         region: 'us-east-1',
@@ -18,7 +18,7 @@ describe('ResizeImageLambdaConstruct', () => {
     });
 
     // Create resize image lambda construct
-    new ResizeImageLambdaConstruct(stack, 'ResizeImageLambdaConstruct', {});
+    new ResizeImageLambdaConstruct(stack, 'TestResizeImageLambdaConstruct', {});
 
     template = Template.fromStack(stack);
   });
