@@ -12,7 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-cloudfront';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { Bucket, IBucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket, CfnBucketPolicy, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Function } from 'aws-cdk-lib/aws-lambda';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
@@ -32,7 +32,6 @@ export class CloudFrontConstruct extends Construct {
 
     const { lambdaFunction, certificate, domainName } = props;
 
-    // Get bucket name
     const bucket = Bucket.fromBucketName(
       this,
       'FromBucketName',
@@ -132,12 +131,13 @@ export class CloudFrontConstruct extends Construct {
    * @param bucket - The bucket to add the resource policy
    */
   addBucketResourcePolicy(bucket: IBucket): void {
-    // Add resource policy to the bucket
-    bucket.addToResourcePolicy(
-      PolicyHelper.cloudfrontS3Access(
-        bucket.bucketArn,
-        this.distribution.distributionArn
+    new CfnBucketPolicy(this, 'BucketPolicy', {
+      bucket: bucket.bucketName,
+      policyDocument: PolicyHelper.cloudfrontS3Access(
+        this,
+        bucket.bucketName,
+        this.distribution.distributionId
       )
-    );
+    });
   }
 }

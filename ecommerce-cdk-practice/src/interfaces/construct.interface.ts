@@ -14,7 +14,6 @@ import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 import { ApiGatewayModel } from './api-gateway-model.interface';
 

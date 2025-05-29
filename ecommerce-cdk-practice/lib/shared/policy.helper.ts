@@ -1,10 +1,10 @@
 import { Stack } from 'aws-cdk-lib';
 import {
   Effect,
-  PolicyStatement,
-  ServicePrincipal
+  PolicyStatement
 } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
+import { CfnBucketPolicyProps } from 'aws-cdk-lib/aws-s3';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
@@ -219,26 +219,30 @@ export class PolicyHelper {
    * @returns The policy statement for CloudFront S3 access
    */
   static cloudfrontS3Access(
-    bucketArn: string,
-    distributionArn: string
-  ): PolicyStatement {
-    return new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        's3:GetObject'
-      ],
-      resources: [
-        `${bucketArn}/*`
-      ],
-      principals: [
-        new ServicePrincipal('cloudfront.amazonaws.com')
-      ],
-      conditions: {
-        StringEquals: {
-          'AWS:SourceArn': distributionArn,
-        },
-      },
-    });
+    scope: Construct,
+    bucketName: string,
+    distributionId: string
+  ): CfnBucketPolicyProps['policyDocument'] {
+    // Get the account of the stack
+    const { account } = PolicyHelper.getAccountContext(scope);
+
+    // Create a policy document for the bucket
+    // Need to use L1 to avoid dependency on the distribution
+    return {
+      Version: '2012-10-17',
+      Statement: [{
+        Effect: 'Allow',
+        Action: 's3:GetObject',
+        Resource: `arn:aws:s3:::${bucketName}/*`,
+        Principal: { Service: 'cloudfront.amazonaws.com' },
+        Condition: {
+          StringEquals: {
+            'AWS:SourceArn':
+              `arn:aws:cloudfront::${account}:distribution/${distributionId}`,
+          }
+        }
+      }]
+    };
   }
 
   /**
