@@ -1,47 +1,37 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import {
   CloudFrontConstruct
 } from '@constructs/cloudfront/cloudfront.construct';
-import { buildResourceName } from '@shared/resource.helper';
-import { BUCKET_NAME } from '@constants/bucket.constant';
 
 describe('CloudFrontConstruct', () => {
-  let app: App;
-  let stack: Stack;
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestCloudFrontStack', {
-      env: { region: 'us-east-1' },
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1'
+      }
     });
 
-    const lambdaFunction = new Function(stack, 'TestLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'LambdaFunction', {
       functionName: 'test-lambda',
       runtime: Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {};'),
     });
 
-    const certificate = new Certificate(stack, 'TestCertificate', {
+    const certificate = new Certificate(stack, 'Certificate', {
       domainName: '*.example.com',
     });
 
-    // Need to mock bucket to test origin domain name in CloudFront
-    Bucket.fromBucketAttributes(stack, 'FromBucketName', {
-      bucketName: buildResourceName(stack, BUCKET_NAME),
-      region: 'us-east-1',
-      bucketRegionalDomainName: `
-        ${buildResourceName(stack, BUCKET_NAME)}.s3.us-east-1.amazonaws.com
-      `,
-    });
-
-    new CloudFrontConstruct(stack, 'TestCloudFrontConstruct', {
+    new CloudFrontConstruct(stack, 'CloudFrontConstruct', {
       lambdaFunction,
       certificate,
       domainName: 'cdn.example.com'
@@ -75,7 +65,6 @@ describe('CloudFrontConstruct', () => {
   });
 
   it('should add OAC to CloudFront distribution', () => {
-
     template.hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Origins:[
@@ -133,7 +122,7 @@ describe('CloudFrontConstruct', () => {
             {
               EventType: 'origin-response',
               LambdaFunctionARN: {
-                Ref: Match.stringLikeRegexp('TestLambda.*Version.*'),
+                Ref: Match.stringLikeRegexp('LambdaFunction.*Version.*'),
               },
             },
           ],
@@ -145,6 +134,36 @@ describe('CloudFrontConstruct', () => {
   it('should retain CloudFront distribution on stack deletion', () => {
     template.hasResource('AWS::CloudFront::Distribution', {
       DeletionPolicy: 'Retain',
+    });
+  });
+
+  it('should add resource policy to bucket', () => {
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 's3:GetObject',
+          Resource: 'arn:aws:s3:::ecommerce-user-assets-dev/*',
+          Principal: {
+            Service: 'cloudfront.amazonaws.com'
+          },
+          Condition: {
+            StringEquals: {
+              'AWS:SourceArn': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:cloudfront::123456789012:distribution/',
+                    {
+                      Ref: Match.stringLikeRegexp('CloudFrontDistribution.*')
+                    }
+                  ]
+                ]
+              }
+            }
+          }
+        }]
+      }
     });
   });
 });
