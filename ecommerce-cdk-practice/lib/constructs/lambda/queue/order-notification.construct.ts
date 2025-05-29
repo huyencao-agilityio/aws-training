@@ -52,7 +52,7 @@ export class OrderNotificationLambdaConstruct extends Construct {
         queue: queue,
         librariesLayer: librariesLayer,
         handlerFile: 'order-notification',
-        timeout: Duration.seconds(3),
+        timeout: Duration.seconds(5),
         environment: {
           DEFAULT_EMAIL_ADDRESS: defaultEmailAddress,
           ADMIN_EMAIL_ADDRESS: adminEmailAddress

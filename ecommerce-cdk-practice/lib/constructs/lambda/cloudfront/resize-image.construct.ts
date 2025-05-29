@@ -37,7 +37,6 @@ export class ResizeImageLambdaConstruct extends Construct {
   /**
    * Create the Lambda function for resize image
    *
-   * @param librariesLayer - The libraries layer
    * @returns The Lambda function for resize image
    */
   createResizeImageLambdaFunction(): Function {

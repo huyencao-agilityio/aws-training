@@ -59,7 +59,7 @@ export class RejectOrderNotificationLambdaConstruct extends Construct {
           ...dbInstance,
           DEFAULT_EMAIL_ADDRESS: defaultEmailAddress
         },
-        timeout: Duration.seconds(3),
+        timeout: Duration.seconds(5),
         withSesPolicy: true,
       }
     );

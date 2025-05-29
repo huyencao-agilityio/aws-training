@@ -13,7 +13,8 @@ import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { buildResourceName } from '@shared/resource.helper';
 
 /**
- * Construct sets up a Lambda function that implements custom authentication flow
+ * Construct sets up a Lambda function
+ * that implements custom authentication flow
  */
 export class VerifyAuthChallengeLambdaConstruct extends Construct {
   public readonly verifyAuthChallenge: Function;
@@ -27,25 +28,28 @@ export class VerifyAuthChallengeLambdaConstruct extends Construct {
   /**
    * Create the Lambda function for Verify Auth Challenge
    *
-   * @param librariesLayer - The libraries layer
    * @returns The Lambda function for Verify Auth Challenge
    */
   createVerifyAuthChallengeLambdaFunction(): Function {
     // Create new Lambda function
-    const lambdaFunction = new NodejsFunction(this, 'VerifyAuthChallengeLambda', {
-      runtime: Runtime.NODEJS_20_X,
-      handler: DEFAULT_LAMBDA_HANDLER,
-      entry: path.join(
-        __dirname,
-        `${LAMBDA_PATH.COGNITO}/verify-auth-challenge.ts`
-      ),
-      bundling: {
-        externalModules: EXTERNAL_MODULES,
-      },
-      functionName: buildResourceName(
-        this, LAMBDA_FUNCTION_NAME.COGNITO_VERIFY_AUTH
-      )
-    });
+    const lambdaFunction = new NodejsFunction(
+      this,
+      'VerifyAuthChallengeLambda',
+      {
+        runtime: Runtime.NODEJS_20_X,
+        handler: DEFAULT_LAMBDA_HANDLER,
+        entry: path.join(
+          __dirname,
+          `${LAMBDA_PATH.COGNITO}/verify-auth-challenge.ts`
+        ),
+        bundling: {
+          externalModules: EXTERNAL_MODULES,
+        },
+        functionName: buildResourceName(
+          this, LAMBDA_FUNCTION_NAME.COGNITO_VERIFY_AUTH
+        )
+      }
+    );
 
     return lambdaFunction;
   }

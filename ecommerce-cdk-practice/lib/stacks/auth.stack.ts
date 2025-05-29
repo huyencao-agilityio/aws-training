@@ -2,7 +2,7 @@ import { Stack, CfnOutput } from 'aws-cdk-lib';
 import { UserPoolOperation } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
-import { getLibrariesLayer } from 'lib/shared/layer.helper';
+import { getLibrariesLayer } from '@shared/layer.helper';
 import { BaseStackProps } from '@interfaces/stack.interface';
 import {
   CreateAuthChallengeLambdaConstruct,

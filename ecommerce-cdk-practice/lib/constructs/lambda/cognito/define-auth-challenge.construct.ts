@@ -46,22 +46,26 @@ export class DefineAuthChallengeLambdaConstruct extends Construct {
     librariesLayer: ILayerVersion
   ): Function {
     // Create new Lambda function
-    const lambdaFunction = new NodejsFunction(this, 'DefineAuthChallengeLambda', {
-      runtime: Runtime.NODEJS_20_X,
-      handler: DEFAULT_LAMBDA_HANDLER,
-      layers: [librariesLayer!],
-      entry: path.join(
-        __dirname,
-        `${LAMBDA_PATH.COGNITO}/define-auth-challenge.ts`
-      ),
-      timeout: Duration.minutes(15),
-      bundling: {
-        externalModules: EXTERNAL_MODULES,
-      },
-      functionName: buildResourceName(
-        this, LAMBDA_FUNCTION_NAME.COGNITO_DEFINE_AUTH
-      )
-    });
+    const lambdaFunction = new NodejsFunction(
+      this,
+      'DefineAuthChallengeLambda',
+      {
+        runtime: Runtime.NODEJS_20_X,
+        handler: DEFAULT_LAMBDA_HANDLER,
+        layers: [librariesLayer!],
+        entry: path.join(
+          __dirname,
+          `${LAMBDA_PATH.COGNITO}/define-auth-challenge.ts`
+        ),
+        timeout: Duration.minutes(15),
+        bundling: {
+          externalModules: EXTERNAL_MODULES,
+        },
+        functionName: buildResourceName(
+          this, LAMBDA_FUNCTION_NAME.COGNITO_DEFINE_AUTH
+        )
+      }
+    );
 
     return lambdaFunction;
   }
