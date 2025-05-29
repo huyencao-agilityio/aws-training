@@ -1,9 +1,10 @@
 import { StackProps } from 'aws-cdk-lib';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
 
 import { AppEnvironment } from './app-env.interface';
 
@@ -27,7 +28,7 @@ export interface CloudFrontStackProps extends BaseStackProps {
  * Defines interface for the stack that need to related to User Pool
  */
 export interface ApiStackProps extends BaseStackProps {
-  userPool: UserPool;
+  userPool: IUserPool;
   basePathApi?: string;
   stage?: string;
 }
@@ -36,8 +37,8 @@ export interface ApiStackProps extends BaseStackProps {
  * Defines interface for the RDS stack
  */
 export interface PostgresRdsStackProps extends StackProps {
-  vpc: Vpc;
-  securityGroup: SecurityGroup;
+  vpc: IVpc;
+  securityGroup: ISecurityGroup;
 }
 
 /**
@@ -52,4 +53,11 @@ export interface CertificateStackProps extends StackProps {
  */
 export interface PipelineStackProps extends StackProps {
   stage: AppEnvironment;
+}
+
+/**
+ * Defines interface for the Monitoring Stack
+ */
+export interface MonitoringStackProps extends StackProps {
+  snsTopic: ITopic;
 }

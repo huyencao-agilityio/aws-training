@@ -6,7 +6,7 @@ import {
   Stats
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
-import { Topic } from 'aws-cdk-lib/aws-sns';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 import { AlarmConstructProps } from '@interfaces/construct.interface';
@@ -61,7 +61,7 @@ export class AlarmConstruct extends Construct {
    * @param stage - The stage of the rest api
    * @returns The created alarm
    */
-  createAlarm5XXError(metric: Metric, snsTopic: Topic, stage: string): Alarm {
+  createAlarm5XXError(metric: Metric, snsTopic: ITopic, stage: string): Alarm {
     // Create new alarm
     const alarm = new Alarm(this, 'ApiGateway5XXAlarm', {
       metric: metric,

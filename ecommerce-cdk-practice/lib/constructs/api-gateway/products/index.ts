@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { RequestAuthorizer } from 'aws-cdk-lib/aws-apigateway';
 import { IResource } from 'aws-cdk-lib/aws-apigateway';
@@ -41,7 +41,6 @@ export class ProductsResourceConstruct extends Construct {
       models!,
       productsLambdaConstruct,
       lambdaAuthorizer!,
-      userPool!,
       librariesLayer!
     );
   }
@@ -55,7 +54,7 @@ export class ProductsResourceConstruct extends Construct {
    */
   createLambdas(
     librariesLayer: ILayerVersion,
-    userPool: UserPool
+    userPool: IUserPool
   ): ProductsLambdaConstruct {
     const lambdaFn = new ProductsLambdaConstruct(
       this,
@@ -84,7 +83,6 @@ export class ProductsResourceConstruct extends Construct {
     models: ApiGatewayModel,
     productsLambdaConstruct: ProductsLambdaConstruct,
     lambdaAuthorizer: RequestAuthorizer,
-    userPool: UserPool,
     librariesLayer: ILayerVersion
   ) {
     const productsResource = resource.addResource('products');
@@ -95,7 +93,6 @@ export class ProductsResourceConstruct extends Construct {
         resource: productsResource,
         lambdaFunction: productsLambdaConstruct.getProductsLambda,
         lambdaAuthorizer,
-        userPool,
         models: {
           productModel: models!.productModel
         }

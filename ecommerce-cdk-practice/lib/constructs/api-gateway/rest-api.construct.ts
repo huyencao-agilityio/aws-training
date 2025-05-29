@@ -5,7 +5,7 @@ import {
   RequestAuthorizer,
   RestApi
 } from 'aws-cdk-lib/aws-apigateway';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
@@ -23,7 +23,6 @@ import { UsersResourceConstruct } from './users';
 import { ProductsResourceConstruct } from './products';
 import { OrderProductResourceConstruct } from './orders';
 import { ModelRestApiConstruct } from './models';
-
 
 /**
  * Define the construct to new a REST API
@@ -88,7 +87,7 @@ export class RestApiConstruct extends Construct {
    * @param userPool - The user pool
    * @returns The Cognito Authorizer
    */
-  createCognitoAuthorizer(userPool: UserPool): CognitoUserPoolsAuthorizer {
+  createCognitoAuthorizer(userPool: IUserPool): CognitoUserPoolsAuthorizer {
     const authorizer = new CognitoUserPoolsAuthorizer(
       this,
       'CognitoUserPoolsAuthorizer',
@@ -111,7 +110,7 @@ export class RestApiConstruct extends Construct {
      */
   createLambdaAuthorizer(
     librariesLayer: ILayerVersion,
-    userPool: UserPool
+    userPool: IUserPool
   ): RequestAuthorizer {
     // Create the Lambda authorizer function
     const { authorizationLambda } = new AuthorizationLambdaConstruct(
@@ -165,7 +164,7 @@ export class RestApiConstruct extends Construct {
    * @param productModelConstruct - The product model construct
    */
   createProductsApi(
-    userPool: UserPool,
+    userPool: IUserPool,
     librariesLayer: ILayerVersion
   ): void {
     new ProductsResourceConstruct(this, 'ProductsResourceConstruct', {

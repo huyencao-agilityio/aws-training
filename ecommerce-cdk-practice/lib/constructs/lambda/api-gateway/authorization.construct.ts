@@ -7,7 +7,7 @@ import {
 } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import {
@@ -35,7 +35,7 @@ export class AuthorizationLambdaConstruct extends Construct {
     // Create the Lambda function for token validation
     this.authorizationLambda = this.createLambdaAuthorizationFunction(
       librariesLayer!,
-      userPool
+      userPool!
     );
   }
 
@@ -48,7 +48,7 @@ export class AuthorizationLambdaConstruct extends Construct {
    */
   createLambdaAuthorizationFunction(
     librariesLayer: ILayerVersion,
-    userPool: UserPool
+    userPool: IUserPool
   ): Function {
     const lambdaFunction = new NodejsFunction(
       this,

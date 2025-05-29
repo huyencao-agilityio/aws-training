@@ -21,7 +21,7 @@ export class CertificateConstruct extends Construct {
     const { hostedZone } = props;
 
     // Create new certificate for domain
-    this.certificate = new Certificate(this, 'WildcardCertificate', {
+    this.certificate = new Certificate(this, 'Certificate', {
       domainName: `*.${DOMAIN_NAME}`,
       validation: CertificateValidation.fromDns(hostedZone),
     });
