@@ -32,43 +32,35 @@ jest.mock('@shared/secret.helper', () => ({
   }
 }));
 
-describe('ProviderConstruct', () => {
-  let app: App;
-  let stack: Stack;
-  let userPool: UserPool;
-  let userPoolId: string;
+describe('TestProviderConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestProviderStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
 
-    userPool = new UserPool(stack, 'TestUserPool', {
-      userPoolName: 'test-pool'
-    });
+    // Create user pool
+    const userPool = new UserPool(stack, 'TestUserPool');
 
+    // Create provider construct
     new ProviderConstruct(stack, 'TestProviderConstruct', {
       userPool
     });
 
     template = Template.fromStack(stack);
-    // Get the user pool id
-    userPoolId = Object.keys(
-      template.findResources('AWS::Cognito::UserPool')
-    )[0];
   });
 
   it('should create Facebook and Google identity providers', () => {
     template.resourceCountIs('AWS::Cognito::UserPoolIdentityProvider', 2);
   });
 
-  it('should create Facebook identity providers with correct configuration', () => {
+  it('should create Facebook identity providers with correct config', () => {
     // Check Facebook Identity Provider
     template.hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
       ProviderName: 'Facebook',
       ProviderType: 'Facebook',
       UserPoolId: {
-        Ref: userPoolId
+        Ref: Match.stringLikeRegexp('.*TestUserPool.*')
       },
       ProviderDetails: {
         client_id: 'fb-client-id',
@@ -88,7 +80,7 @@ describe('ProviderConstruct', () => {
       ProviderName: 'Google',
       ProviderType: 'Google',
       UserPoolId: {
-        Ref: userPoolId
+        Ref: Match.stringLikeRegexp('.*TestUserPool.*')
       },
       ProviderDetails: {
         client_id: 'google-client-id',

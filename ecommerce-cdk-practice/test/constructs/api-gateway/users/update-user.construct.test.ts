@@ -13,27 +13,32 @@ import {
   UpdateUsersDetailApiConstruct
 } from '@constructs/api-gateway/users/update-user.construct';
 
-describe('UpdateUserDetailApiConstruct', () => {
+describe('TestUpdateUserDetailApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const api = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'UpdateUserLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestUpdateUserLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}'),
       functionName: 'ecommerce-api-update-user-dev'
     });
 
-    // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
+    // Create Cognito authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'CognitoAuthorization',
+      'TestCognitoAuthorization',
       {
         authorizerName: 'CognitoAuthorization',
         cognitoUserPools: [userPool],
@@ -41,9 +46,9 @@ describe('UpdateUserDetailApiConstruct', () => {
     );
 
     // Create Update User Model
-    const updateUserModel = new Model(stack, 'UpdateUserProfileModel', {
+    const updateUserModel = new Model(stack, 'TestUpdateUserProfileModel', {
       restApi: api,
-      modelName: 'UpdateUserProfileModel',
+      modelName: 'TestUpdateUserProfileModel',
       schema: {}
     });
 
@@ -54,20 +59,24 @@ describe('UpdateUserDetailApiConstruct', () => {
       .addResource('{userId}');
 
     // Create Update User API
-    new UpdateUsersDetailApiConstruct(stack, 'UpdateUserDetailApiConstruct', {
-      restApi: api,
-      resource,
-      lambdaFunction,
-      cognitoAuthorizer,
-      models: {
-        updateUserModel,
-      },
-    });
+    new UpdateUsersDetailApiConstruct(
+      stack,
+      'TestUpdateUserDetailApiConstruct',
+      {
+        restApi: api,
+        resource,
+        lambdaFunction,
+        cognitoAuthorizer,
+        models: {
+          updateUserModel,
+        },
+      }
+    );
 
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one API Gateway method', () => {
+  it('should create one API Gateway method', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 
@@ -99,7 +108,7 @@ describe('UpdateUserDetailApiConstruct', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         RequestModels: {
           'application/json': {
-            Ref: Match.stringLikeRegexp('.*UpdateUserProfileModel.*')
+            Ref: Match.stringLikeRegexp('.*TestUpdateUserProfileModel.*')
           }
         }
       });
@@ -203,7 +212,7 @@ describe('UpdateUserDetailApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*UpdateUserProfileModel.*')
+                Ref: Match.stringLikeRegexp('.*TestUpdateUserProfileModel.*')
               }
             }
           },

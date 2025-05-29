@@ -17,46 +17,54 @@ jest.mock('@shared/layer.helper', () => ({
   getLibrariesLayer: jest.fn().mockImplementation(() => ({}))
 }));
 
-describe('ProductsResourceConstruct', () => {
+describe('TestProductsResourceConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function Authorizer
     const lambdaFunctionAuthorizer = new NodejsFunction(
       stack,
-      'LambdaFunctionAuthorizer',
+      'TestLambdaFunctionAuthorizer',
       {
         handler: 'index.handler',
         code: Code.fromInline('exports.handler = async () => {}')
       }
     );
-    const lambdaAuthorizer = new RequestAuthorizer(stack, 'LambdaAuthorizer', {
-      handler: lambdaFunctionAuthorizer,
-      identitySources: ['method.request.header.Authorization'],
-    });
+    const lambdaAuthorizer = new RequestAuthorizer(
+      stack,
+      'TestLambdaAuthorizer',
+      {
+        handler: lambdaFunctionAuthorizer,
+        identitySources: ['method.request.header.Authorization'],
+      }
+    );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
 
     // Create product model
-    const productModel = new Model(stack, 'ProductsResponseModel', {
-      restApi: api,
-      modelName: 'ProductsResponseModel',
+    const productModel = new Model(stack, 'TestProductsResponseModel', {
+      restApi,
+      modelName: 'TestProductsResponseModel',
       schema: {}
     });
 
-    // Create User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
 
     // Create Resource
-    const resource = api.root.addResource('api');
+    const resource = restApi.root.addResource('api');
 
     // Create Update User API
-    new ProductsResourceConstruct(stack, 'ProductsResourceConstruct', {
+    new ProductsResourceConstruct(stack, 'TestProductsResourceConstruct', {
       resource,
       userPool,
       librariesLayer,
@@ -69,7 +77,7 @@ describe('ProductsResourceConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one API Gateway methods', () => {
+  it('should create one API Gateway methods', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 
@@ -88,7 +96,7 @@ describe('ProductsResourceConstruct', () => {
   it('should create models in API Gateway', () => {
     template.resourceCountIs('AWS::ApiGateway::Model', 1);
     template.hasResourceProperties('AWS::ApiGateway::Model', {
-      Name: 'ProductsResponseModel',
+      Name: 'TestProductsResponseModel',
     });
   });
 

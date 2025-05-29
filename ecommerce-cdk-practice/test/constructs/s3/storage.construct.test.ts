@@ -4,13 +4,13 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import { StorageConstruct } from '@constructs/s3/storage.construct';
 
 describe('StorageConstruct', () => {
-  let app: App;
-  let stack: Stack;
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestStorageStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // Create Storage Construct
     new StorageConstruct(stack, 'TestStorageConstruct');
 
     template = Template.fromStack(stack);
@@ -43,7 +43,12 @@ describe('StorageConstruct', () => {
         CorsRules: [
           {
             AllowedHeaders: ['*'],
-            AllowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+            AllowedMethods: [
+              'GET',
+              'POST',
+              'PUT',
+              'DELETE'
+            ],
             AllowedOrigins: ['*'],
             ExposedHeaders: [],
           },

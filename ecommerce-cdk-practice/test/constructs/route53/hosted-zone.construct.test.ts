@@ -1,22 +1,19 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import 'dotenv/config';
 
 import {
   HostedZoneConstruct
 } from '@constructs/route53/hosted-zone.construct';
 
-describe('HostedZoneConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestHostedZoneConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestHostedZoneStack', {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
       env: {
-        account: process.env.AWS_ACCOUNT_ID,
-        region: process.env.AWS_REGION
+        account: '123456789012',
+        region: 'us-east-1'
       }
     });
     new HostedZoneConstruct(stack, 'TestHostedZoneConstruct');

@@ -12,14 +12,14 @@ jest.mock('@shared/secret.helper', () => ({
   }
 }));
 
-describe('SnsTopicConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestSnsTopicConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestSnsStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // Create SNS Topic Construct
     new SnsTopicConstruct(stack, 'TestSnsTopicConstruct');
 
     template = Template.fromStack(stack);

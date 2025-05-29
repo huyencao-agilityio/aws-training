@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Fn, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
@@ -8,30 +8,35 @@ import {
   CloudFrontConstruct
 } from '@constructs/cloudfront/cloudfront.construct';
 
-describe('CloudFrontConstruct', () => {
+describe('TestCloudFrontConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack', {
+    const stack = new Stack(app, 'TestStack', {
       env: {
         account: '123456789012',
         region: 'us-east-1'
       }
     });
 
-    const lambdaFunction = new NodejsFunction(stack, 'LambdaFunction', {
+    // Get certificate from existing certificate
+    const certificate = Certificate.fromCertificateArn(
+      stack,
+      'TestFromCertificate',
+      Fn.importValue('TestCertificate')
+    );
+
+    // Create Lambda Function
+    const lambdaFunction = new NodejsFunction(stack, 'TestLambdaFunction', {
       functionName: 'test-lambda',
       runtime: Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {};'),
     });
 
-    const certificate = new Certificate(stack, 'Certificate', {
-      domainName: '*.example.com',
-    });
-
-    new CloudFrontConstruct(stack, 'CloudFrontConstruct', {
+    // Create CloudFront Construct
+    new CloudFrontConstruct(stack, 'TestCloudFrontConstruct', {
       lambdaFunction,
       certificate,
       domainName: 'cdn.example.com'
@@ -40,7 +45,7 @@ describe('CloudFrontConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one distribution', () => {
+  it('should create one distribution', () => {
     template.resourceCountIs('AWS::CloudFront::Distribution', 1);
 
   });
@@ -55,7 +60,7 @@ describe('CloudFrontConstruct', () => {
   it('should create OAC with correct properties', () => {
     template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
       OriginAccessControlConfig: {
-        Name: Match.stringLikeRegexp('^ecommerce-.*-dev$'),
+        Name: 'ecommerce-user-assets-oac-dev',
         Description: 'OAC for CloudFront to access S3',
         OriginAccessControlOriginType: 's3',
         SigningBehavior: 'always',
@@ -69,9 +74,7 @@ describe('CloudFrontConstruct', () => {
       DistributionConfig: {
         Origins:[
           {
-            DomainName: Match.stringLikeRegexp(
-              '^ecommerce-.*-dev\\.s3\\.us-east-1\\.amazonaws\\.com$'
-            ),
+            DomainName: 'ecommerce-user-assets-dev.s3.us-east-1.amazonaws.com',
             S3OriginConfig:{
               OriginAccessIdentity: ''
             },
@@ -96,7 +99,9 @@ describe('CloudFrontConstruct', () => {
     template.hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerCertificate: {
-          AcmCertificateArn: Match.anyValue()
+          AcmCertificateArn: {
+            'Fn::ImportValue': Match.stringLikeRegexp('.*TestCertificate.*')
+          }
         },
       }
     });
@@ -122,7 +127,7 @@ describe('CloudFrontConstruct', () => {
             {
               EventType: 'origin-response',
               LambdaFunctionARN: {
-                Ref: Match.stringLikeRegexp('LambdaFunction.*Version.*'),
+                Ref: Match.stringLikeRegexp('.*TestLambdaFunction.*Version.*'),
               },
             },
           ],
@@ -155,7 +160,7 @@ describe('CloudFrontConstruct', () => {
                   [
                     'arn:aws:cloudfront::123456789012:distribution/',
                     {
-                      Ref: Match.stringLikeRegexp('CloudFrontDistribution.*')
+                      Ref: Match.stringLikeRegexp('.*TestCloudFrontConstruct.*')
                     }
                   ]
                 ]

@@ -5,22 +5,21 @@ import { Vpc, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { PostgresRdsConstruct } from '@constructs/rds/rds.construct';
 
 describe('PostgresRdsConstruct', () => {
-  let app: App;
-  let stack: Stack;
   let template: Template;
-  let vpc: Vpc;
-  let securityGroup: SecurityGroup;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestRdsStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
 
     // Create VPC and Security Group for testing
-    vpc = new Vpc(stack, 'TestVpc');
-    securityGroup = new SecurityGroup(stack, 'TestSecurityGroup', {
-      vpc,
-      description: 'Test security group for RDS'
+    const vpc = Vpc.fromLookup(stack, 'TestVpc', {
+      vpcId: 'vpc-id'
     });
+    const securityGroup = SecurityGroup.fromLookupById(
+      stack,
+      'TestSecurityGroup',
+      'sg-id'
+    );
 
     new PostgresRdsConstruct(stack, 'TestRdsConstruct', {
       vpc,
@@ -64,7 +63,7 @@ describe('PostgresRdsConstruct', () => {
       VPCSecurityGroups: Match.arrayWith([
         Match.objectLike({
           'Fn::GetAtt': [
-            Match.stringLikeRegexp('TestSecurityGroup'),
+            Match.stringLikeRegexp('.*TestSecurityGroup.*'),
             'GroupId'
           ]
         })

@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Fn, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 
@@ -20,18 +20,21 @@ jest.mock('@shared/secret.helper', () => ({
   }
 }));
 
-describe('UserPoolConstruct', () => {
-  let app: App;
-  let stack: Stack;
+describe('TestUserPoolConstruct', () => {
   let template: Template;
+
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestStack');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
 
-    const certificate = new Certificate(stack, 'TestCert', {
-      domainName: '*.example.com',
-    });
+    // Get certificate from certificate
+    const certificate = Certificate.fromCertificateArn(
+      stack,
+      'TestFromCertificate',
+      Fn.importValue('TestCertificate')
+    );
 
+    // Create user pool construct
     new UserPoolConstruct(stack, 'TestUserPoolConstruct', {
       region: 'us-east-1',
       domainName: 'auth.example.com',
@@ -42,6 +45,9 @@ describe('UserPoolConstruct', () => {
   });
 
   describe('Basic Configuration', () => {
+    it('should create a User Pool', () => {
+      template.resourceCountIs('AWS::Cognito::UserPool', 1);
+    });
 
     it('should create user pool with correct name pattern', () => {
       template.hasResourceProperties('AWS::Cognito::UserPool', {
@@ -49,7 +55,7 @@ describe('UserPoolConstruct', () => {
       });
     });
 
-    it('should configure email as the primary sign-in attribute', () => {
+    it('should config email as the primary sign-in attribute', () => {
       template.hasResourceProperties('AWS::Cognito::UserPool', {
         UsernameAttributes: ['email']
       });
@@ -67,7 +73,7 @@ describe('UserPoolConstruct', () => {
       });
     });
 
-    it('should configure standard attributes for email and given name', () => {
+    it('should config standard attributes for email and given name', () => {
       template.hasResourceProperties('AWS::Cognito::UserPool', {
         Schema: Match.arrayWith([
           Match.objectLike({
@@ -134,13 +140,14 @@ describe('UserPoolConstruct', () => {
     });
 
     it('should apply removal policy DESTROY', () => {
-      const resource = template.findResources('AWS::Cognito::UserPool');
-      expect(Object.values(resource)[0]?.DeletionPolicy).toEqual('Delete');
+      template.hasResource('AWS::Cognito::UserPool', {
+        DeletionPolicy: 'Delete'
+      });
     });
   });
 
   describe('UserPool Groups', () => {
-    it('should create exactly two groups', () => {
+    it('should create two groups', () => {
       template.resourceCountIs('AWS::Cognito::UserPoolGroup', 2);
     });
 
@@ -148,7 +155,7 @@ describe('UserPoolConstruct', () => {
       template.hasResourceProperties('AWS::Cognito::UserPoolGroup', {
         GroupName: COGNITO.GROUPS.ADMIN.NAME,
         UserPoolId: {
-          Ref: Match.stringLikeRegexp('UserPool')
+          Ref: Match.stringLikeRegexp('.*TestUserPoolConstruct.*')
         },
         Description: COGNITO.GROUPS.ADMIN.DESCRIPTION
       });
@@ -158,7 +165,7 @@ describe('UserPoolConstruct', () => {
       template.hasResourceProperties('AWS::Cognito::UserPoolGroup', {
         GroupName: COGNITO.GROUPS.USER.NAME,
         UserPoolId: {
-          Ref: Match.stringLikeRegexp('UserPool')
+          Ref: Match.stringLikeRegexp('.*TestUserPoolConstruct.*')
         },
         Description: COGNITO.GROUPS.USER.DESCRIPTION
       });
@@ -171,7 +178,7 @@ describe('UserPoolConstruct', () => {
         Domain: 'auth.example.com',
         CustomDomainConfig: {
           CertificateArn: {
-            Ref: Match.stringLikeRegexp('TestCert.*'),
+            'Fn::ImportValue': Match.stringLikeRegexp('.*TestCertificate.*'),
           },
         },
       });
@@ -179,7 +186,7 @@ describe('UserPoolConstruct', () => {
   });
 
   describe('Config user attribute update settings', () => {
-    it('should configure user attribute settings correctly', () => {
+    it('should config user attribute settings correctly', () => {
       template.hasResourceProperties('AWS::Cognito::UserPool', {
         UserAttributeUpdateSettings: {
           AttributesRequireVerificationBeforeUpdate: ['email'],

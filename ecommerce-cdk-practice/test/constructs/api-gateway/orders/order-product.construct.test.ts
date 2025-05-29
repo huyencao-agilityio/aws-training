@@ -13,56 +13,61 @@ import {
   OrderProductApiConstruct
 } from '@constructs/api-gateway/orders/order-product.construct';
 
-describe('OrderProductApiConstruct', () => {
+describe('TestOrderProductApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'UpdateUserLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestUpdateUserLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}')
     });
 
     // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
+    // Create cognito authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'CognitoAuthorization',
+      'TestCognitoAuthorization',
       {
-        authorizerName: 'CognitoAuthorization',
+        authorizerName: 'TestCognitoAuthorization',
         cognitoUserPools: [userPool],
       }
     );
 
     // Create common response model
-    const commonResponseModel = new Model(stack, 'CommonResponseModel', {
-      restApi: api,
-      modelName: 'CommonResponseModel',
+    const commonResponseModel = new Model(stack, 'TestCommonResponseModel', {
+      restApi,
+      modelName: 'TestCommonResponseModel',
       schema: {}
     });
 
     // Create order model
-    const orderModel = new Model(stack, 'OrderModel', {
-      restApi: api,
-      modelName: 'OrderModel',
+    const orderModel = new Model(stack, 'TestOrderModel', {
+      restApi,
+      modelName: 'TestOrderModel',
       schema: {}
     });
 
     // Create resource
-    const resource = api.root
+    const resource = restApi.root
       .addResource('api')
       .addResource('orders')
       .addResource('{orderId}')
       .addResource('accept');
 
     // Create order product API
-    new OrderProductApiConstruct(stack, 'OrderProductApiConstruct', {
-      restApi: api,
+    new OrderProductApiConstruct(stack, 'TestOrderProductApiConstruct', {
+      restApi,
       resource,
       lambdaFunction,
       cognitoAuthorizer,
@@ -75,7 +80,7 @@ describe('OrderProductApiConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one API Gateway method', () => {
+  it('should create one API Gateway method', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 
@@ -194,7 +199,7 @@ describe('OrderProductApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*CommonResponseModel.*')
+                Ref: Match.stringLikeRegexp('.*TestCommonResponseModel.*')
               }
             }
           },

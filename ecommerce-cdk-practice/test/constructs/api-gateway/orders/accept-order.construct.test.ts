@@ -13,49 +13,58 @@ import {
   AcceptOrderApiConstruct
 } from '@constructs/api-gateway/orders/accept-order.construct';
 
-describe('AcceptOrderApiConstruct', () => {
+describe('TestAcceptOrderApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
-    const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const app = new App({});
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1'
+      }
+    });
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'UpdateUserLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestUpdateUserLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}')
     });
 
-    // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'CognitoAuthorization',
+      'TestCognitoAuthorization',
       {
-        authorizerName: 'CognitoAuthorization',
+        authorizerName: 'TestCognitoAuthorization',
         cognitoUserPools: [userPool],
       }
     );
 
     // Create common response model
-    const commonResponseModel = new Model(stack, 'CommonResponseModel', {
-      restApi: api,
-      modelName: 'CommonResponseModel',
+    const commonResponseModel = new Model(stack, 'TestCommonResponseModel', {
+      restApi,
+      modelName: 'TestCommonResponseModel',
       schema: {}
     });
 
     // Create Resource
-    const resource = api.root
+    const resource = restApi.root
       .addResource('api')
       .addResource('orders')
       .addResource('{orderId}')
       .addResource('accept');
 
     // Create Accept Order API
-    new AcceptOrderApiConstruct(stack, 'AcceptOrderApiConstruct', {
-      restApi: api,
+    new AcceptOrderApiConstruct(stack, 'TestAcceptOrderApiConstruct', {
+      restApi,
       resource,
       lambdaFunction,
       cognitoAuthorizer,
@@ -81,7 +90,9 @@ describe('AcceptOrderApiConstruct', () => {
     it('should config method request with correct authorization', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         AuthorizationType: 'COGNITO_USER_POOLS',
-        AuthorizationScopes: ['aws.cognito.signin.user.admin'],
+        AuthorizationScopes: [
+          'aws.cognito.signin.user.admin'
+        ],
         ApiKeyRequired: false
       });
     });
@@ -181,7 +192,7 @@ describe('AcceptOrderApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*CommonResponseModel.*')
+                Ref: Match.stringLikeRegexp('.*TestCommonResponseModel.*')
               }
             }
           },

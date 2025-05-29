@@ -12,61 +12,65 @@ import {
   OrderProductResourceConstruct
 } from '@constructs/api-gateway/orders';
 
-// Mock libraries layer in Lambda
-jest.mock('@shared/layer.helper', () => ({
-  getLibrariesLayer: jest.fn().mockImplementation(() => ({}))
-}));
-
-describe('OrderProductResourceConstruct', () => {
+describe('TestOrderProductResourceConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
-    // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPoolId'
+    );
+    // Create cognito authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'CognitoAuthorization',
+      'TestCognitoAuthorization',
       {
-        authorizerName: 'CognitoAuthorization',
+        authorizerName: 'TestCognitoAuthorization',
         cognitoUserPools: [userPool],
       }
     );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
 
     // Create common response model
-    const commonResponseModel = new Model(stack, 'CommonResponseModel', {
-      restApi: api,
-      modelName: 'CommonResponseModel',
+    const commonResponseModel = new Model(stack, 'TestCommonResponseModel', {
+      restApi,
+      modelName: 'TestCommonResponseModel',
       schema: {}
     });
 
     // Create order model
-    const orderModel = new Model(stack, 'OrderModel', {
-      restApi: api,
-      modelName: 'OrderModel',
+    const orderModel = new Model(stack, 'TestOrderModel', {
+      restApi,
+      modelName: 'TestOrderModel',
       schema: {}
     });
 
     // Create Resource
-    const resource = api.root.addResource('api');
+    const resource = restApi.root.addResource('api');
 
     // Create order product resource
-    new OrderProductResourceConstruct(stack, 'OrderProductResourceConstruct', {
-      restApi: api,
-      resource,
-      librariesLayer,
-      cognitoAuthorizer,
-      models: {
-        orderModel,
-        commonResponseModel,
-      },
-    });
+    new OrderProductResourceConstruct(
+      stack,
+      'TestOrderProductResourceConstruct',
+      {
+        restApi,
+        resource,
+        librariesLayer,
+        cognitoAuthorizer,
+        models: {
+          orderModel,
+          commonResponseModel,
+        },
+      }
+    );
 
     template = Template.fromStack(stack);
   });
@@ -118,14 +122,10 @@ describe('OrderProductResourceConstruct', () => {
   it('should create models in API Gateway', () => {
     template.resourceCountIs('AWS::ApiGateway::Model', 2);
     template.hasResourceProperties('AWS::ApiGateway::Model', {
-      Name: 'OrderModel',
+      Name: 'TestOrderModel',
     });
     template.hasResourceProperties('AWS::ApiGateway::Model', {
-      Name: 'CommonResponseModel',
+      Name: 'TestCommonResponseModel',
     });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 });

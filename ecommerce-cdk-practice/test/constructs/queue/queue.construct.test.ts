@@ -3,14 +3,13 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 
 import { QueueConstruct } from '@constructs/queue/queue.construct';
 
-describe('QueueConstruct', () => {
-  let app: App;
+describe('TestQueueConstruct', () => {
   let stack: Stack;
   let template: Template;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestQueueStack');
+    const app = new App();
+    stack = new Stack(app, 'TestStack');
   });
 
   describe('Standard Queue', () => {

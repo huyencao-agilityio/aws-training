@@ -13,49 +13,54 @@ import {
   RejectOrderApiConstruct
 } from '@constructs/api-gateway/orders/reject-order.construct';
 
-describe('RejectOrderApiConstruct', () => {
+describe('TestRejectOrderApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'UpdateUserLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestUpdateUserLambda', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}')
     });
 
-    // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
+    // Create Cognito authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'CognitoAuthorization',
+      'TestCognitoAuthorization',
       {
-        authorizerName: 'CognitoAuthorization',
+        authorizerName: 'TestCognitoAuthorization',
         cognitoUserPools: [userPool],
       }
     );
 
     // Create common response model
-    const commonResponseModel = new Model(stack, 'CommonResponseModel', {
-      restApi: api,
-      modelName: 'CommonResponseModel',
+    const commonResponseModel = new Model(stack, 'TestCommonResponseModel', {
+      restApi,
+      modelName: 'TestCommonResponseModel',
       schema: {}
     });
 
     // Create Resource
-    const resource = api.root
+    const resource = restApi.root
       .addResource('api')
       .addResource('orders')
       .addResource('{orderId}')
       .addResource('accept');
 
     // Create reject order API
-    new RejectOrderApiConstruct(stack, 'RejectOrderApiConstruct', {
-      restApi: api,
+    new RejectOrderApiConstruct(stack, 'TestRejectOrderApiConstruct', {
+      restApi,
       resource,
       lambdaFunction,
       cognitoAuthorizer,
@@ -181,7 +186,7 @@ describe('RejectOrderApiConstruct', () => {
             StatusCode: '200',
             ResponseModels: {
               'application/json': {
-                Ref: Match.stringLikeRegexp('.*CommonResponseModel.*')
+                Ref: Match.stringLikeRegexp('.*TestCommonResponseModel.*')
               }
             }
           },

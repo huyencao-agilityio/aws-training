@@ -6,26 +6,26 @@ import {
   HealthCheckApiConstruct
 } from '@constructs/api-gateway/health-check/health-check.construct';
 
-describe('HealthCheckApiConstruct', () => {
+describe('TestHealthCheckApiConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const api = new RestApi(stack, 'TestRestApi');
 
     // Add a resource for the health check
     const resource = api.root.addResource('health-check');
 
     // Add the health check construct
-    new HealthCheckApiConstruct(stack, 'HealthCheckConstruct', {
+    new HealthCheckApiConstruct(stack, 'TestHealthCheckConstruct', {
       resource,
     });
 
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly one API Gateway method', () => {
+  it('should create one API Gateway method', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 1);
   });
 
@@ -78,7 +78,9 @@ describe('HealthCheckApiConstruct', () => {
   describe('Method Response', () => {
     it('should config method response with correct status code', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
-        MethodResponses: [{ StatusCode: '200' }]
+        MethodResponses: [{
+          StatusCode: '200'
+        }]
       });
     });
   });

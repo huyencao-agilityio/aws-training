@@ -15,55 +15,64 @@ jest.mock('@shared/layer.helper', () => ({
   getLibrariesLayer: jest.fn().mockImplementation(() => ({}))
 }));
 
-describe('UsersResourceConstruct', () => {
+describe('TestUsersResourceConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const api = new RestApi(stack, 'Api');
+    const stack = new Stack(app, 'TestStack');
+    const restApi = new RestApi(stack, 'TestRestApi');
 
-    // Create Cognito User Pool
-    const userPool = new UserPool(stack, 'UserPool');
+    // Get user pool from existing user pool
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
+    // Create Cognito authorizer
     const cognitoAuthorizer = new CognitoUserPoolsAuthorizer(
       stack,
-      'CognitoAuthorization',
+      'TestCognitoAuthorization',
       {
-        authorizerName: 'CognitoAuthorization',
+        authorizerName: 'TestCognitoAuthorization',
         cognitoUserPools: [userPool],
       }
     );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
 
     // Create Update User Model
-    const updateUserModel = new Model(stack, 'UpdateUserModel', {
-      restApi: api,
-      modelName: 'UpdateUserModel',
+    const updateUserModel = new Model(stack, 'TestUpdateUserModel', {
+      restApi,
+      modelName: 'TestUpdateUserModel',
       schema: {},
     });
 
     // Create Upload Avatar Model
-    const uploadAvatarModel = new Model(stack, 'UploadAvatarModel', {
-      restApi: api,
-      modelName: 'UploadAvatarModel',
+    const uploadAvatarModel = new Model(stack, 'TestUploadAvatarModel', {
+      restApi,
+      modelName: 'TestUploadAvatarModel',
       schema: {},
     });
 
     // Create Presigned S3 Response Model
-    const presignedS3ResponseModel = new Model(stack, 'PresignedS3ResponseModel', {
-      restApi: api,
-      modelName: 'PresignedS3ResponseModel',
-      schema: {},
-    });
+    const presignedS3ResponseModel = new Model(
+      stack,
+      'TestPresignedS3ResponseModel',
+      {
+        restApi,
+        modelName: 'TestPresignedS3ResponseModel',
+        schema: {},
+      }
+    );
 
     // Create Resource
-    const resource = api.root.addResource('api');
+    const resource = restApi.root.addResource('api');
 
     // Create Update User API
-    new UsersResourceConstruct(stack, 'UsersResourceConstruct', {
-      restApi: api,
+    new UsersResourceConstruct(stack, 'TestUsersResourceConstruct', {
+      restApi,
       resource,
       librariesLayer,
       cognitoAuthorizer,
@@ -77,7 +86,7 @@ describe('UsersResourceConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should create exactly two API Gateway methods', () => {
+  it('should create two API Gateway methods', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 2);
   });
 
@@ -114,13 +123,13 @@ describe('UsersResourceConstruct', () => {
   it('should create models in API Gateway', () => {
     template.resourceCountIs('AWS::ApiGateway::Model', 3);
     template.hasResourceProperties('AWS::ApiGateway::Model', {
-      Name: 'UpdateUserModel',
+      Name: 'TestUpdateUserModel',
     });
     template.hasResourceProperties('AWS::ApiGateway::Model', {
-      Name: 'UploadAvatarModel',
+      Name: 'TestUploadAvatarModel',
     });
     template.hasResourceProperties('AWS::ApiGateway::Model', {
-      Name: 'PresignedS3ResponseModel',
+      Name: 'TestPresignedS3ResponseModel',
     });
   });
 
