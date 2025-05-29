@@ -7,22 +7,22 @@ import {
 } from '@constructs/lambda/cognito/post-confirmation.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('PostConfirmationLambdaConstruct', () => {
+describe('TestPostConfirmationLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack(app, 'TestStack');
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
     // Create user pool
-    const userPool = new UserPool(stack, 'UserPool')
+    const userPool = new UserPool(stack, 'TestFromUserPool')
 
     // Create post confirmation lambda construct
     new PostConfirmationLambdaConstruct(
       stack,
-      'PostConfirmationLambdaConstruct',
+      'TestPostConfirmationLambdaConstruct',
       {
         librariesLayer,
         userPool,
@@ -75,7 +75,7 @@ describe('PostConfirmationLambdaConstruct', () => {
             Action: 'cognito-idp:AdminAddUserToGroup',
             Resource: {
               'Fn::GetAtt': [
-                Match.stringLikeRegexp('.*UserPool*.'),
+                Match.stringLikeRegexp('.*TestFromUserPool.*'),
                 'Arn'
               ]
             }

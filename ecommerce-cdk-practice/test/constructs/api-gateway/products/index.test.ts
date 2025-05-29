@@ -44,7 +44,7 @@ describe('TestProductsResourceConstruct', () => {
     );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
 
     // Create product model
     const productModel = new Model(stack, 'TestProductsResponseModel', {

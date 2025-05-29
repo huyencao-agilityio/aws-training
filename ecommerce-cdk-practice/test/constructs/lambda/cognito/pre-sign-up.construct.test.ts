@@ -7,22 +7,22 @@ import {
 } from '@constructs/lambda/cognito/pre-sign-up.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('PreSignUpLambdaConstruct', () => {
+describe('TestPreSignUpLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack(app, 'TestStack');
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
     // Create user pool
-    const userPool = new UserPool(stack, 'UserPool')
+    const userPool = new UserPool(stack, 'TestFromUserPool')
 
     // Create pre signup lambda construct
     new PreSignUpLambdaConstruct(
       stack,
-      'PreSignUpLambdaConstruct',
+      'TestPreSignUpLambdaConstruct',
       {
         librariesLayer,
         userPool,
@@ -80,7 +80,7 @@ describe('PreSignUpLambdaConstruct', () => {
             ],
             Resource: {
               'Fn::GetAtt': [
-                Match.stringLikeRegexp('.*UserPool*.'),
+                Match.stringLikeRegexp('.*TestFromUserPool.*'),
                 'Arn'
               ]
             }

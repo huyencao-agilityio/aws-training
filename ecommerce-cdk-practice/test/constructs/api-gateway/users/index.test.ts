@@ -40,7 +40,7 @@ describe('TestUsersResourceConstruct', () => {
     );
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'test-lambda-layer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
 
     // Create Update User Model
     const updateUserModel = new Model(stack, 'TestUpdateUserModel', {

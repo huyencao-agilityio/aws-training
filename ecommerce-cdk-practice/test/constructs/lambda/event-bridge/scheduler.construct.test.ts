@@ -6,12 +6,12 @@ import {
 } from '@constructs/lambda/event-bridge/scheduler.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('SchedulerLambdaConstruct', () => {
+describe('TestSchedulerLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack', {
+    const stack = new Stack(app, 'TestStack', {
       env: {
         account: '123456789012',
         region: 'us-east-1',
@@ -19,12 +19,12 @@ describe('SchedulerLambdaConstruct', () => {
     });
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
 
     // Create scheduler lambda construct
     new SchedulerLambdaConstruct(
       stack,
-      'SchedulerLambdaConstruct',
+      'TestSchedulerLambdaConstruct',
       {
         librariesLayer,
       }

@@ -7,22 +7,26 @@ import {
 } from '@constructs/lambda/api-gateway/products.construct';
 import { getLibrariesLayer } from '@shared/layer.helper';
 
-describe('ProductsLambdaConstruct', () => {
+describe('TestProductsLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack(app, 'TestStack');
 
     // Get libraries layer
-    const librariesLayer = getLibrariesLayer(stack, 'LibrariesLayer');
-    // Get user pool
-    const userPool = new UserPool(stack, 'UserPool');
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
+    // Get user pool from user pool id
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
 
     // Create products lambda construct
     new ProductsLambdaConstruct(
       stack,
-      'ProductsLambdaConstruct',
+      'TestProductsLambdaConstruct',
       {
         librariesLayer,
         userPool

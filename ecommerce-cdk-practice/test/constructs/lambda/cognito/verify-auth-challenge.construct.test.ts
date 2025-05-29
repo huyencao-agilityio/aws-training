@@ -5,17 +5,17 @@ import {
   VerifyAuthChallengeLambdaConstruct
 } from '@constructs/lambda/cognito/verify-auth-challenge.construct';
 
-describe('VerifyAuthChallengeLambdaConstruct', () => {
+describe('TestVerifyAuthChallengeLambdaConstruct', () => {
   let template: Template;
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack(app, 'TestStack');
 
     // Create verify auth challenge lambda construct
     new VerifyAuthChallengeLambdaConstruct(
       stack,
-      'VerifyAuthChallengeLambdaConstruct'
+      'TestVerifyAuthChallengeLambdaConstruct'
     );
 
     template = Template.fromStack(stack);
