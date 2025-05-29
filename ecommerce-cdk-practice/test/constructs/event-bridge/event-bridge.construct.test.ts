@@ -1,6 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 
 import {
   EventBridgeConstruct
@@ -22,7 +23,7 @@ describe('EventBridgeConstruct', () => {
       }
     });
 
-    const lambdaFunction = new Function(stack, 'TestLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestLambda', {
       functionName: 'test-lambda',
       runtime: Runtime.NODEJS_18_X,
       handler: 'index.handler',
