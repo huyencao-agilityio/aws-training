@@ -13,6 +13,7 @@ import { StorageStack } from '@stacks/storage.stack';
 import { VPCStack } from '@stacks/vpc.stack';
 import { Route53Stack } from '@stacks/route53.stack';
 import { CertificateStack } from '@stacks/certificate.stack';
+import { SnsStack } from '@stacks/sns.stack';
 
 /**
  * BaseStage is a class that groups common stacks used across different environments
@@ -53,7 +54,7 @@ export class BaseStage extends Stage {
     });
 
     // Create S3 storage stack
-    const storageStack = new StorageStack(this, 'StorageStack', {
+    new StorageStack(this, 'StorageStack', {
       stackName: `${stageName}-storage-stack`,
     });
 
@@ -94,9 +95,14 @@ export class BaseStage extends Stage {
       stackName: `${stageName}-event-bridge-stack`
     });
 
+    const snsStack = new SnsStack(this, 'SnsStack', {
+      stackName: `${stageName}-sns-stack`
+    });
+
     // Create monitoring stack
     const monitoringStack = new MonitoringStack(this, 'MonitoringStack', {
-      stackName: `${stageName}-monitoring-stack`
+      stackName: `${stageName}-monitoring-stack`,
+      snsTopic: snsStack.snsTopicConstruct.topic
     });
 
     // Explicit dependency
