@@ -12,6 +12,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { BaseConstructProps } from '@interfaces/construct.interface';
 import { getQueueResources } from '@shared/queue.helper';
 import { getDatabaseConfig } from '@shared/database.helper';
+import { buildResourceName } from '@shared/resource.helper';
 import { PolicyHelper } from '@shared/policy.helper';
 import { QueueResources } from '@app-types/queue.type';
 import {
@@ -20,7 +21,6 @@ import {
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
-import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for API order
@@ -35,7 +35,7 @@ export class OrderLambdaConstruct extends Construct {
 
     const { librariesLayer } = props;
     // Get the queue resources
-    const queueResources = getQueueResources();
+    const queueResources = getQueueResources(scope);
     // Get the db instance
     const dbInstance = getDatabaseConfig(scope);
 

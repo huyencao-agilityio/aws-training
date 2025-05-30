@@ -47,14 +47,14 @@ export class QueueStack extends Stack {
         librariesLayer: librariesLayer
       });
 
-      new CfnOutput(this, `${baseName}Url`, {
+      new CfnOutput(this, `${baseName}url`, {
         value: queueConstruct.queue.queueUrl,
-        exportName: `${baseName}Url`,
+        exportName: `${baseName}-url`,
       });
 
-      new CfnOutput(this, `${baseName}Arn`, {
+      new CfnOutput(this, `${baseName}arn`, {
         value: queueConstruct.queue.queueArn,
-        exportName: `${baseName}Arn`,
+        exportName: `${baseName}-arn`,
       });
     }
   }
