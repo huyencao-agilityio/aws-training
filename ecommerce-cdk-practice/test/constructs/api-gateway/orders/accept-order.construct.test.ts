@@ -27,7 +27,7 @@ describe('TestAcceptOrderApiConstruct', () => {
     const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'TestUpdateUserLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestLambdaFunction', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}')
@@ -112,7 +112,21 @@ describe('TestAcceptOrderApiConstruct', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           IntegrationHttpMethod: 'POST',
-          Uri: Match.anyValue()
+          Uri: Match.objectLike({
+            'Fn::Join': Match.arrayWith([
+              Match.arrayWith([
+                Match.stringLikeRegexp(
+                  ':apigateway:us-east-1:lambda:path/2015-03-31/functions/'
+                ),
+                Match.objectLike({
+                  'Fn::GetAtt': Match.arrayWith([
+                    Match.stringLikeRegexp('.*TestLambdaFunction.*'),
+                    'Arn'
+                  ])
+                }),
+              ])
+            ])
+          })
         }
       })
     });

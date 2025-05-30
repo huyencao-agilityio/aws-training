@@ -72,13 +72,15 @@ describe('TestPostConfirmationLambdaConstruct', () => {
         Statement: Match.arrayWith([
           Match.objectLike({
             Effect: 'Allow',
-            Action: 'cognito-idp:AdminAddUserToGroup',
-            Resource: {
+            Action: [
+              'cognito-idp:AdminAddUserToGroup'
+            ],
+            Resource: [{
               'Fn::GetAtt': [
                 Match.stringLikeRegexp('.*TestFromUserPool.*'),
                 'Arn'
               ]
-            }
+            }]
           }),
         ]),
       },

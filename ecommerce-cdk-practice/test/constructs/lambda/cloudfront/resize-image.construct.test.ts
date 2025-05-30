@@ -42,7 +42,11 @@ describe('TestResizeImageLambdaConstruct', () => {
 
   it('should add policy statement to CloudFront access Lambda', () => {
     template.hasResourceProperties('AWS::Lambda::Function', {
-      Role: Match.anyValue(),
+      Role: {
+        'Fn::GetAtt': Match.arrayWith([
+          Match.stringLikeRegexp('.*TestResizeImageLambdaConstruct.*'),
+        ])
+      },
     }),
 
     template.hasResourceProperties('AWS::IAM::Policy', {

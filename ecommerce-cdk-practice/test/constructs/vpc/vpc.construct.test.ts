@@ -120,7 +120,11 @@ describe('TestVpcConstruct', () => {
     template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: '-1',
       Description: 'Allow all traffic from self',
-      SourceSecurityGroupId: Match.anyValue()
+      SourceSecurityGroupId: Match.objectLike({
+        'Fn::GetAtt': Match.arrayWith([
+          Match.stringLikeRegexp('.*TestVpcConstruct.*'),
+        ])
+      })
     });
   });
 });

@@ -18,11 +18,16 @@ describe('TestUploadAvatarApiConstruct', () => {
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'TestStack');
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1'
+      }
+    });
     const restApi = new RestApi(stack, 'TestRestApi');
 
     // Create Lambda Function
-    const lambdaFunction = new NodejsFunction(stack, 'UploadAvatarLambda', {
+    const lambdaFunction = new NodejsFunction(stack, 'TestLambdaFunction', {
       runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = async () => {}'),
@@ -135,7 +140,21 @@ describe('TestUploadAvatarApiConstruct', () => {
       template.hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           IntegrationHttpMethod: 'POST',
-          Uri: Match.anyValue()
+          Uri: Match.objectLike({
+            'Fn::Join': Match.arrayWith([
+              Match.arrayWith([
+                Match.stringLikeRegexp(
+                  ':apigateway:us-east-1:lambda:path/2015-03-31/functions/'
+                ),
+                Match.objectLike({
+                  'Fn::GetAtt': Match.arrayWith([
+                    Match.stringLikeRegexp('.*TestLambdaFunction.*'),
+                    'Arn'
+                  ])
+                }),
+              ])
+            ])
+          })
         }
       })
     });

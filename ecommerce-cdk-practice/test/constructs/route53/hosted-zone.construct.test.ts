@@ -21,7 +21,7 @@ describe('TestHostedZoneConstruct', () => {
     template = Template.fromStack(stack);
   });
 
-  it('should not create any CloudFormation resources', () => {
+  it('should not create any hosted zone', () => {
     template.resourceCountIs('AWS::Route53::HostedZone', 0);
   });
 });
