@@ -3,11 +3,10 @@ import path from 'path';
 import { Function, Runtime, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 
 import { UserPoolConstructProps } from '@interfaces/construct.interface';
-import { getDatabaseConfig } from '@shared/database.helper';
 import {
   LAMBDA_PATH,
   DEFAULT_LAMBDA_HANDLER,
@@ -16,6 +15,7 @@ import {
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
 import { PolicyHelper } from '@shared/policy.helper';
 import { buildResourceName } from '@shared/resource.helper';
+import { getDatabaseConfig } from '@shared/database.helper';
 
 /**
  * Construct sets up a Lambda function that
@@ -35,14 +35,22 @@ export class PostConfirmationLambdaConstruct extends Construct {
     this.postConfirmation = this.createPostConfirmationLambdaFunction(
       librariesLayer!,
       dbInstance,
-      userPool
+      userPool!,
     );
   }
 
+  /**
+   * Create the Lambda function for post-confirmation handling
+   *
+   * @param librariesLayer - The libraries layer
+   * @param dbInstance - The database instance
+   * @param userPool - The user pool
+   * @returns The Lambda function
+    */
   createPostConfirmationLambdaFunction(
     librariesLayer: ILayerVersion,
     dbInstance: Record<string, string>,
-    userPool: UserPool
+    userPool: IUserPool,
   ): Function {
     // Create new Lambda function
     const lambdaFunction = new NodejsFunction(this, 'PostConfirmation', {
@@ -65,9 +73,12 @@ export class PostConfirmationLambdaConstruct extends Construct {
       )
     });
 
-    // Add IAM policy to allow add user to group in Cognito
-    lambdaFunction.addToRolePolicy(
-      PolicyHelper.cognitoAddUserToGroup(userPool.userPoolArn)
+    // Add IAM policy for Lambda function
+    PolicyHelper.cognitoAddUserToGroup(
+      this,
+      'PostConfirmLambdaPolicy',
+      lambdaFunction.role!.roleName,
+      userPool.userPoolArn
     );
 
     return lambdaFunction;

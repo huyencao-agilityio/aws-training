@@ -130,14 +130,12 @@ export class CloudFrontConstruct extends Construct {
    *
    * @param bucket - The bucket to add the resource policy
    */
-  addBucketResourcePolicy(bucket: IBucket): void {
-    new CfnBucketPolicy(this, 'BucketPolicy', {
-      bucket: bucket.bucketName,
-      policyDocument: PolicyHelper.cloudfrontS3Access(
-        this,
-        bucket.bucketName,
-        this.distribution.distributionId
-      )
-    });
+  addBucketResourcePolicy(bucket: IBucket): CfnBucketPolicy {
+    return PolicyHelper.cloudfrontS3Access(
+      this,
+      bucket.bucketName,
+      'CloudFrontBucketPolicy',
+      this.distribution.distributionArn
+    );
   }
 }

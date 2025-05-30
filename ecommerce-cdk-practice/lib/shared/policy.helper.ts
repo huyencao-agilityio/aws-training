@@ -1,10 +1,11 @@
 import { Stack } from 'aws-cdk-lib';
 import {
+  CfnPolicy,
   Effect,
   PolicyStatement
 } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { CfnBucketPolicyProps } from 'aws-cdk-lib/aws-s3';
+import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 
 import { BUCKET_NAME } from '@constants/bucket.constant';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
@@ -89,7 +90,7 @@ export class PolicyHelper {
       actions: [
         'sqs:SendMessage'
       ],
-      resources: [resourceArn]
+      resources: [ resourceArn ]
     });
   }
 
@@ -99,13 +100,25 @@ export class PolicyHelper {
    * @param userPoolArn - The ARN of the user pool
    * @returns The policy statement for adding a user to a group in Cognito
    */
-  static cognitoAddUserToGroup(userPoolArn: string): PolicyStatement {
-    return new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        'cognito-idp:AdminAddUserToGroup'
-      ],
-      resources: [userPoolArn]
+  static cognitoAddUserToGroup(
+    scope: Construct,
+    policyName: string,
+    roleName: string,
+    userPoolArn: string
+  ): CfnPolicy {
+    return new CfnPolicy(scope, policyName, {
+      policyName: policyName,
+      roles: [ roleName ],
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Effect: 'Allow',
+          Action: [
+            'cognito-idp:AdminAddUserToGroup'
+          ],
+          Resource: [ userPoolArn ],
+        }],
+      }
     });
   }
 
@@ -115,15 +128,27 @@ export class PolicyHelper {
    * @param userPoolArn - The ARN of the user pool
    * @returns The policy statement for Cognito user management
    */
-  static cognitoUserManagement(userPoolArn: string): PolicyStatement {
-    return new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        'cognito-idp:ListUsers',
-        'cognito-idp:AdminLinkProviderForUser',
-        'cognito-idp:AdminDeleteUser'
-      ],
-      resources: [userPoolArn],
+  static cognitoUserManagement(
+    scope: Construct,
+    policyName: string,
+    roleName: string,
+    userPoolArn: string
+  ): CfnPolicy {
+    return new CfnPolicy(scope, policyName, {
+      policyName: policyName,
+      roles: [ roleName ],
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Effect: 'Allow',
+          Action: [
+            'cognito-idp:ListUsers',
+            'cognito-idp:AdminLinkProviderForUser',
+            'cognito-idp:AdminDeleteUser'
+          ],
+          Resource: [ userPoolArn ],
+        }],
+      }
     });
   }
 
@@ -207,7 +232,7 @@ export class PolicyHelper {
       actions: [
         'lambda:InvokeFunction'
       ],
-      resources: [functionArn],
+      resources: [ functionArn],
     });
   }
 
@@ -221,28 +246,30 @@ export class PolicyHelper {
   static cloudfrontS3Access(
     scope: Construct,
     bucketName: string,
-    distributionId: string
-  ): CfnBucketPolicyProps['policyDocument'] {
-    // Get the account of the stack
-    const { account } = PolicyHelper.getAccountContext(scope);
-
-    // Create a policy document for the bucket
-    // Need to use L1 to avoid dependency on the distribution
-    return {
-      Version: '2012-10-17',
-      Statement: [{
-        Effect: 'Allow',
-        Action: 's3:GetObject',
-        Resource: `arn:aws:s3:::${bucketName}/*`,
-        Principal: { Service: 'cloudfront.amazonaws.com' },
-        Condition: {
-          StringEquals: {
-            'AWS:SourceArn':
-              `arn:aws:cloudfront::${account}:distribution/${distributionId}`,
+    policyName: string,
+    distributionArn: string
+  ): CfnBucketPolicy {
+    return new CfnBucketPolicy(scope, policyName, {
+      bucket: bucketName,
+      policyDocument:{
+        Version: '2012-10-17',
+        Statement: [{
+          Effect: 'Allow',
+          Action: [
+            's3:GetObject'
+          ],
+          Resource: [
+            `arn:aws:s3:::${bucketName}/*`,
+          ],
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Condition: {
+            StringEquals: {
+              'AWS:SourceArn': distributionArn,
+            }
           }
-        }
-      }]
-    };
+        }]
+      }
+    });
   }
 
   /**
@@ -254,19 +281,28 @@ export class PolicyHelper {
    */
   static cloudfrontManageDistribution(
     scope: Construct,
-    distributionId: string
-  ): PolicyStatement {
-    const { account } = PolicyHelper.getAccountContext(scope);
-
-    return new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        'cloudfront:UpdateDistribution',
-        'cloudfront:CreateDistribution'
-      ],
-      resources: [
-        `arn:aws:cloudfront::${account}:distribution/${distributionId}`
-      ],
+    policyName: string,
+    roleName: string,
+    distributionArn: string
+  ): CfnPolicy {
+    return new CfnPolicy(scope, policyName, {
+      policyName: policyName,
+      roles: [ roleName ],
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'cloudfront:UpdateDistribution',
+              'cloudfront:CreateDistribution',
+            ],
+            Resource: [
+              distributionArn,
+            ],
+          },
+        ],
+      },
     });
   }
 }
