@@ -35,7 +35,7 @@ export class PostConfirmationLambdaConstruct extends Construct {
     this.postConfirmation = this.createPostConfirmationLambdaFunction(
       librariesLayer!,
       dbInstance,
-      userPool!,
+      userPool,
     );
   }
 

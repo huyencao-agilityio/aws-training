@@ -39,7 +39,7 @@ export class PreSignUpLambdaConstruct extends Construct {
     this.preSignUp = this.createPreSignUpLambdaFunction(
       librariesLayer!,
       dbInstance,
-      userPool!
+      userPool
     );
   }
 
