@@ -43,9 +43,13 @@ export class CloudFrontStack extends Stack {
     );
 
     // Add IAM role policy for Lambda function
-    resizeImageLambda.addToRolePolicy(
-      PolicyHelper.cloudfrontManageDistribution(this, distribution.distributionId)
+    PolicyHelper.cloudfrontManageDistribution(
+      this,
+      'CloudFrontManageDistribution',
+      resizeImageLambda.role!.roleName,
+      distribution.distributionArn
     );
+
     // Custom domain for cloudfront
     new CloudFrontDomainConstruct(this, 'CloudFrontDomainConstruct', {
       hostedZone: hostedZone!,
@@ -56,8 +60,7 @@ export class CloudFrontStack extends Stack {
     // Create a CloudFormation output to export the domain name of the CloudFront Distribution
     new CfnOutput(this, 'CloudFrontDistributionDomainName', {
       value: distribution.distributionDomainName,
-      description: 'The domain name of the CloudFront Distribution',
-      exportName: 'CloudFrontDomainName',
+      description: 'The domain name of the CloudFront Distribution'
     });
   }
 }
