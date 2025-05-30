@@ -35,7 +35,7 @@ export class AuthorizationLambdaConstruct extends Construct {
     // Create the Lambda function for token validation
     this.authorizationLambda = this.createLambdaAuthorizationFunction(
       librariesLayer!,
-      userPool!
+      userPool
     );
   }
 

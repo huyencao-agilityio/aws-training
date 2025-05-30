@@ -14,13 +14,13 @@ import {
   UserPoolConstructProps
 } from '@interfaces/construct.interface';
 import { getDatabaseConfig } from '@shared/database.helper';
+import { buildResourceName } from '@shared/resource.helper';
 import {
   DEFAULT_LAMBDA_HANDLER,
   LAMBDA_FUNCTION_NAME,
   LAMBDA_PATH
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
-import { buildResourceName } from '@shared/resource.helper';
 
 /**
  * Construct for creating Lambda function for API products
@@ -40,7 +40,7 @@ export class ProductsLambdaConstruct extends Construct {
     this.getProductsLambda = this.createGetProductsLambdaFunction(
       librariesLayer!,
       dbInstance,
-      userPool!
+      userPool
     );
   }
 

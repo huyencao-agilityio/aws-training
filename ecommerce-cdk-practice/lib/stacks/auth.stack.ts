@@ -35,7 +35,7 @@ export class AuthStack extends Stack {
 
     // Create user pool construct
     this.userPoolConstruct = new UserPoolConstruct(this, 'UserPoolConstruct', {
-      librariesLayer: librariesLayer,
+      librariesLayer,
       region: this.region,
       domainName,
       certificate
@@ -56,14 +56,14 @@ export class AuthStack extends Stack {
       this,
       'CreateAuthChallengeLambdaConstruct',
       {
-        librariesLayer: librariesLayer
+        librariesLayer
       }
     );
     const defineAuthChallengeLambda = new DefineAuthChallengeLambdaConstruct(
       this,
       'DefineAuthChallengeLambdaConstruct',
       {
-        librariesLayer: librariesLayer
+        librariesLayer
       }
     );
     const verifyAuthChallengeLambda = new VerifyAuthChallengeLambdaConstruct(
@@ -77,23 +77,23 @@ export class AuthStack extends Stack {
       this,
       'PostConfirmationLambdaConstruct',
       {
-        librariesLayer: librariesLayer,
-        userPool: userPool
+        librariesLayer,
+        userPool
       }
     );
     const preSignUpLambda = new PreSignUpLambdaConstruct(
       this,
       'PreSignUpLambdaConstruct',
       {
-        librariesLayer: librariesLayer,
-        userPool: userPool
+        librariesLayer,
+        userPool
       }
     );
     const customMessageLambda = new CustomMessageLambdaConstruct(
       this,
       'CustomMessageLambdaConstruct',
       {
-        librariesLayer: librariesLayer
+        librariesLayer
       }
     );
 
@@ -129,8 +129,8 @@ export class AuthStack extends Stack {
       this,
       'ProviderConstruct',
       {
-        librariesLayer: librariesLayer,
-        userPool: userPool
+        librariesLayer,
+        userPool
       }
     );
 
@@ -143,22 +143,20 @@ export class AuthStack extends Stack {
 
     // Output for User Pool
     new CfnOutput(this, 'UserPoolId', {
-      value: this.userPoolConstruct.userPool.userPoolId,
-      description: `User Pool ID`,
+      value: this.userPoolConstruct.userPool.userPoolId
     });
 
     // Output for User Pool Client
     new CfnOutput(this, 'UserPoolClientId', {
-      value: this.userPoolConstruct.userPoolClient.userPoolClientId,
-      description: `User Pool Client ID`,
+      value: this.userPoolConstruct.userPoolClient.userPoolClientId
     });
 
+    // Output for Login Page URL
     new CfnOutput(this, 'LoginPageUrl', {
       value: `https://ecommerce-cdk-app.auth.${this.region}.amazoncognito.com/login?` +
         `client_id=${this.userPoolConstruct.userPoolClient.userPoolClientId}&` +
         `response_type=code&scope=email+openid+profile&` +
-        `redirect_uri=https://ecommerce-app.com`,
-      description: 'Login page URL'
+        `redirect_uri=https://ecommerce-app.com`
     });
   }
 }
