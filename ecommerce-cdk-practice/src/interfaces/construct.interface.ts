@@ -47,8 +47,7 @@ export interface UserPoolDomainConstructProps {
  * Defines interface for the construct that need to related to User Pool.
  */
 export interface UserPoolConstructProps extends BaseConstructProps {
-  userPool?: IUserPool;
-  userPoolArn?: string;
+  userPool: IUserPool;
 }
 
 /**

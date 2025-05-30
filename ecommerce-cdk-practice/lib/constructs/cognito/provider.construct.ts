@@ -3,7 +3,7 @@ import {
   UserPoolIdentityProviderFacebook,
   UserPoolIdentityProviderGoogle,
   ProviderAttribute,
-  UserPool
+  IUserPool
 } from 'aws-cdk-lib/aws-cognito';
 
 import {
@@ -38,7 +38,7 @@ export class ProviderConstruct extends Construct {
    * @returns The created provider
    */
   createFacebookProvider(
-    userPool: UserPool
+    userPool: IUserPool
   ): UserPoolIdentityProviderFacebook {
     // Get facebook client id and secret from SSM Parameter Store
     const fbClientId = SecretHelper.getSecureStringParameter(
@@ -78,7 +78,7 @@ export class ProviderConstruct extends Construct {
    * @returns The created provider
    */
   createGoogleProvider(
-    userPool: UserPool
+    userPool: IUserPool
   ): UserPoolIdentityProviderGoogle {
     // Get google client id and secret from SSM Parameter Store
     const googleClientId = SecretHelper.getSecureStringParameter(
