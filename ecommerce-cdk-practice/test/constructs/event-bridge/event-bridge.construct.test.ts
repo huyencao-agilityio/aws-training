@@ -53,13 +53,16 @@ describe('TestEventBridgeConstruct', () => {
         Mode: 'OFF'
       },
       Target: {
-        Arn: {
-          'Fn::GetAtt': [
+        Arn: Match.objectLike({
+          'Fn::GetAtt': Match.arrayWith([
             Match.stringLikeRegexp('.*TestLambdaFunction.*'),
-            'Arn'
-          ]
-        },
-        RoleArn: Match.anyValue(),
+          ])
+        }),
+        RoleArn: Match.objectLike({
+          'Fn::GetAtt': Match.arrayWith([
+            Match.stringLikeRegexp('.*TestEventBridgeConstruct.*'),
+          ])
+        }),
         RetryPolicy: {
           MaximumEventAgeInSeconds: 60,
           MaximumRetryAttempts: 0

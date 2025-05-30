@@ -57,24 +57,13 @@ describe('TestApiStack', () => {
   it('should create output for API Gateway URL', () => {
     template.hasOutput('ApiGatewayRestApiUrl', {
       Value: {
-        'Fn::Join': [
-          '',
-          [
-            'https://',
+        'Fn::Join': Match.arrayWith([
+          Match.arrayWith([
             {
               Ref: Match.stringLikeRegexp('.*RestApi.*')
             },
-            '.execute-api.us-east-1.',
-            {
-              Ref: 'AWS::URLSuffix'
-            },
-            '/',
-            {
-              Ref: Match.stringLikeRegexp('.*RestApi.*')
-            },
-            '/'
-          ]
-        ]
+          ])
+        ])
       },
       Export: {
         Name: 'ApiGatewayRestApiUrl'

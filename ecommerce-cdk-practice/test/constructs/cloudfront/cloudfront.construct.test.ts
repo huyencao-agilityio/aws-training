@@ -78,7 +78,11 @@ describe('TestCloudFrontConstruct', () => {
             S3OriginConfig:{
               OriginAccessIdentity: ''
             },
-            OriginAccessControlId: Match.anyValue(),
+            OriginAccessControlId: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([
+                Match.stringLikeRegexp('.*TestCloudFrontConstruct.*')
+              ])
+            }),
           }
         ]
       },
@@ -147,24 +151,32 @@ describe('TestCloudFrontConstruct', () => {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
-          Action: 's3:GetObject',
-          Resource: 'arn:aws:s3:::ecommerce-user-assets-dev/*',
+          Action: [
+            's3:GetObject',
+          ],
+          Resource: [
+            'arn:aws:s3:::ecommerce-user-assets-dev/*',
+          ],
           Principal: {
             Service: 'cloudfront.amazonaws.com'
           },
           Condition: {
             StringEquals: {
-              'AWS:SourceArn': {
-                'Fn::Join': [
+              'AWS:SourceArn': Match.objectLike({
+                'Fn::Join': Match.arrayWith([
                   '',
-                  [
-                    'arn:aws:cloudfront::123456789012:distribution/',
+                  Match.arrayWith([
+                    Match.stringLikeRegexp(
+                      ':cloudfront::123456789012:distribution/'
+                    ),
                     {
-                      Ref: Match.stringLikeRegexp('.*TestCloudFrontConstruct.*')
+                      Ref: Match.stringLikeRegexp(
+                        '.*TestCloudFrontConstruct.*'
+                      )
                     }
-                  ]
-                ]
-              }
+                  ])
+                ])
+              })
             }
           }
         }]

@@ -31,7 +31,11 @@ describe('TestQueueConstruct', () => {
         VisibilityTimeout: 30,
         RedrivePolicy: {
           maxReceiveCount: 2,
-          deadLetterTargetArn: Match.anyValue()
+          deadLetterTargetArn: Match.objectLike({
+            'Fn::GetAtt': Match.arrayWith([
+              Match.stringLikeRegexp('.*TestQueueConstruct.*'),
+            ])
+          })
         }
       });
     });
@@ -66,7 +70,11 @@ describe('TestQueueConstruct', () => {
         FifoQueue: true,
         RedrivePolicy: {
           maxReceiveCount: 3,
-          deadLetterTargetArn: Match.anyValue()
+          deadLetterTargetArn: Match.objectLike({
+            'Fn::GetAtt': Match.arrayWith([
+              Match.stringLikeRegexp('.*TestFifoQueueConstruct.*'),
+            ])
+          })
         }
       });
     });

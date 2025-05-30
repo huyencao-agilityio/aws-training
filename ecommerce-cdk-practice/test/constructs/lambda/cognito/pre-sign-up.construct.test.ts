@@ -70,22 +70,22 @@ describe('TestPreSignUpLambdaConstruct', () => {
 
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
+        Statement: [
+          {
             Effect: 'Allow',
             Action: [
               'cognito-idp:ListUsers',
               'cognito-idp:AdminLinkProviderForUser',
               'cognito-idp:AdminDeleteUser'
             ],
-            Resource: {
+            Resource: [{
               'Fn::GetAtt': [
                 Match.stringLikeRegexp('.*TestFromUserPool.*'),
                 'Arn'
               ]
-            }
-          }),
-        ]),
+            }]
+          },
+        ],
       },
     });
   });

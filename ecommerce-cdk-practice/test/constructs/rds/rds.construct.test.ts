@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Fn, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Vpc, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 
@@ -9,16 +9,21 @@ describe('PostgresRdsConstruct', () => {
 
   beforeEach(() => {
     const app = new App();
-    const stack = new Stack(app, 'TestStack');
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1'
+      }
+    });
 
-    // Create VPC and Security Group for testing
+    // Get VPC and Security Group
     const vpc = Vpc.fromLookup(stack, 'TestVpc', {
       vpcId: 'vpc-id'
     });
-    const securityGroup = SecurityGroup.fromLookupById(
+    const securityGroup = SecurityGroup.fromSecurityGroupId(
       stack,
       'TestSecurityGroup',
-      'sg-id'
+      Fn.importValue('TestSecurityGroupId')
     );
 
     new PostgresRdsConstruct(stack, 'TestRdsConstruct', {
@@ -27,10 +32,6 @@ describe('PostgresRdsConstruct', () => {
     });
 
     template = Template.fromStack(stack);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   it('should create an RDS instance', () => {
@@ -59,15 +60,12 @@ describe('PostgresRdsConstruct', () => {
 
   it('should have correct VPC configuration', () => {
     template.hasResourceProperties('AWS::RDS::DBInstance', {
-      DBSubnetGroupName: Match.anyValue(),
-      VPCSecurityGroups: Match.arrayWith([
-        Match.objectLike({
-          'Fn::GetAtt': [
-            Match.stringLikeRegexp('.*TestSecurityGroup.*'),
-            'GroupId'
-          ]
-        })
-      ])
+      DBSubnetGroupName: {
+        Ref: Match.stringLikeRegexp('.*TestRdsConstruct.*')
+      },
+      VPCSecurityGroups: [{
+        'Fn::ImportValue': Match.stringLikeRegexp('.*TestSecurityGroupId.*')
+      }]
     });
   });
 
