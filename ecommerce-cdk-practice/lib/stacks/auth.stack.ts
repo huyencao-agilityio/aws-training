@@ -31,7 +31,7 @@ export class AuthStack extends Stack {
     const { hostedZone, domainName, certificate } =  props;
 
     // Get layer on Lambda
-    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(this);
 
     // Create user pool construct
     this.userPoolConstruct = new UserPoolConstruct(this, 'UserPoolConstruct', {

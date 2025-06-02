@@ -32,20 +32,20 @@ export class SqsLambdaConstruct extends Construct {
       queue,
       librariesLayer,
       handlerFile,
-      environment = {},
-      timeout = Duration.seconds(3),
-      withSesPolicy = true,
+      environment,
+      timeout,
+      withSesPolicy,
     } = props;
 
     // Create Lambda function
     this.createSqsLambdaFunction(
       id,
-      librariesLayer!,
-      timeout,
-      environment,
+      timeout!,
+      environment!,
       handlerFile!,
       withSesPolicy,
-      queue
+      queue,
+      librariesLayer
     );
   }
 
@@ -65,12 +65,12 @@ export class SqsLambdaConstruct extends Construct {
    */
   createSqsLambdaFunction(
     id: string,
-    librariesLayer: ILayerVersion,
     timeout: Duration,
     environment: Record<string, string>,
     handlerFile: string,
-    withSesPolicy: boolean,
-    queue: Queue
+    withSesPolicy: boolean = true,
+    queue: Queue,
+    librariesLayer?: ILayerVersion
   ): Function {
     // Create Lambda function
     const lambdaFunction = new NodejsFunction(this, `${id}Function`, {

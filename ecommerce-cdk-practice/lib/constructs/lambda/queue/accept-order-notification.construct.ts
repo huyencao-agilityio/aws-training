@@ -23,9 +23,9 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
 
     // Create the SQS Lambda Construct
     this.createSqsLambdaConstruct(
-      librariesLayer!,
       dbInstance,
-      queue
+      queue,
+      librariesLayer,
     );
   }
 
@@ -37,9 +37,9 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
    * @returns The Lambda function for accept order notification
    */
   createSqsLambdaConstruct(
-    librariesLayer: ILayerVersion,
     dbInstance: Record<string, string>,
-    queue: Queue
+    queue: Queue,
+    librariesLayer?: ILayerVersion,
   ): SqsLambdaConstruct {
     // Get the default email address
     const defaultEmailAddress = SecretHelper.getPlainTextParameter(
@@ -58,8 +58,7 @@ export class AcceptOrderNotificationLambdaConstruct extends Construct {
           ...dbInstance,
           DEFAULT_EMAIL_ADDRESS: defaultEmailAddress
         },
-        timeout: Duration.seconds(5),
-        withSesPolicy: true,
+        timeout: Duration.seconds(5)
       }
     );
 

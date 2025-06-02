@@ -15,7 +15,7 @@ export class EventBridgeStack extends Stack {
     super(scope, id, props);
 
     // Get layer on Lambda
-    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(this);
 
     // Create the Lambda function for scheduler
     const schedulerLambdaConstruct = new SchedulerLambdaConstruct(
@@ -26,9 +26,13 @@ export class EventBridgeStack extends Stack {
     );
 
     // Create event bridge construct
-    const eventBridgeConstruct = new EventBridgeConstruct(this, 'EventBridgeConstruct', {
-      lambdaFunction: schedulerLambdaConstruct.schedulerLambda
-    });
+    const eventBridgeConstruct = new EventBridgeConstruct(
+      this,
+      'EventBridgeConstruct',
+      {
+        lambdaFunction: schedulerLambdaConstruct.schedulerLambda
+      }
+    );
 
     // Create a CloudFormation output to export the name and arn of the EventBridge
     new CfnOutput(this, 'EventBridgeSchedulerName', {

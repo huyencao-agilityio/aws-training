@@ -17,7 +17,7 @@ export class QueueStack extends Stack {
     super(scope, id, props);
 
     // Get layer on Lambda
-    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(this);
 
     // Define all queues that need to create
     const queues = [
