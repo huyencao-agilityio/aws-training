@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepare": "husky",
-    "precommit": "cd ecommerce-cdk-practice && npm test:coverage",
+    "prepare": "husky install",
+    "prepush": "cd ecommerce-cdk-practice && npm test",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
