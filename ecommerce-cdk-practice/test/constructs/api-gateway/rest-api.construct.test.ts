@@ -87,4 +87,28 @@ describe('TestRestApiConstruct', () => {
       PathPart: 'api'
     });
   });
+
+  it('should create resources with default stage when stage is not provided', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const userPool = UserPool.fromUserPoolId(
+      stack,
+      'TestFromUserPool',
+      'TestUserPool'
+    );
+
+    const librariesLayer = getLibrariesLayer(stack, 'TestLibrariesLayer');
+
+    new RestApiConstruct(stack, 'TestRestApiConstruct', {
+      userPool,
+      librariesLayer
+    });
+
+    const newTemplate = Template.fromStack(stack);
+
+    newTemplate.hasResourceProperties('AWS::ApiGateway::Stage', {
+      StageName: 'v1'
+    });
+  });
 });
