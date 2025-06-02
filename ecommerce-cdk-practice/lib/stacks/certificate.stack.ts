@@ -14,8 +14,12 @@ export class CertificateStack extends Stack {
 
     const { hostedZone } = props;
 
-    this.certificateConstruct = new CertificateConstruct(this, 'CertificateConstruct', {
-      hostedZone
-    });
+    this.certificateConstruct = new CertificateConstruct(
+      this,
+      'CertificateConstruct',
+      {
+        hostedZone
+      }
+    );
   }
 }

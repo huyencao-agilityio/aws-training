@@ -13,7 +13,7 @@ import { SecretHelper } from './secret.helper';
  */
 export const getLibrariesLayer = (
   scope: Construct,
-  id: string
+  id: string = 'LibrariesLayer'
 ): ILayerVersion => {
   // Get the layer ARN from the SSM Parameter Store
   const layerArn = SecretHelper.getPlainTextParameter(
@@ -23,7 +23,7 @@ export const getLibrariesLayer = (
 
   return LayerVersion.fromLayerVersionArn(
     scope,
-    id || 'LibrariesLayer',
+    id,
     layerArn
   );
 };

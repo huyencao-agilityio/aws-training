@@ -24,7 +24,7 @@ export class ApiStack extends Stack {
     } = props;
 
     // Get layer on Lambda
-    const librariesLayer = getLibrariesLayer(this, 'LibrariesLayer');
+    const librariesLayer = getLibrariesLayer(this);
 
     // Init REST API Construct
     const restApiConstruct = new RestApiConstruct(this, 'RestApiConstruct', {
