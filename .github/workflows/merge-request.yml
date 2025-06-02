@@ -3,7 +3,7 @@ name: Merge request
 on:
   pull_request:
     branches:
-      - develop
+      - feature/test-huskey
 
 jobs:
   run-tests:
