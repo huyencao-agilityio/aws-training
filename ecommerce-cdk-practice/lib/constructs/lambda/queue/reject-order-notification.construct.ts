@@ -23,9 +23,9 @@ export class RejectOrderNotificationLambdaConstruct extends Construct {
 
     // Create the SQS Lambda Construct
     this.createSqsLambdaConstruct(
-      librariesLayer!,
       queue,
-      dbInstance
+      dbInstance,
+      librariesLayer
     );
   }
 
@@ -38,9 +38,9 @@ export class RejectOrderNotificationLambdaConstruct extends Construct {
    * @returns The SQS Lambda Construct
    */
   createSqsLambdaConstruct(
-    librariesLayer: ILayerVersion,
     queue: Queue,
-    dbInstance: Record<string, string>
+    dbInstance: Record<string, string>,
+    librariesLayer?: ILayerVersion,
   ): SqsLambdaConstruct {
     // Get the default email address
     const defaultEmailAddress = SecretHelper.getPlainTextParameter(
@@ -59,8 +59,7 @@ export class RejectOrderNotificationLambdaConstruct extends Construct {
           ...dbInstance,
           DEFAULT_EMAIL_ADDRESS: defaultEmailAddress
         },
-        timeout: Duration.seconds(5),
-        withSesPolicy: true,
+        timeout: Duration.seconds(5)
       }
     );
 

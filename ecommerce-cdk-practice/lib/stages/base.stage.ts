@@ -37,7 +37,8 @@ export class BaseStage extends Stage {
 
     // Create certificate stack
     const certificateStack = new CertificateStack(this, 'CertificateStack', {
-      hostedZone: hostedZone
+      hostedZone: hostedZone,
+      stackName: `${stageName}-certificate-stack`
     });
     const certificate = certificateStack.certificateConstruct.certificate;
 

@@ -19,8 +19,8 @@ export class OrderNotificationLambdaConstruct extends Construct {
 
     // Create the SQS Lambda Construct
     this.createSqsLambdaConstruct(
-      librariesLayer!,
-      queue
+      queue,
+      librariesLayer
     );
   }
 
@@ -32,8 +32,8 @@ export class OrderNotificationLambdaConstruct extends Construct {
    * @returns The SqsLambdaConstruct
    */
   createSqsLambdaConstruct(
-    librariesLayer: ILayerVersion,
-    queue: Queue
+    queue: Queue,
+    librariesLayer?: ILayerVersion,
   ): SqsLambdaConstruct {
     // Get the default and admin email addresses
     const defaultEmailAddress = SecretHelper.getPlainTextParameter(
@@ -56,8 +56,7 @@ export class OrderNotificationLambdaConstruct extends Construct {
         environment: {
           DEFAULT_EMAIL_ADDRESS: defaultEmailAddress,
           ADMIN_EMAIL_ADDRESS: adminEmailAddress
-        },
-        withSesPolicy: true
+        }
       }
     );
 
