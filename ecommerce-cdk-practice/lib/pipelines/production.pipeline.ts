@@ -22,7 +22,7 @@ export class ProductionPipelineStack extends Stack {
     // Create the pipeline
     const pipeline = PipelineHelper.createPipeline({
       scope: this,
-      pipelineName: `${APP_NAME}-Pipeline-${stage.stageName}`,
+      pipelineName: `${APP_NAME}-pipeline-${stage.stageName}`,
       stageName: stage.stageName
     });
 
