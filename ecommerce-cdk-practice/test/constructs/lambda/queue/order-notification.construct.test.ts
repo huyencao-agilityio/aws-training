@@ -113,4 +113,32 @@ describe('TestOrderNotificationLambdaConstruct', () => {
       }
     });
   });
+
+  it('should create a lambda function with no libraries layer', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    // Create queue
+    const queue = new Queue(stack, 'TestQueue');
+
+    // Create accept order notification lambda construct
+    new OrderNotificationLambdaConstruct(
+      stack,
+      'TestOrderNotificationLambdaConstruct',
+      {
+        queue,
+      }
+    );
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Layers: Match.absent()
+    });
+  });
 });
