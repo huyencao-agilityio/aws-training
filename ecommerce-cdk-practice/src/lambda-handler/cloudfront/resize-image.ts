@@ -44,10 +44,15 @@ export const handler: Handler = async (
   console.log('Try to resize:', originalKey, '→', thumbnailKey);
 
   try {
-    const original = await S3.getObject({ Bucket: bucket, Key: originalKey }).promise();
+    const original = await S3.getObject({
+      Bucket: bucket,
+      Key: originalKey
+    }).promise();
 
     const extMatch = filename.match(/\.(jpe?g|png|webp)$/i);
-    const format = (extMatch ? extMatch[1].toLowerCase() : 'jpeg') as ImageFormat;
+    const format = (
+      extMatch ? extMatch[1].toLowerCase() : 'jpeg'
+    ) as ImageFormat;
     const body = original.Body as Buffer;
 
     const resizedBuffer = await Sharp(body)

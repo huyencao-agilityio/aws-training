@@ -52,12 +52,6 @@ export class ResizeImageLambdaConstruct extends Construct {
         __dirname,
         `${LAMBDA_PATH.CLOUDFRONT}/resize-image.ts`
       ),
-      bundling: {
-        forceDockerBundling: true,
-        externalModules: ['@types/aws-lambda'],
-        nodeModules: ['sharp', 'aws-sdk'],
-        minify: true,
-      },
       timeout: Duration.seconds(30),
       functionName: lambdaFnName
     });
