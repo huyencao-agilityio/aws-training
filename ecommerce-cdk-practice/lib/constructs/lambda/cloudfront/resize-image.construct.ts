@@ -55,7 +55,8 @@ export class ResizeImageLambdaConstruct extends Construct {
       bundling: {
         forceDockerBundling: true,
         externalModules: [],
-        nodeModules: ['sharp', 'aws-sdk', '@types/aws-lambda']
+        nodeModules: ['sharp', 'aws-sdk'],
+        minify: true,
       },
       timeout: Duration.seconds(30),
       functionName: lambdaFnName
