@@ -23,9 +23,7 @@ export class PipelineHelper {
     const branch = github[stageName].branch;
 
     // Get github token
-    const token = SecretHelper.getSecretValue(
-      ParameterKeys.GithubToken
-    );
+    const token = SecretHelper.getSecretManager('github_token');
 
     // Create the pipeline
     return new CodePipeline(scope, 'AppPipeline', {
@@ -51,7 +49,7 @@ export class PipelineHelper {
           'cd ecommerce-cdk-practice',
           'npm ci',
           'npm run build',
-          'npm run deploy:$STAGE'
+          'npm run synth:$STAGE'
         ],
         primaryOutputDirectory: 'ecommerce-cdk-practice/cdk.out',
         rolePolicyStatements: [
