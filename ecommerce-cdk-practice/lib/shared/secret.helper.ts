@@ -47,4 +47,16 @@ export class SecretHelper {
   static getSecretValue(parameterName: string): SecretValue {
     return SecretValue.ssmSecure(parameterName);
   }
+
+  /**
+   * Get a secret value from Secret Manager
+   *
+   * @param field - The field of the secret
+   * @returns The secret value
+   */
+  static getSecretManager(field: string) {
+    return SecretValue.secretsManager('secret', {
+      jsonField: field,
+    });
+  }
 }
