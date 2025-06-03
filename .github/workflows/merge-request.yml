@@ -18,11 +18,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cd to ecommerce-cdk-practice
-        run: cd ecommerce-cdk-practice
-
       - name: Install dependencies
         run: npm install
+        working-directory: ecommerce-cdk-practice
 
       - name: Run tests
         run: npm test
+        working-directory: ecommerce-cdk-practice
