@@ -101,7 +101,7 @@ export class OrderProductApiConstruct extends BaseApiMethodConstruct {
     const requestTemplates = {
       'application/json': `{
         ${cognitoAuthorizerContext}
-        "body": $input.json('$'),
+        "body": $input.json('$')
       }`.replace(/\s+/g, ' ')
     };
 
