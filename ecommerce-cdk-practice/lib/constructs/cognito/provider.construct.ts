@@ -41,10 +41,12 @@ export class ProviderConstruct extends Construct {
     userPool: IUserPool
   ): UserPoolIdentityProviderFacebook {
     // Get facebook client id and secret from SSM Parameter Store
-    const fbClientId = SecretHelper.getSecretValueWithUnsafeUnwrap(
+    const fbClientId = SecretHelper.getPlainTextParameter(
+      this,
       ParameterKeys.FacebookClientId
     );
-    const fbClientSecret = SecretHelper.getSecretValueWithUnsafeUnwrap(
+    const fbClientSecret = SecretHelper.getPlainTextParameter(
+      this,
       ParameterKeys.FacebookClientSecret
     );
 
@@ -77,7 +79,8 @@ export class ProviderConstruct extends Construct {
     userPool: IUserPool
   ): UserPoolIdentityProviderGoogle {
     // Get google client id and secret from SSM Parameter Store
-    const googleClientId = SecretHelper.getSecretValueWithUnsafeUnwrap(
+    const googleClientId = SecretHelper.getPlainTextParameter(
+      this,
       ParameterKeys.GoogleClientId
     );
     const googleClientSecret = SecretHelper.getSecretValue(
