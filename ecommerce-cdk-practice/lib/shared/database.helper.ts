@@ -12,22 +12,15 @@ import { SecretHelper } from './secret.helper';
 export const getDatabaseConfig = (
   scope: Construct
 ): Record<string, string> => {
-  // Generate a random string for the database password and user
-  // This is to avoid conflicts the name
-  const random = Math.random().toString(36).substring(2, 8);
   // Get the database password, name, user from the SSM Parameter Store
-  const dbPassword = SecretHelper.getSecureStringParameter(
-    scope,
-    `DbPass${random}`,
+  const dbPassword = SecretHelper.getSecretValueWithUnsafeUnwrap(
     ParameterKeys.DbPassword
   );
   const dbName = SecretHelper.getPlainTextParameter(
     scope,
     ParameterKeys.DbName
   );
-  const dbUser = SecretHelper.getSecureStringParameter(
-    scope,
-    `DbUser${random}`,
+  const dbUser = SecretHelper.getSecretValueWithUnsafeUnwrap(
     ParameterKeys.DbUser
   );
 
