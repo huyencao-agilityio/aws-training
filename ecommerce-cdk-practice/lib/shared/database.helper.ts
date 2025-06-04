@@ -13,14 +13,16 @@ export const getDatabaseConfig = (
   scope: Construct
 ): Record<string, string> => {
   // Get the database password, name, user from the SSM Parameter Store
-  const dbPassword = SecretHelper.getSecretValueWithUnsafeUnwrap(
+  const dbPassword = SecretHelper.getPlainTextParameter(
+    scope,
     ParameterKeys.DbPassword
   );
   const dbName = SecretHelper.getPlainTextParameter(
     scope,
     ParameterKeys.DbName
   );
-  const dbUser = SecretHelper.getSecretValueWithUnsafeUnwrap(
+  const dbUser = SecretHelper.getPlainTextParameter(
+    scope,
     ParameterKeys.DbUser
   );
 
