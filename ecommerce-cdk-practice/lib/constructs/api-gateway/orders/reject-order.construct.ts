@@ -81,7 +81,7 @@ export class RejectOrderApiConstruct extends BaseApiMethodConstruct {
     const requestTemplates = {
       'application/json': `{
         ${cognitoAuthorizerContext}
-        "orderId": "$input.params('orderId')",
+        "orderId": "$input.params('orderId')"
       }`.replace(/\s+/g, ' ')
     };
 

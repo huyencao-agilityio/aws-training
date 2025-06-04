@@ -102,7 +102,7 @@ export class UploadAvatarApiConstruct extends BaseApiMethodConstruct {
       'application/json': `{
         ${cognitoAuthorizerContext}
         "userId": "$input.params('userId')",
-        "body": $input.json('$'),
+        "body": $input.json('$')
       }`.replace(/\s+/g, ' ')
     };
 
