@@ -1,8 +1,7 @@
-import * as AWS from 'aws-sdk';
+import { SQS} from 'aws-sdk';
 import { Handler } from 'aws-lambda';
-import { PoolClient } from 'pg';
 
-import { PgPool } from '/opt/nodejs/index.js';
+import { PgPool, PoolClient } from '/opt/nodejs/index.js';
 
 import { HttpStatusCode } from '@enums/http-status-code.enum';
 import {
@@ -12,7 +11,7 @@ import { OrderProduct } from '@interfaces/order.interface';
 import { CartItemAndProduct } from '@interfaces/cart.interface';
 import { ApiResponseCommon } from '@interfaces/common-response.interface';
 
-const sqs = new AWS.SQS();
+const sqs = new SQS();
 
 /**
  * Get cart detail by id
@@ -21,8 +20,14 @@ const sqs = new AWS.SQS();
  * @param userId - The owner of cart
  * @returns - Return the card id
  */
-async function getByCartId(client: PoolClient, userId: string): Promise<string> {
-  const result = await client.query('SELECT id FROM public.cart WHERE owner_id = $1', [userId]);
+async function getByCartId(
+  client: PoolClient,
+  userId: string
+): Promise<string> {
+  const result = await client.query(
+    'SELECT id FROM public.cart WHERE owner_id = $1',
+    [userId]
+  );
 
   if (!result.rowCount) {
     throw new Error('Cart not found for this user');
