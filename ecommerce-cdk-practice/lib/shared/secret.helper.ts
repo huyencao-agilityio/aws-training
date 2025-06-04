@@ -49,6 +49,16 @@ export class SecretHelper {
   }
 
   /**
+   * Get a secret value from SSM Parameter Store with unsafe unwrap
+   *
+   * @param parameterName - The name of the parameter
+   * @returns The secret value
+   */
+  static getSecretValueWithUnsafeUnwrap(parameterName: string): string {
+    return SecretValue.ssmSecure(parameterName).unsafeUnwrap();
+  }
+
+  /**
    * Get a secret value from Secret Manager
    *
    * @param field - The field of the secret
