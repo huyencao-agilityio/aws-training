@@ -9,4 +9,6 @@ export interface PipelineOptions {
   scope: Construct;
   pipelineName: string;
   stageName: StageNameType;
+  repo: string;
+  branch: string;
 }
