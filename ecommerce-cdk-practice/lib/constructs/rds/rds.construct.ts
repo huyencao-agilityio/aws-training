@@ -42,9 +42,9 @@ export class PostgresRdsConstruct extends Construct {
    * @returns The created DatabaseInstance.
    */
   createRdsInstance(vpc: IVpc, securityGroup: ISecurityGroup): DatabaseInstance {
-    // Get the db password from the SSM Parameter Store
-    const dbPassword = SecretHelper.getSecretValue(
-      ParameterKeys.DbPassword
+    // Get the db password from the Secret Manager
+    const dbPassword = SecretHelper.getSecretManager(
+      'db_password'
     );
 
     const instance = new DatabaseInstance(this, 'PostgresInstance', {
