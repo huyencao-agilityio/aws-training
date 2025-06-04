@@ -15,15 +15,12 @@ import { PolicyHelper } from './policy.helper';
  */
 export class PipelineHelper {
   static createPipeline(options: PipelineOptions): CodePipeline {
-    const { scope, pipelineName, stageName } = options;
-
-    // Get github repo and branch from context
-    const github = scope.node.tryGetContext('github');
-    const repo = github[stageName].repositoryName;
-    const branch = github[stageName].branch;
+    const { scope, pipelineName, stageName, repo, branch } = options;
 
     // Get github token
-    const token = SecretHelper.getSecretManager(SecretManagerFields.GithubToken);
+    const token = SecretHelper.getSecretManager(
+      SecretManagerFields.GithubToken
+    );
 
     // Create the pipeline
     return new CodePipeline(scope, 'AppPipeline', {

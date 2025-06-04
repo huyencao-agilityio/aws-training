@@ -19,11 +19,19 @@ export class ProductionPipelineStack extends Stack {
 
     const { stage } = props;
 
+    const { stageName } = stage;
+    // Get github repo and branch from context
+    const github = scope.node.tryGetContext('github');
+    const repo = github[stageName].repositoryName;
+    const branch = github[stageName].branch;
+
     // Create the pipeline
     const pipeline = PipelineHelper.createPipeline({
       scope: this,
-      pipelineName: `${APP_NAME}-pipeline-${stage.stageName}`,
-      stageName: stage.stageName
+      pipelineName: `${APP_NAME}-pipeline-${stageName}`,
+      stageName: stageName,
+      repo,
+      branch
     });
 
     // Add stage and approval step
