@@ -161,7 +161,7 @@ describe('TestUpdateUserDetailApiConstruct', () => {
                 "group": "$context.authorizer.claims['cognito:groups']"
               },
               "userId": "$input.params('userId')",
-              "body": $input.json('$'),
+              "body": $input.json('$')
             }`.replace(/\s+/g, ' ')
           }
         }

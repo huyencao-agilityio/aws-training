@@ -153,7 +153,7 @@ describe('TestOrderProductApiConstruct', () => {
                 "email": "$context.authorizer.claims.email",
                 "group": "$context.authorizer.claims['cognito:groups']"
               },
-              "body": $input.json('$'),
+              "body": $input.json('$')
             }`.replace(/\s+/g, ' ')
           }
         }

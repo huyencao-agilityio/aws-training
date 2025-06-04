@@ -140,7 +140,7 @@ describe('TestRejectOrderApiConstruct', () => {
                 "email": "$context.authorizer.claims.email",
                 "group": "$context.authorizer.claims['cognito:groups']"
               },
-              "orderId": "$input.params('orderId')",
+              "orderId": "$input.params('orderId')"
             }`.replace(/\s+/g, ' ')
           }
         }
