@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { SQS } from 'aws-sdk';
 import { Handler } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
@@ -11,7 +11,7 @@ import { HttpStatusCode } from '@enums/http-status-code.enum';
 import { UserGroup } from '@enums/user-group.enum';
 import { OrderStatus } from '@enums/order-status.enum';
 
-const sqs = new AWS.SQS();
+const sqs = new SQS();
 
 export const handler: Handler = async (
   event: APIGatewayEventRequestOrderDetailResource

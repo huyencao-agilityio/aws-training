@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { SQS } from 'aws-sdk';
 import { Handler } from 'aws-lambda';
 
 import { PgPool } from '/opt/nodejs/index.js';
@@ -12,7 +12,7 @@ import {
 import { ApiResponseCommon } from '@interfaces/common-response.interface';
 import { Order } from '@interfaces/order.interface';
 
-const sqs = new AWS.SQS();
+const sqs = new SQS();
 
 export const handler: Handler = async (
   event: APIGatewayEventRequestOrderDetailResource
