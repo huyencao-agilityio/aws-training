@@ -18,6 +18,7 @@ import {
   LAMBDA_FUNCTION_NAME
 } from '@constants/lambda.constant';
 import { EXTERNAL_MODULES } from '@constants/external-modules.constant';
+import { ParameterKeys } from '@constants/parameter-keys.constant';
 import { buildResourceName } from '@shared/resource.helper';
 import { SecretHelper } from '@shared/secret.helper';
 
@@ -55,11 +56,11 @@ export class SchedulerLambdaConstruct extends Construct {
     // Get the default and admin email addresses
     const defaultEmailAddress = SecretHelper.getPlainTextParameter(
       this,
-      'DefaultEmailAddress'
+      ParameterKeys.DefaultEmailAddress
     );
     const adminEmailAddress = SecretHelper.getPlainTextParameter(
       this,
-      'AdminEmailAddress'
+      ParameterKeys.AdminEmailAddress
     );
 
     // Create new Lambda function
