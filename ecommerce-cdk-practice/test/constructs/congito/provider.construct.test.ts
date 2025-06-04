@@ -1,36 +1,9 @@
-import { App, SecretValue, Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 import { ProviderConstruct } from '@constructs/cognito/provider.construct';
-import { ParameterKeys } from '@constants/parameter-keys.constant';
-import { SecretHelper } from '@shared/secret.helper';
 
-// Mock SecretHelper
-jest.mock('@shared/secret.helper', () => ({
-  SecretHelper: {
-    getSecureStringParameter: jest.fn()
-      .mockImplementation((scope, id, key) => {
-        if (key === ParameterKeys.FacebookClientId) {
-          return 'fb-client-id';
-        }
-        if (key === ParameterKeys.FacebookClientSecret) {
-          return 'fb-client-secret';
-        }
-        if (key === ParameterKeys.GoogleClientId) {
-          return 'google-client-id';
-        }
-        return '';
-      }),
-    getSecretValue: jest.fn()
-      .mockImplementation((key) => {
-        if (key === ParameterKeys.GoogleClientSecret) {
-          return SecretValue.ssmSecure('google-client-secret');
-        }
-        return '';
-      })
-  }
-}));
 
 describe('TestProviderConstruct', () => {
   let template: Template;
@@ -63,8 +36,12 @@ describe('TestProviderConstruct', () => {
         Ref: Match.stringLikeRegexp('.*TestUserPool.*')
       },
       ProviderDetails: {
-        client_id: 'fb-client-id',
-        client_secret: 'fb-client-secret',
+        client_id: {
+          Ref: Match.stringLikeRegexp('.*facebookclientid.*')
+        },
+        client_secret: {
+          Ref: Match.stringLikeRegexp('.*facebookclientsecret.*')
+        },
         authorize_scopes: 'public_profile,email'
       },
       AttributeMapping: {
@@ -83,8 +60,10 @@ describe('TestProviderConstruct', () => {
         Ref: Match.stringLikeRegexp('.*TestUserPool.*')
       },
       ProviderDetails: {
-        client_id: 'google-client-id',
-        client_secret: Match.stringLikeRegexp('.*google-client-secret.*'),
+        client_id: {
+          Ref: Match.stringLikeRegexp('.*googleclientid.*')
+        },
+        client_secret: Match.stringLikeRegexp('.*google_client_secret.*'),
         authorize_scopes: 'profile email openid'
       },
       AttributeMapping: {
@@ -93,35 +72,5 @@ describe('TestProviderConstruct', () => {
         email_verified: 'email_verified'
       }
     });
-  });
-
-  it('should get credentials for Facebook from parameter store', () => {
-    expect(SecretHelper.getSecureStringParameter).toHaveBeenCalledWith(
-      expect.any(Object),
-      'FacebookClientId',
-      ParameterKeys.FacebookClientId
-    );
-
-    expect(SecretHelper.getSecureStringParameter).toHaveBeenCalledWith(
-      expect.any(Object),
-      'FacebookClientSecret',
-      ParameterKeys.FacebookClientSecret
-    );
-  });
-
-  it('should get credentials for Google from parameter store', () => {
-    expect(SecretHelper.getSecureStringParameter).toHaveBeenCalledWith(
-      expect.any(Object),
-      'GoogleClientId',
-      ParameterKeys.GoogleClientId
-    );
-
-    expect(SecretHelper.getSecretValue).toHaveBeenCalledWith(
-      ParameterKeys.GoogleClientSecret
-    );
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 });
