@@ -11,6 +11,7 @@ import {
 } from '@interfaces/construct.interface';
 import { SecretHelper } from '@shared/secret.helper';
 import { ParameterKeys } from '@constants/parameter-keys.constant';
+import { SecretManagerFields } from '@constants/secret-manage-field.const';
 
 /**
  * Construct for managing social identity providers (Facebook, Google)
@@ -83,8 +84,8 @@ export class ProviderConstruct extends Construct {
       this,
       ParameterKeys.GoogleClientId
     );
-    const googleClientSecret = SecretHelper.getSecretValue(
-      ParameterKeys.GoogleClientSecret
+    const googleClientSecret = SecretHelper.getSecretManager(
+      SecretManagerFields.GoogleClientSecret
     );
 
     // Create google provider
