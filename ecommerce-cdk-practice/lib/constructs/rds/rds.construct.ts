@@ -16,9 +16,9 @@ import {
 import { Construct } from 'constructs';
 
 import { PostgresRdsConstructProps } from '@interfaces/construct.interface';
-import { ParameterKeys } from '@constants/parameter-keys.constant';
 import { SecretHelper } from '@shared/secret.helper';
 import { buildResourceName } from '@shared/resource.helper';
+import { SecretManagerFields } from '@constants/secret-manage-field.const';
 
 /**
  * Define the construct to create a new RDS
@@ -44,7 +44,7 @@ export class PostgresRdsConstruct extends Construct {
   createRdsInstance(vpc: IVpc, securityGroup: ISecurityGroup): DatabaseInstance {
     // Get the db password from the Secret Manager
     const dbPassword = SecretHelper.getSecretManager(
-      'db_password'
+      SecretManagerFields.DbPassword
     );
 
     const instance = new DatabaseInstance(this, 'PostgresInstance', {

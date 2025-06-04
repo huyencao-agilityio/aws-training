@@ -4,7 +4,7 @@ import {
   CodePipelineSource
 } from 'aws-cdk-lib/pipelines';
 
-import { ParameterKeys } from '@constants/parameter-keys.constant';
+import { SecretManagerFields } from '@constants/secret-manage-field.const';
 import { PipelineOptions } from '@interfaces/pipeline.interface';
 
 import { SecretHelper } from './secret.helper';
@@ -23,7 +23,7 @@ export class PipelineHelper {
     const branch = github[stageName].branch;
 
     // Get github token
-    const token = SecretHelper.getSecretManager('github_token');
+    const token = SecretHelper.getSecretManager(SecretManagerFields.GithubToken);
 
     // Create the pipeline
     return new CodePipeline(scope, 'AppPipeline', {
