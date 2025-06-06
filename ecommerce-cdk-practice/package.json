@@ -16,7 +16,9 @@
     "synth:prod": "npx cdk synth -c stage=prod",
     "deploy:prod": "npx cdk deploy -c stage=prod",
     "synth:staging": "npx cdk synth -c stage=staging",
-    "deploy:staging": "npx cdk deploy -c stage=staging"
+    "deploy:staging": "npx cdk deploy -c stage=staging",
+    "role:developer": "ts-node scripts/create-developer-role.ts",
+    "role:devops": "ts-node scripts/create-devops-role.ts"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "^1.204.0",
@@ -27,6 +29,7 @@
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/jwk-to-pem": "^2.0.3",
+    "@types/lodash": "^4.17.17",
     "@types/node": "22.7.9",
     "@types/pg": "^8.11.14",
     "aws-cdk": "2.1004.0",
@@ -41,8 +44,10 @@
     "typescript": "~5.6.3"
   },
   "dependencies": {
+    "@aws-sdk/client-iam": "^3.825.0",
     "aws-cdk-lib": "2.181.1",
     "constructs": "^10.0.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "lodash": "^4.17.21"
   }
 }
