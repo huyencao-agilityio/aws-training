@@ -9,7 +9,7 @@ This is a practice repository for building a application on AWS for the Ecommerc
 Node.js (>=20.x)
 
 ## Project Structure
-```
+```bash
 ecommerce-cdk-practice/
 |
 ├── bin/                      # Entry point for the CDK application
@@ -72,24 +72,24 @@ ecommerce-cdk-practice/
 ## Setup
 
 ### 1. Clone the repository:
-```
+```bash
 git clone https://gitlab.asoft-python.com/huyen.cao/aws-training
 git checkout develop
 cd ecommerce-cdk-practice
 ```
 
 ### 2. Install dependencies:
-```
+```bash
 npm install
 ```
 
 ### 3. Configure AWS credentials:
-```
+```bash
 aws configure
 ```
 
 ### 4. Bootstrap CDK (run once per AWS account/region):
-```
+```bash
 cdk bootstrap aws://ACCOUNT_ID/REGION
 ```
 Example: `cdk bootstrap aws://123456789012/us-east-1`
@@ -119,17 +119,29 @@ npm run deploy:prod
 ## Testing
 
 1. Run unit test
-```
+```bash
 npm run test
 npm run test [FILE]
 ```
 
 2. Run unit test in watch mode
-```
+```bash
 npm run test:watch
 ```
 
 3. Run unit test with coverage
-```
+```bash
 npm run test:coverage
+```
+
+## Add policy for IAM user
+
+1. Add policy for developer IAM
+```bash
+npm run role:developer
+```
+
+2. Add policy for devops IAM
+```bash
+npm run role:devops
 ```
