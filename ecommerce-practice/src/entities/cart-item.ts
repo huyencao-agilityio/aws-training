@@ -16,20 +16,20 @@ export class CartItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('uuid')
   cart_id: string;
 
-  @Column()
+  @Column('uuid')
   product_id: string;
 
-  @Column()
+  @Column('int')
   quantity: number;
 
-  @CreateDateColumn()
-  created_at: Date = new Date();
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date = new Date();
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   @ManyToOne(() => Cart, cart => cart.cart_items)
   @JoinColumn({ name: 'cart_id' })

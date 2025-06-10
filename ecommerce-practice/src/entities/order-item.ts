@@ -16,23 +16,23 @@ export class OrderItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('int')
   quantity: number;
 
-  @Column()
+  @Column('int')
   amount: number;
 
-  @Column()
+  @Column('uuid')
   order_id: string;
 
-  @Column()
+  @Column('uuid')
   product_id: string;
 
-  @CreateDateColumn()
-  created_at: Date = new Date();
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date = new Date();
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   @ManyToOne(() => Order, (order) => order.order_items)
   @JoinColumn({ name: 'order_id' })

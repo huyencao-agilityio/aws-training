@@ -11,30 +11,30 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('varchar')
   name: string;
 
-  @Column({ unique: true })
+  @Column('varchar', { unique: true })
   email: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   google_id: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   facebook_id: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   address: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   avatar: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   thumbnail: string;
 
-  @CreateDateColumn()
-  created_at: Date = new Date();
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date = new Date();
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
