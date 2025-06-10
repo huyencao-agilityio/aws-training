@@ -17,26 +17,26 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('uuid')
   owner_id: string;
 
-  @Column()
+  @Column('int')
   amount: number;
 
-  @Column()
+  @Column('int')
   quantity: number;
 
-  @Column()
+  @Column('varchar')
   status: string;
 
-  @Column({ nullable: true })
+  @Column('timestamp', { nullable: true })
   completed_at: Date;
 
-  @CreateDateColumn()
-  created_at: Date = new Date();
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date = new Date();
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'owner_id' })

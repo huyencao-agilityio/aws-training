@@ -2,6 +2,7 @@
   "name": "ecommerce-practice",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
@@ -27,9 +28,16 @@
     "typeorm": "^0.3.21"
   },
   "devDependencies": {
+    "@serverless/typescript": "^4.15.1",
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^24.0.0",
     "amazon-user-pool-srp-client": "^1.0.4",
     "axios": "^1.8.4",
+    "esbuild": "^0.25.5",
     "google-auth-library": "^9.15.1",
-    "ts-node": "^10.9.2"
+    "serverless": "^4.17.0",
+    "serverless-offline": "^14.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

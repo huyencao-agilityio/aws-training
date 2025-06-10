@@ -17,14 +17,14 @@ export class Cart {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('uuid')
   owner_id: string;
 
-  @CreateDateColumn()
-  created_at: Date = new Date();
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date = new Date();
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   @OneToOne(() => User)
   @JoinColumn({ name: 'owner_id' })
