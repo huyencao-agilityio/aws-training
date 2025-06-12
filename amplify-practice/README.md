@@ -14,7 +14,12 @@ amplify-practice/
 |
 ├── amplify/
 │   ├── auth/
-│   ├── data/
+│   ├── api/
+│   ├── db/
+│   ├── function/
+│   ├── queue/
+│   ├── storage/
+│   ├── cloudfront/
 ├── package-lock.json
 ├── package.json/
 ├── README.md
