@@ -11,7 +11,11 @@
     "paths": {
       "$amplify/*": [
         "../.amplify/generated/*"
-      ]
+      ],
+      "@custom/*": ["./custom/*"],
+      "@auth/*": ["./auth/*"],
+      "@shared/*": ["./shared/*"],
+      "@utils/*": ["./utils/*"]
     }
   }
 }
