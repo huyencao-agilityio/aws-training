@@ -10,7 +10,7 @@ import {
   ISecurityGroup
 } from 'aws-cdk-lib/aws-ec2';
 
-import { buildResourceName } from '@utils/resource.utils';
+import { buildResourceName } from '../../utils/resource.utils';
 
 /**
  * Define the construct to create a new VPC
