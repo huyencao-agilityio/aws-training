@@ -1,4 +1,4 @@
-import { APP_NAME } from '@shared/constants/app.const';
+import { APP_NAME } from '../shared/constants/app.const';
 
 /**
  * Build a resource name
