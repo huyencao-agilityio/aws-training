@@ -15,11 +15,11 @@ import {
 } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
 
-import { SecretHelper } from '@utils/secret.utils';
-import { buildResourceName } from '@utils/resource.utils';
-import { SecretManagerFields } from '@shared/constants/secret-manage-field.const';
-import { ParameterKeys } from '@shared/constants/parameter-keys.constant';
-import { RdsConstructProps } from '@shared/interfaces/construct.interface';
+import { SecretHelper } from '../../utils/secret.utils';
+import { buildResourceName } from '../../utils/resource.utils';
+import { SecretManagerFields } from '../../shared/constants/secret-manage-field.const';
+import { ParameterKeys } from '../../shared/constants/parameter-keys.constant';
+import { RdsConstructProps } from '../../shared/interfaces/construct.interface';
 
 /**
  * Define the construct to create a new RDS
