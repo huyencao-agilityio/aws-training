@@ -1,0 +1,107 @@
+// Generate Prisma Client for querying the database in TypeScript
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Define the database connection and provider
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define user model to store user info and use for authentication
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  google_id   String?
+  facebook_id String?
+  address     String?
+  avatar      String?
+  thumbnail   String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  orders      Order[]
+  cart        Cart?
+
+  @@map("users")
+}
+
+// Define product model to store available items for purchase
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  quantity    Int
+  price       Int
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+
+  order_items OrderItem[]
+  cart_items  CartItem[]
+
+  @@map("products")
+}
+
+// Define cart model to store user’s current cart (one per user)
+model Cart {
+  id         String      @id @default(uuid())
+  owner_id   String      @unique
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  user       User        @relation(fields: [owner_id], references: [id])
+  cart_items CartItem[]
+
+  @@map("carts")
+}
+
+// Define cart item model representing each item in a user’s cart
+model CartItem {
+  id         String    @id @default(uuid())
+  cart_id    String
+  product_id String
+  quantity   Int
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  cart       Cart      @relation(fields: [cart_id], references: [id])
+  product    Product   @relation(fields: [product_id], references: [id])
+
+  @@map("cart_items")
+}
+
+// Define order model to store each user’s transaction record
+model Order {
+  id           String       @id @default(uuid())
+  owner_id     String
+  amount       Int
+  quantity     Int
+  status       String
+  completed_at DateTime?
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+
+  user         User         @relation(fields: [owner_id], references: [id])
+  order_items  OrderItem[]
+
+  @@map("orders")
+}
+
+// Define order item model representing individual items in an order
+
+model OrderItem {
+  id         String    @id @default(uuid())
+  quantity   Int
+  amount     Int
+  order_id   String
+  product_id String
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  order      Order     @relation(fields: [order_id], references: [id])
+  product    Product   @relation(fields: [product_id], references: [id])
+
+  @@map("order_items")
+}
