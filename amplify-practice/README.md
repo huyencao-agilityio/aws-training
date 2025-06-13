@@ -9,6 +9,7 @@ This is a practice repository for building a application on AWS for the E-commer
 Node.js (>=22.x)
 
 ## Project Structure
+
 ```bash
 amplify-practice/
 |
@@ -28,6 +29,7 @@ amplify-practice/
 ## Setup
 
 ### 1. Clone the repository:
+
 ```bash
 git clone https://gitlab.asoft-python.com/huyen.cao/aws-training
 git checkout develop
@@ -35,6 +37,7 @@ cd amplify-practice
 ```
 
 ### 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -46,9 +49,38 @@ npm install
 aws configure
 ```
 
+## Environment variables
+
+| Field | Type | Description | Default | Note |
+|:------|:-----|:------------|:-----|:--|
+| DATABASE_URL | String | Connection string used to connect to the database | N/A ||
+
+## Development
+
+To run the Amplify Gen 2 backend sandbox for local development and testing:
+
+1. Build amplify code in local
+
+```bash
+npm run amplify:build
+```
+
+2. Deploy amplify to Sandbox
+
+```bash
+npm run amplify:sandbox
+```
+
+3. Migration Database
+
+```bash
+npm run migration:db
+```
+
 ## Deploy
 
-1. Deploy to AWS:
+1. Deploy to AWS Amplify Hosting:
+
 ```bash
-npx amplify push
+npm run amplify:push
 ```
