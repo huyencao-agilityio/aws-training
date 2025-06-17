@@ -21,6 +21,8 @@ amplify-practice/
 │   ├── queue/
 │   ├── storage/
 │   ├── cloudfront/
+├── bin/
+│   ├── set-secrets.sh
 ├── package-lock.json
 ├── package.json/
 ├── README.md
@@ -54,15 +56,19 @@ aws configure
 | Field | Type | Description | Default | Note |
 |:------|:-----|:------------|:-----|:--|
 | DATABASE_URL | String | Connection string used to connect to the database | N/A ||
+| GOOGLE_CLIENT_ID | String | The Google client id | N/A ||
+| GOOGLE_CLIENT_SECRET | String | The Google client secret | N/A ||
+| FACEBOOK_CLIENT_ID | String | The Facebook client id | N/A ||
+| FACEBOOK_CLIENT_SECRET | String | The Facebook client secret | N/A ||
 
 ## Development
 
-To run the Amplify Gen 2 backend sandbox for local development and testing:
+To run the Amplify Gen 2 backend sandbox:
 
-1. Build amplify code in local
+1. Add secret value
 
 ```bash
-npm run amplify:build
+npm run set-secrets
 ```
 
 2. Deploy amplify to Sandbox
