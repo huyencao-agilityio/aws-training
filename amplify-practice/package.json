@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "set-secrets": "dotenv bash bin/set-secrets.sh",
     "amplify:sandbox": "npx ampx sandbox",
     "amplify:push": "npx amplify push",
-    "amplify:build": "npx amplify backend build",
+    "amplify:delete": "npx ampx sandbox delete",
     "migration:db": "npx prisma migrate dev --name init",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,8 +17,12 @@
   "devDependencies": {
     "@aws-amplify/backend": "^1.16.1",
     "@aws-amplify/backend-cli": "^1.7.2",
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^24.0.1",
     "aws-cdk-lib": "^2.189.1",
+    "aws-sdk": "^2.1692.0",
     "constructs": "^10.4.2",
+    "dotenv-cli": "^8.0.0",
     "esbuild": "^0.25.5",
     "prisma": "^6.9.0",
     "tsx": "^4.20.1",
