@@ -3,23 +3,27 @@ import {
   PostConfirmationTriggerHandler
 } from 'aws-lambda';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { PrismaClient } from '@prisma/client';
+import { getPrismaClient } from '/opt/nodejs/prisma-client.js';
 
 import { UserGroup } from '../../shared/enums/user-group.enum';
 import { ProviderType } from '../../shared/enums/provider-type.enum';
 import {
   CognitoIdentityProvider
 } from '../../shared/interfaces/cognito.interface';
+import {
+  PostConfirmationTrigger
+} from '../../shared/enums/post-confirmation-trigger.enum';
 
 const cognito = new CognitoIdentityServiceProvider();
-const prisma = new PrismaClient();
 
 export const handler: PostConfirmationTriggerHandler = async (
   event: PostConfirmationTriggerEvent
 ): Promise<PostConfirmationTriggerEvent> => {
   console.log('PostConfirmationTriggerHandler', JSON.stringify(event));
 
-  if (event.triggerSource !== 'PostConfirmation_ConfirmSignUp') {
+  const prisma = await getPrismaClient();
+
+  if (event.triggerSource !== PostConfirmationTrigger.CONFIRM_SIGN_UP) {
     return event;
   }
 

@@ -7,7 +7,7 @@ import {
   UserType,
   AdminLinkProviderForUserRequest
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { PrismaClient } from '@prisma/client';
+import { getPrismaClient, PrismaClient } from '/opt/nodejs/prisma-client.js';
 
 import { PreSignUpTrigger } from '../../shared/enums/pre-signup-trigger.enum';
 import { ProviderType } from '../../shared/enums/provider-type.enum';
@@ -20,7 +20,6 @@ import {
 } from '../../shared/interfaces/cognito.interface';
 
 const cognito = new CognitoIdentityServiceProvider();
-const prisma = new PrismaClient();
 
 /**
  * Parses the identity provider from a Cognito username.
@@ -112,7 +111,8 @@ const handleNativeSignup = async (
  * @returns The updated event after processing external provider sign-up logic
  */
 const handleExternalProviderSignup = async (
-  event: PreSignUpTriggerEvent
+  event: PreSignUpTriggerEvent,
+  prisma: PrismaClient
 ): Promise<PreSignUpTriggerEvent> => {
   const {
     userPoolId,
@@ -188,6 +188,8 @@ export const handler: PreSignUpTriggerHandler = async (
 ): Promise<PreSignUpTriggerEvent> => {
   console.log('PreSignUpTriggerHandler', JSON.stringify(event));
 
+  const prisma = await getPrismaClient();
+
   const { request: { userAttributes: { email } }, triggerSource } = event;
 
   if (!email) {
@@ -201,7 +203,7 @@ export const handler: PreSignUpTriggerHandler = async (
         return await handleNativeSignup(event);
 
       case PreSignUpTrigger.EXTERNAL_PROVIDER:
-        return await handleExternalProviderSignup(event);
+        return await handleExternalProviderSignup(event, prisma);
 
       default:
         return event;

@@ -1,4 +1,4 @@
-import { defineBackend, secret } from '@aws-amplify/backend';
+import { defineBackend } from '@aws-amplify/backend';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { auth } from './auth/resource';
@@ -8,7 +8,6 @@ import { postConfirmation } from './auth/post-confirmation/resource';
 import { VpcConstruct } from './custom/vpc/resource';
 import { RdsConstruct } from './custom/rds/resource';
 import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
-import { defineAuthChallenge } from './auth/define-auth-challenge/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -17,8 +16,7 @@ const backend = defineBackend({
   auth,
   createAuthChallenge,
   preSignUp,
-  postConfirmation,
-  defineAuthChallenge,
+  postConfirmation
 });
 
 const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources
@@ -72,16 +70,13 @@ backend.addOutput({
   },
 });
 
-backend.createAuthChallenge.resources.lambda.node.addDependency(backend.auth.resources);
-
 const createAuthChallengeLambda = backend.createAuthChallenge.resources.lambda as NodejsFunction;
 createAuthChallengeLambda.addLayers(layer);
 
 const preSignUpLambda = backend.preSignUp.resources.lambda as NodejsFunction;
 preSignUpLambda.addLayers(layer);
+preSignUpLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
 
 const postConfirmationLambda = backend.postConfirmation.resources.lambda as NodejsFunction;
 postConfirmationLambda.addLayers(layer);
-
-const defineAuthChallengeLambda = backend.defineAuthChallenge.resources.lambda as NodejsFunction;
-defineAuthChallengeLambda.addLayers(layer);
+postConfirmationLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);

@@ -2,6 +2,7 @@ export const EXTERNAL_MODULES = [
   '/opt/nodejs/*',
   'sharp',
   'aws-sdk',
+  '@prisma/client',
   'aws-lambda',
   'jsonwebtoken',
   'jwk-to-pem',
