@@ -7,7 +7,9 @@
     "amplify:sandbox": "npx ampx sandbox",
     "amplify:push": "npx amplify push",
     "amplify:delete": "npx ampx sandbox delete",
-    "migration:db": "npx prisma migrate dev --name init",
+    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prisma:generate": "npx prisma generate",
+    "layer:build": "tsc --project layers/nodejs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -71,16 +71,28 @@ To run the Amplify Gen 2 backend sandbox:
 npm run set-secrets
 ```
 
-2. Deploy amplify to Sandbox
+2. Generate generate
+
+```bash
+npm run prisma:generate
+```
+
+3. Build layer
+
+```bash
+npm run layer:build
+```
+
+4. Deploy amplify to Sandbox
 
 ```bash
 npm run amplify:sandbox
 ```
 
-3. Migration Database
+5. Migration Database
 
 ```bash
-npm run migration:db
+npm run prisma:migrate
 ```
 
 ## Deploy
