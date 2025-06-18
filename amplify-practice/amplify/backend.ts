@@ -1,6 +1,10 @@
 import { defineBackend } from '@aws-amplify/backend';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { auth } from './auth/resource';
+import { createAuthChallenge } from './auth/create-auth-challenge/resource';
+import { preSignUp } from './auth/pre-sign-up/resource';
+import { postConfirmation } from './auth/post-confirmation/resource';
 import { VpcConstruct } from './custom/vpc/resource';
 import { RdsConstruct } from './custom/rds/resource';
 import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
@@ -9,8 +13,38 @@ import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
 const backend = defineBackend({
-  auth
+  auth,
+  createAuthChallenge,
+  preSignUp,
+  postConfirmation
 });
+
+const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources
+
+// Custom password policy for user pool
+cfnUserPool.policies = {
+  passwordPolicy: {
+    minimumLength: 12,
+    requireLowercase: true,
+    requireUppercase: true,
+    requireNumbers: true,
+    requireSymbols: true,
+    temporaryPasswordValidityDays: 7,
+    passwordHistorySize: 2,
+  },
+};
+
+// Custom token validity for user pool client
+cfnUserPoolClient.accessTokenValidity = 60;
+cfnUserPoolClient.idTokenValidity = 60;
+cfnUserPoolClient.refreshTokenValidity = 5;
+
+// Specify token validity units
+cfnUserPoolClient.tokenValidityUnits = {
+  accessToken: 'minutes',
+  idToken: 'minutes',
+  refreshToken: 'days',
+};
 
 // Create a new stack for custom resources
 const customResourceStack = backend.createStack('CustomResourceStack');
@@ -35,3 +69,14 @@ backend.addOutput({
     rdsEndpoint,
   },
 });
+
+const createAuthChallengeLambda = backend.createAuthChallenge.resources.lambda as NodejsFunction;
+createAuthChallengeLambda.addLayers(layer);
+
+const preSignUpLambda = backend.preSignUp.resources.lambda as NodejsFunction;
+preSignUpLambda.addLayers(layer);
+preSignUpLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+
+const postConfirmationLambda = backend.postConfirmation.resources.lambda as NodejsFunction;
+postConfirmationLambda.addLayers(layer);
+postConfirmationLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);

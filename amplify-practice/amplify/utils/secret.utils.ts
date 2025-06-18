@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { SecretValue } from 'aws-cdk-lib';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 /**
  * Helper class for managing secrets in SSM Parameter Store and Secret Manager

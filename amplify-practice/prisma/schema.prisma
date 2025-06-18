@@ -1,6 +1,12 @@
 // Generate Prisma Client for querying the database in TypeScript
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+generator lambdaClient {
+  provider = "prisma-client-js"
+  output = "../layers/nodejs/node_modules/@prisma/client"
 }
 
 // Define the database connection and provider
