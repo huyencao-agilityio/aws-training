@@ -9,6 +9,7 @@
     "amplify:delete": "npx ampx sandbox delete",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:generate": "npx prisma generate",
+    "schema:generate": "npx ampx generate schema-from-database --connection-uri-secret DATABASE_URL --out amplify/data/schema.sql.ts",
     "layer:build": "tsc --project layers/nodejs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

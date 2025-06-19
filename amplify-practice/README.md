@@ -55,7 +55,8 @@ aws configure
 
 | Field | Type | Description | Default | Note |
 |:------|:-----|:------------|:-----|:--|
-| DATABASE_URL | String | Connection string used to connect to the database | N/A ||
+| DATABASE_URL | String | Connection string used to connect to the database for migration| N/A ||
+| SQL_CONNECTION_STRING | String | Connection string used to connect to the database for schema in GraphQL | N/A ||
 | GOOGLE_CLIENT_ID | String | The Google client id | N/A ||
 | GOOGLE_CLIENT_SECRET | String | The Google client secret | N/A ||
 | FACEBOOK_CLIENT_ID | String | The Facebook client id | N/A ||
@@ -71,7 +72,7 @@ To run the Amplify Gen 2 backend sandbox:
 npm run set-secrets
 ```
 
-2. Generate generate
+2. Generate prisma
 
 ```bash
 npm run prisma:generate
@@ -93,6 +94,12 @@ npm run amplify:sandbox
 
 ```bash
 npm run prisma:migrate
+```
+
+6. Generate database schema
+
+```bash
+npm run schema:generate
 ```
 
 ## Deploy

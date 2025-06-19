@@ -2,7 +2,6 @@ import { defineAuth, secret } from '@aws-amplify/backend';
 
 import { UserGroup } from '../shared/enums/user-group.enum';
 import { COGNITO } from '../shared/constants/cognito.constant';
-import { ParameterKeys } from '../shared/constants/parameter-keys.constant';
 
 import { customMessage } from './custom-message/resource';
 import { preSignUp } from './pre-sign-up/resource';
