@@ -9,7 +9,6 @@
     "amplify:delete": "npx ampx sandbox delete",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:generate": "npx prisma generate",
-    "schema:generate": "npx ampx generate schema-from-database --connection-uri-secret DATABASE_URL --out amplify/data/schema.sql.ts",
     "layer:build": "tsc --project layers/nodejs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +21,7 @@
     "@aws-amplify/backend-cli": "^1.7.2",
     "@types/aws-lambda": "^8.10.149",
     "@types/node": "^24.0.1",
+    "amazon-user-pool-srp-client": "^1.0.4",
     "aws-cdk-lib": "^2.189.1",
     "aws-sdk": "^2.1692.0",
     "constructs": "^10.4.2",

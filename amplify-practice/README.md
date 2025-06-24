@@ -96,12 +96,6 @@ npm run amplify:sandbox
 npm run prisma:migrate
 ```
 
-6. Generate database schema
-
-```bash
-npm run schema:generate
-```
-
 ## Deploy
 
 1. Deploy to AWS Amplify Hosting:
