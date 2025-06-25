@@ -42,7 +42,7 @@ export class PolicyHelper {
         'ses:SendEmail'
       ],
       resources: [
-        `arn:aws:ses:${region}:${account}:identity/${defaultEmailAddress}`
+        `arn:aws:ses:${region}:${account}:identity/*`
       ],
     });
   }
@@ -66,6 +66,20 @@ export class PolicyHelper {
       ],
       resources: [
         `arn:aws:secretsmanager:${region}:${account}:secret:${secretName}*`
+      ],
+    });
+  }
+
+  static allowAccessCognitoAuth(scope: Construct, userPoolId: string) {
+    const { region, account } = PolicyHelper.getAccountContext(scope);
+
+    return new PolicyStatement({
+      actions: [
+        'cognito-idp:RespondToAuthChallenge',
+        'cognito-idp:InitiateAuth',
+      ],
+      resources: [
+        `arn:aws:cognito-idp:${region}:${account}:userpool/${userPoolId}`
       ],
     })
   }

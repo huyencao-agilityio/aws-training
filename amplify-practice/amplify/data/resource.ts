@@ -1,20 +1,36 @@
 import { a, ClientSchema, defineData } from '@aws-amplify/backend';
 
 import { login } from '../functions/login/resource';
-import { LoginInput } from './models/login-input';
-import { LoginResult } from './models/login-result';
+import { verifyOtp } from '../functions/verify-otp/resource';
+import { healthCheck } from '../functions/health-check/resource';
+import { LoginInput } from './models/login/login-input';
+import { VerifyOtpResult } from './models/verify-otp/verify-otp-result';
+import { LoginResult } from './models/login/login-result';
+import { VerifyOtpInput } from './models/verify-otp/verify-otp-input';
 
 export type Schema = ClientSchema<typeof schema>;
 
 const schema = a.schema({
-  login: a
+  LoginResult: LoginResult,
+  VerifyOtpResult: VerifyOtpResult,
+  healthCheck: a
     .query()
+    .returns(a.string())
+    .authorization((allow) => [allow.publicApiKey()])
+    .handler(a.handler.function(healthCheck)),
+  login: a
+    .mutation()
     .arguments(LoginInput)
-    .returns(LoginResult)
+    .returns(a.ref('LoginResult'))
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(login)),
+  verifyOtp: a
+    .mutation()
+    .arguments(VerifyOtpInput)
+    .returns(a.ref('VerifyOtpResult'))
+    .authorization((allow) => [allow.publicApiKey()])
+    .handler(a.handler.function(verifyOtp)),
 });
-
 
 export const data = defineData({
   schema,

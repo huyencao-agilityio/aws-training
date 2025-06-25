@@ -4,8 +4,6 @@ import {
 } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 
-import { env } from '$amplify/env/ecommerce-create-auth-challenge-amplify'
-
 import {
   EMAIL_SUBJECT,
   verificationEmailTemplate
@@ -18,7 +16,7 @@ export const handler: CreateAuthChallengeTriggerHandler = async (
 ): Promise<CreateAuthChallengeTriggerEvent> => {
   console.log('CreateAuthChallengeTriggerHandler', JSON.stringify(event));
 
-  const defaultEmail = env.DEFAULT_EMAIL;
+  const defaultEmail = process.env.DEFAULT_EMAIL;
   if (!defaultEmail) {
     throw new Error('DEFAULT_EMAIL environment variable is not set');
   }
@@ -26,7 +24,7 @@ export const handler: CreateAuthChallengeTriggerHandler = async (
   const email = event.request.userAttributes.email;
   const userName = email.split('@')[0];
   const challengeCode =
-    env.CHALLENGE_CODE ||
+    process.env.CHALLENGE_CODE ||
     Math.floor(100000 + Math.random() * 900000).toString();
 
   event.response.publicChallengeParameters = { email: email };

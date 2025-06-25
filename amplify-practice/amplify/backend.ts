@@ -9,6 +9,9 @@ import { VpcConstruct } from './custom/vpc/resource';
 import { RdsConstruct } from './custom/rds/resource';
 import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
 import { data } from './data/resource';
+import { login } from './functions/login/resource';
+import { PolicyHelper } from './utils/policy.utils';
+import { verifyOtp } from './functions/verify-otp/resource';
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
@@ -17,14 +20,17 @@ const backend = defineBackend({
   data,
   createAuthChallenge,
   preSignUp,
-  postConfirmation
+  postConfirmation,
+  login,
+  verifyOtp
 });
-
 
 /***********************************/
 /* Add config for Cognito
 /***********************************/
 const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources;
+const userPoolId = cfnUserPool.ref;
+const userPoolClientId= cfnUserPoolClient.ref;
 
 // Custom password policy for user pool
 cfnUserPool.policies = {
@@ -49,7 +55,6 @@ cfnUserPoolClient.tokenValidityUnits = {
   idToken: 'minutes',
   refreshToken: 'days',
 };
-
 
 /***********************************/
 /* Create custom resources
@@ -88,3 +93,15 @@ preSignUpLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress
 const postConfirmationLambda = backend.postConfirmation.resources.lambda as NodejsFunction;
 postConfirmationLambda.addLayers(layer);
 postConfirmationLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+
+const loginLambda = backend.login.resources.lambda as NodejsFunction;
+loginLambda.addLayers(layer);
+loginLambda.addEnvironment('USER_POOL_ID', userPoolId);
+loginLambda.addEnvironment('CLIENT_ID', userPoolClientId);
+loginLambda.addToRolePolicy(
+  PolicyHelper.allowAccessCognitoAuth(customResourceStack, userPoolId)
+);
+
+const verifyOtpLambda = backend.verifyOtp.resources.lambda as NodejsFunction;
+verifyOtpLambda.addLayers(layer);
+verifyOtpLambda.addEnvironment('CLIENT_ID', userPoolClientId);
