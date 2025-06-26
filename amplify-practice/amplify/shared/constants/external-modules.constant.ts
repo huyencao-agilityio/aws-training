@@ -8,5 +8,7 @@ export const EXTERNAL_MODULES = [
   'jwk-to-pem',
   '@aws-sdk/s3-presigned-post',
   '@aws-sdk/client-s3',
-  'aws-sdk/clients/cognitoidentityserviceprovider'
+  'aws-sdk/clients/cognitoidentityserviceprovider',
+  'constructs',
+  'amazon-user-pool-srp-client'
 ];
