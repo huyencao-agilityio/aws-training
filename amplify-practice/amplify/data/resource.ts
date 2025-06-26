@@ -13,17 +13,20 @@ export type Schema = ClientSchema<typeof schema>;
 const schema = a.schema({
   LoginResult: LoginResult,
   VerifyOtpResult: VerifyOtpResult,
+  // Define the health check API
   healthCheck: a
     .query()
     .returns(a.string())
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(healthCheck)),
+  // Define the login API
   login: a
     .mutation()
     .arguments(LoginInput)
     .returns(a.ref('LoginResult'))
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(login)),
+  // Define the verify OTP API
   verifyOtp: a
     .mutation()
     .arguments(VerifyOtpInput)

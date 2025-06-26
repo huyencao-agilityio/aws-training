@@ -9,5 +9,6 @@ export const EXTERNAL_MODULES = [
   '@aws-sdk/s3-presigned-post',
   '@aws-sdk/client-s3',
   'aws-sdk/clients/cognitoidentityserviceprovider',
-  'constructs'
+  'constructs',
+  'amazon-user-pool-srp-client'
 ];

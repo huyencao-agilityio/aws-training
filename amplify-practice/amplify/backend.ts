@@ -10,8 +10,9 @@ import { RdsConstruct } from './custom/rds/resource';
 import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
 import { data } from './data/resource';
 import { login } from './functions/login/resource';
-import { PolicyHelper } from './utils/policy.utils';
 import { verifyOtp } from './functions/verify-otp/resource';
+import { PolicyHelper } from './utils/policy.utils';
+
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
@@ -105,3 +106,6 @@ loginLambda.addToRolePolicy(
 const verifyOtpLambda = backend.verifyOtp.resources.lambda as NodejsFunction;
 verifyOtpLambda.addLayers(layer);
 verifyOtpLambda.addEnvironment('CLIENT_ID', userPoolClientId);
+verifyOtpLambda.addToRolePolicy(
+  PolicyHelper.allowAccessCognitoAuth(customResourceStack, userPoolId)
+);

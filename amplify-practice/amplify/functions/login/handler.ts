@@ -12,6 +12,13 @@ const clientId = process.env.CLIENT_ID || '';
 
 const cognito = new CognitoIdentityServiceProvider();
 
+/**
+ * Initiate the authentication process for a user
+ *
+ * @param email - The email address of the user
+ * @param srp - The SRP client
+ * @returns The authentication response
+ */
 async function initiateAuth(email: string, srp: any) {
   const SRP_A = srp.calculateA();
   const params = {
@@ -27,6 +34,14 @@ async function initiateAuth(email: string, srp: any) {
   return await cognito.initiateAuth(params).promise();
 }
 
+/**
+ * Verify the password for a user
+ *
+ * @param authData - The authentication response
+ * @param password - The password of the user
+ * @param srp - The SRP client
+ * @returns The authentication response
+ */
 async function verifyPassword(
   authData: InitiateAuthResponse,
   password: string,
@@ -77,6 +92,13 @@ async function verifyPassword(
   return await cognito.respondToAuthChallenge(params).promise();
 }
 
+/**
+ * Handle the login request
+ *
+ * @param event - The event object
+ * @param context - The context object
+ * @returns The login response
+ */
 export const handler: Handler = async (event, context) => {
   console.log(`Login: ${JSON.stringify(event)}`);
 

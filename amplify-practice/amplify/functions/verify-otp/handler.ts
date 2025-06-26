@@ -4,6 +4,13 @@ import { CognitoIdentityServiceProvider } from 'aws-sdk';
 const clientId = process.env.CLIENT_ID || '';
 const cognito = new CognitoIdentityServiceProvider();
 
+/**
+ * Verify the OTP for a user
+ *
+ * @param event - The event object
+ * @param context - The context object
+ * @returns The verify OTP response
+ */
 export const handler: Handler = async (event, context) => {
   console.log(`Verify OTP Event: ${JSON.stringify(event)}`);
 

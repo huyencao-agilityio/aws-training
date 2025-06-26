@@ -13,6 +13,12 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * Define a verify OTP Lambda function
+ *
+ * @param scope - The scope of the stack
+ * @returns The verify OTP Lambda function
+ */
 function verifyOtpFn (scope: Construct) {
   // Create a verify OTP Lambda function
   const lambdaFn = new NodejsFunction(scope, 'VerifyOtpLambda', {
@@ -29,10 +35,7 @@ function verifyOtpFn (scope: Construct) {
 }
 
 /**
- * Define a verify OTP Lambda function
- *
- * @param scope - The scope of the stack
- * @returns The verify OTP Lambda function
+ * Define a verify OTP Lambda function for the Amplify backend
  */
 export const verifyOtp = defineFunction(
   (scope: Construct) => verifyOtpFn(scope),
