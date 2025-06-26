@@ -10,6 +10,7 @@
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:generate": "npx prisma generate",
     "layer:build": "tsc --project layers/nodejs",
+    "resolver:build": "tsc --project amplify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -32,6 +33,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@aws-appsync/utils": "^2.0.3",
     "@prisma/client": "^6.9.0",
     "aws-amplify": "^6.15.0"
   }

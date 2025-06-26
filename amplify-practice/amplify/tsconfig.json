@@ -9,6 +9,8 @@
     "strict": true,
     "skipLibCheck": true,
     "allowJs": true,
+    "outDir": "../build/resolvers",
+    "rootDir": "./data/resolvers",
     "paths": {
       "$amplify/*": [
         "../.amplify/generated/*"
@@ -17,5 +19,6 @@
         "../layers/nodejs/*"
       ]
     }
-  }
+  },
+   "include": ["data/resolvers/**/*.ts"]
 }
