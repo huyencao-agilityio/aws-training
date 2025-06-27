@@ -1,6 +1,6 @@
 import { a } from '@aws-amplify/backend';
 
-export const LoginInput = {
+export const LoginRequest = {
   email: a.string().required(),
   password: a.string().required(),
 };

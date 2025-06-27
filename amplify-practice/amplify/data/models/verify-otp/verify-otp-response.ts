@@ -1,6 +1,6 @@
 import { a } from '@aws-amplify/backend';
 
-export const VerifyOtpResult = a.customType({
+export const VerifyOtpResponse = a.customType({
   AccessToken: a.string(),
   ExpiresIn: a.integer(),
   IdToken: a.string(),
