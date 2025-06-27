@@ -1,46 +1,44 @@
 import { defineFunction } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { buildResourceName } from '../../utils/resource.utils';
+import { buildResourceName } from '../../../utils/resource.utils';
 import {
   EXTERNAL_MODULES
-} from '../../shared/constants/external-modules.constant';
+} from '../../../shared/constants/external-modules.constant';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Define a login Lambda function
+ * Define a verify OTP Lambda function
  *
  * @param scope - The scope of the stack
- * @returns The login Lambda function
+ * @returns The verify OTP Lambda function
  */
-function loginFn (scope: Construct) {
-  // Create a login Lambda function
-  const lambdaFn = new NodejsFunction(scope, 'LoginLambda', {
+function verifyOtpFn (scope: Construct) {
+  // Create a verify OTP Lambda function
+  const lambdaFn = new NodejsFunction(scope, 'VerifyOtpLambda', {
     handler: 'index.handler',
     runtime: Runtime.NODEJS_22_X,
     entry: path.join(__dirname, './handler.ts'),
-    functionName: buildResourceName('login-api'),
+    functionName: buildResourceName('verify-otp'),
     bundling: {
       externalModules: EXTERNAL_MODULES,
-    },
-    timeout: Duration.minutes(3)
+    }
   });
 
   return lambdaFn;
 }
 
 /**
- * Define a login Lambda function for the Amplify backend
+ * Define a verify OTP Lambda function for the Amplify backend
  */
-export const login = defineFunction(
-  (scope: Construct) => loginFn(scope),
+export const verifyOtp = defineFunction(
+  (scope: Construct) => verifyOtpFn(scope),
   {
     resourceGroupName: 'data',
   }

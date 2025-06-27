@@ -9,8 +9,9 @@ import { VpcConstruct } from './custom/vpc/resource';
 import { RdsConstruct } from './custom/rds/resource';
 import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
 import { data } from './data/resource';
-import { login } from './functions/login/resource';
-import { verifyOtp } from './functions/verify-otp/resource';
+import { login } from './functions/auth/login/resource';
+import { verifyOtp } from './functions/auth/verify-otp/resource';
+import { getProducts } from './functions/products/get-products/resource';
 import { PolicyHelper } from './utils/policy.utils';
 
 /**
@@ -23,7 +24,8 @@ const backend = defineBackend({
   preSignUp,
   postConfirmation,
   login,
-  verifyOtp
+  verifyOtp,
+  getProducts
 });
 
 /***********************************/
@@ -109,3 +111,7 @@ verifyOtpLambda.addEnvironment('CLIENT_ID', userPoolClientId);
 verifyOtpLambda.addToRolePolicy(
   PolicyHelper.allowAccessCognitoAuth(customResourceStack, userPoolId)
 );
+
+const getProductsLambda = backend.getProducts.resources.lambda as NodejsFunction;
+getProductsLambda.addLayers(layer);
+getProductsLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
