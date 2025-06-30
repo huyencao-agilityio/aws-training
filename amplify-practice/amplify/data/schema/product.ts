@@ -16,8 +16,7 @@ export const productSchema = {
     .arguments(ProductRequest)
     .returns(a.ref('ProductResponse'))
     .authorization((allow) => [
-      allow.authenticated(),
-      allow.publicApiKey()
+      allow.guest()
     ])
     .handler(a.handler.function(getProducts)),
 }

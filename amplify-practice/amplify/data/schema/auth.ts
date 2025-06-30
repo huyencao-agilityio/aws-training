@@ -18,13 +18,17 @@ export const authSchema = {
     .mutation()
     .arguments(LoginRequest)
     .returns(a.ref('LoginResponse'))
-    .authorization((allow) => [allow.publicApiKey()])
+    .authorization((allow) => [
+      allow.guest()
+    ])
     .handler(a.handler.function(login)),
   // Define the verify OTP API
   verifyOtp: a
     .mutation()
     .arguments(VerifyOtpRequest)
     .returns(a.ref('VerifyOtpResponse'))
-    .authorization((allow) => [allow.publicApiKey()])
+    .authorization((allow) => [
+      allow.guest()
+    ])
     .handler(a.handler.function(verifyOtp)),
 }

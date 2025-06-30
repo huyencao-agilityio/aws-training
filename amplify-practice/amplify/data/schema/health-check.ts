@@ -11,7 +11,7 @@ export const healthCheckSchema = {
     .query()
     .returns(a.string())
     .authorization(allow => [
-      allow.publicApiKey(),
+      allow.authenticated()
     ])
     .handler(a.handler.custom({
       entry: `${RESOLVER_PATH}health-check.js`
