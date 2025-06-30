@@ -23,7 +23,7 @@ export const handler: Handler = async (
 
   const isAdmin = group?.includes(UserGroup.ADMIN);
 
-  if (currentUserId !== id) {
+  if (!isAdmin && currentUserId !== id) {
     throw new Error(JSON.stringify({
       statusCode: HttpStatusCode.FORBIDDEN,
       message: 'Permission denied.'
