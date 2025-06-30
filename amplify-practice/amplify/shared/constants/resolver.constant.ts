@@ -1,1 +1,1 @@
-export const RESOLVER_PATH = '../../build/resolvers/';
+export const RESOLVER_PATH = '../../../build/resolvers/';
