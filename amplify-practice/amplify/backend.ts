@@ -12,6 +12,7 @@ import { data } from './data/resource';
 import { login } from './functions/auth/login/resource';
 import { verifyOtp } from './functions/auth/verify-otp/resource';
 import { getProducts } from './functions/products/get-products/resource';
+import { updateUserProfile } from './functions/users/update-user/resource';
 import { PolicyHelper } from './utils/policy.utils';
 
 /**
@@ -25,7 +26,8 @@ const backend = defineBackend({
   postConfirmation,
   login,
   verifyOtp,
-  getProducts
+  getProducts,
+  updateUserProfile
 });
 
 /***********************************/
@@ -115,3 +117,7 @@ verifyOtpLambda.addToRolePolicy(
 const getProductsLambda = backend.getProducts.resources.lambda as NodejsFunction;
 getProductsLambda.addLayers(layer);
 getProductsLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+
+const updateUserProfileLambda = backend.updateUserProfile.resources.lambda as NodejsFunction;
+updateUserProfileLambda.addLayers(layer);
+updateUserProfileLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
