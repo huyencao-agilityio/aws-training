@@ -5,6 +5,6 @@ export const VerifyOtpRequest = {
     ChallengeName: a.string().required(),
     Session: a.string().required(),
   }),
-  email: a.string().required(),
+  email: a.email().required(),
   otp: a.string().required()
 };
