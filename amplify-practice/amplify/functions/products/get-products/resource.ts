@@ -18,10 +18,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Define a login Lambda function
+ * Define a get products Lambda function
  *
  * @param scope - The scope of the stack
- * @returns The login Lambda function
+ * @returns The get products Lambda function
  */
 function getProductsFn (scope: Construct) {
   const secretName = SecretHelper.getPlainTextParameter(
@@ -29,7 +29,7 @@ function getProductsFn (scope: Construct) {
     ParameterKeys.SecretName
   );
 
-  // Create a login Lambda function
+  // Create a get products Lambda function
   const lambdaFn = new NodejsFunction(scope, 'GetProductsLambda', {
     handler: 'index.handler',
     runtime: Runtime.NODEJS_22_X,
@@ -53,7 +53,7 @@ function getProductsFn (scope: Construct) {
 }
 
 /**
- * Define a login Lambda function for the Amplify backend
+ * Define a get products Lambda function for the Amplify backend
  */
 export const getProducts = defineFunction(
   (scope: Construct) => getProductsFn(scope),

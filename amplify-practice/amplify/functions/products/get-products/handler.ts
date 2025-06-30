@@ -7,6 +7,7 @@ import {
   PaginationResponse
 } from '../../../shared/interfaces/pagination.interface';
 import { HttpStatusCode } from '../../../shared/enums/http-status-code.enum';
+import { Product } from '../../../shared/interfaces/product.interface';
 
 /**
  * Lambda handler for retrieving all products.
@@ -15,7 +16,7 @@ import { HttpStatusCode } from '../../../shared/enums/http-status-code.enum';
  */
 export const handler: Handler = async (
   event: AppSyncResolverEvent<PaginationArguments>
-): Promise<PaginationResponse | void> => {
+): Promise<PaginationResponse<Product> | void> => {
   console.log('API Get All Product', JSON.stringify(event));
 
   const page = parseInt(event?.arguments?.page || '1');
