@@ -1,6 +1,7 @@
 import { Stack } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Effect } from 'aws-cdk-lib/aws-iam';
+import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 /**
@@ -70,6 +71,13 @@ export class PolicyHelper {
     });
   }
 
+  /**
+   * Create a policy statement for accessing Cognito authentication
+   *
+   * @param scope - The scope of the stack
+   * @param userPoolId - The ID of the user pool
+   * @returns The policy statement for accessing Cognito authentication
+   */
   static allowAccessCognitoAuth(scope: Construct, userPoolId: string) {
     const { region, account } = PolicyHelper.getAccountContext(scope);
 
@@ -82,5 +90,41 @@ export class PolicyHelper {
         `arn:aws:cognito-idp:${region}:${account}:userpool/${userPoolId}`
       ],
     })
+  }
+
+  /**
+   * Create a policy statement for CloudFront S3 access
+   *
+   * @param bucketArn - The ARN of the bucket
+   * @param distributionArn - The ARN of the distribution
+   * @returns The policy statement for CloudFront S3 access
+   */
+  static cloudfrontS3Access(
+    scope: Construct,
+    bucketName: string,
+    policyName: string,
+    distributionArn: string
+  ): CfnBucketPolicy {
+    return new CfnBucketPolicy(scope, policyName, {
+      bucket: bucketName,
+      policyDocument:{
+        Version: '2012-10-17',
+        Statement: [{
+          Effect: 'Allow',
+          Action: [
+            's3:GetObject'
+          ],
+          Resource: [
+            `arn:aws:s3:::${bucketName}/*`,
+          ],
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Condition: {
+            StringEquals: {
+              'AWS:SourceArn': distributionArn,
+            }
+          }
+        }]
+      }
+    });
   }
 }

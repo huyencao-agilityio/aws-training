@@ -6,3 +6,8 @@ export const UpdateUserRequest = {
   address: a.string(),
   name: a.string(),
 };
+
+export const UploadAvatarRequest = {
+  userId: a.string(),
+  contentType: a.string(),
+};

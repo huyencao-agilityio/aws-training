@@ -1,5 +1,6 @@
 import { ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 /**
  * Defines interface for the RDS Construct
@@ -7,4 +8,12 @@ import { IVpc } from 'aws-cdk-lib/aws-ec2';
 export interface RdsConstructProps {
   vpc: IVpc;
   securityGroup: ISecurityGroup;
+}
+
+/**
+ * Defines interface for the CloudFront construct.
+ * Used to configure a CloudFront distribution with a custom domain and certificate.
+ */
+export interface CloudFrontConstructProps {
+  bucket: IBucket;
 }
