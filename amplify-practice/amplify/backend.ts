@@ -13,7 +13,10 @@ import { login } from './functions/auth/login/resource';
 import { verifyOtp } from './functions/auth/verify-otp/resource';
 import { getProducts } from './functions/products/get-products/resource';
 import { updateUserProfile } from './functions/users/update-user/resource';
+import { uploadAvatar } from './functions/users/upload-avatar/resource';
 import { PolicyHelper } from './utils/policy.utils';
+import { CloudFrontConstruct } from './custom/cloudfront/resource';
+import { storage } from './storage/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -21,13 +24,15 @@ import { PolicyHelper } from './utils/policy.utils';
 const backend = defineBackend({
   auth,
   data,
+  storage,
   createAuthChallenge,
   preSignUp,
   postConfirmation,
   login,
   verifyOtp,
   getProducts,
-  updateUserProfile
+  updateUserProfile,
+  uploadAvatar,
 });
 
 /***********************************/
@@ -49,6 +54,7 @@ cfnUserPool.policies = {
     passwordHistorySize: 2,
   },
 }
+
 // Custom token validity for user pool client
 cfnUserPoolClient.accessTokenValidity = 60;
 cfnUserPoolClient.idTokenValidity = 60;
@@ -75,13 +81,24 @@ const rds = new RdsConstruct(customResourceStack, 'RdsConstruct', {
   vpc,
   securityGroup,
 });
+
 // Get the RDS endpoint
 const rdsEndpoint = rds.instance.dbInstanceEndpointAddress;
+
+// Get the storage stack
+const storageStack = backend.storage.stack;
+// Get the bucket
+const bucket = backend.storage.resources.bucket;
+// Create a new CloudFront distribution
+const { distribution } = new CloudFrontConstruct(storageStack, 'CloudFrontConstruct', {
+  bucket
+});
 
 // Add output for backend
 backend.addOutput({
   custom: {
     rdsEndpoint,
+    cloudfrontDistribution: distribution.domainName,
   },
 });
 
@@ -116,8 +133,21 @@ verifyOtpLambda.addToRolePolicy(
 
 const getProductsLambda = backend.getProducts.resources.lambda as NodejsFunction;
 getProductsLambda.addLayers(layer);
-getProductsLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+getProductsLambda.addEnvironment(
+  'DB_HOST',
+  rds.instance.dbInstanceEndpointAddress
+);
 
 const updateUserProfileLambda = backend.updateUserProfile.resources.lambda as NodejsFunction;
 updateUserProfileLambda.addLayers(layer);
-updateUserProfileLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+updateUserProfileLambda.addEnvironment(
+  'DB_HOST',
+  rds.instance.dbInstanceEndpointAddress
+);
+
+const uploadAvatarLambda = backend.uploadAvatar.resources.lambda as NodejsFunction;
+uploadAvatarLambda.addLayers(layer);
+uploadAvatarLambda.addEnvironment(
+  'BUCKET_NAME',
+  bucket.bucketName
+);

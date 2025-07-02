@@ -11,3 +11,8 @@ export const UserResponse = a.customType({
   created_at: a.string(),
   updated_at: a.string()
 });
+
+export const UploadAvatarResponse = a.customType({
+  url: a.string(),
+  fields: a.json(),
+});
