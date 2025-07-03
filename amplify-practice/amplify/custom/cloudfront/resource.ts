@@ -8,6 +8,7 @@ import {
   SigningBehavior,
   SigningProtocol,
   OriginAccessControlOriginType,
+  LambdaEdgeEventType,
 } from 'aws-cdk-lib/aws-cloudfront';
 import { CfnBucketPolicy, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -20,6 +21,8 @@ import {
 import { buildResourceName } from '../../utils/resource.utils';
 import { BUCKET_NAME } from '../../shared/constants/bucket.constant';
 import { PolicyHelper } from '../../utils/policy.utils';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { IVersion } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Define the construct to create new CloudFront
@@ -30,13 +33,18 @@ export class CloudFrontConstruct extends Construct {
   constructor(scope: Construct, id: string, props: CloudFrontConstructProps) {
     super(scope, id);
 
-    const { bucket } = props;
+    const { bucket, lambdaFnVersion } = props;
 
     // Create new a distribution in CloudFront
-    this.distribution = this.createDistribution(bucket);
+    this.distribution = this.createDistribution(
+      bucket,
+      lambdaFnVersion
+    );
 
     // Add bucket resource policy to allow CloudFront to access the bucket
     this.addBucketResourcePolicy(bucket);
+
+    // this.addLambdaFunctionPolicy(lambdaFunction, bucket);
   }
 
   /**
@@ -44,7 +52,7 @@ export class CloudFrontConstruct extends Construct {
    *
    * @returns The origin access control
    */
-  createOriginAccessControl(bucket: IBucket): CfnOriginAccessControl {
+  createOriginAccessControl(): CfnOriginAccessControl {
     const oac = new CfnOriginAccessControl(this, 'OAC', {
       originAccessControlConfig: {
         name: buildResourceName(`${BUCKET_NAME}-oac`),
@@ -66,9 +74,12 @@ export class CloudFrontConstruct extends Construct {
    * @param domainName - The domain name to use for the distribution
    * @returns The distribution
    */
-  createDistribution(bucket: IBucket): Distribution {
+  createDistribution(
+    bucket: IBucket,
+    lambdaFnVersion: IVersion
+  ): Distribution {
     // Create OAC
-    const oac = this.createOriginAccessControl(bucket);
+    const oac = this.createOriginAccessControl();
 
     // Create distribution
     const distribution =  new Distribution(this, 'CloudFrontDistribution', {
@@ -76,6 +87,12 @@ export class CloudFrontConstruct extends Construct {
         origin: S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFnVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+          },
+        ],
       },
       comment: 'CloudFront for public image access via S3',
     });
@@ -114,4 +131,10 @@ export class CloudFrontConstruct extends Construct {
       this.distribution.distributionArn
     );
   }
+
+  // addLambdaFunctionPolicy(lambdaFunction: NodejsFunction, bucket: IBucket): void {
+  //   lambdaFunction.addToRolePolicy(
+  //     PolicyHelper.s3ObjectCrud(bucket.bucketName)
+  //   );
+  // }
 }

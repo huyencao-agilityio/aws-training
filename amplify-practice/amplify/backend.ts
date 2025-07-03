@@ -17,6 +17,7 @@ import { uploadAvatar } from './functions/users/upload-avatar/resource';
 import { PolicyHelper } from './utils/policy.utils';
 import { CloudFrontConstruct } from './custom/cloudfront/resource';
 import { storage } from './storage/resource';
+import { OriginRequestLambdaConstruct } from './custom/lambda/origin-request/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -32,7 +33,7 @@ const backend = defineBackend({
   verifyOtp,
   getProducts,
   updateUserProfile,
-  uploadAvatar,
+  uploadAvatar
 });
 
 /***********************************/
@@ -89,10 +90,37 @@ const rdsEndpoint = rds.instance.dbInstanceEndpointAddress;
 const storageStack = backend.storage.stack;
 // Get the bucket
 const bucket = backend.storage.resources.bucket;
+
+// Create the Lambda function for origin request
+const { originRequestLambda} = new OriginRequestLambdaConstruct(
+  customResourceStack,
+  'OriginRequestLambdaConstruct'
+);
+
 // Create a new CloudFront distribution
-const { distribution } = new CloudFrontConstruct(storageStack, 'CloudFrontConstruct', {
-  bucket
-});
+const { distribution } = new CloudFrontConstruct(
+  storageStack,
+  'CloudFrontConstruct',
+  {
+    bucket,
+    lambdaFnVersion: originRequestLambda.currentVersion,
+  }
+);
+
+// Add policy statement for S3 object CRUD operations
+PolicyHelper.s3ObjectCrud(
+  storageStack,
+  bucket.bucketName,
+  originRequestLambda
+);
+
+// Add policy statement for CloudFront distribution management
+PolicyHelper.cloudfrontManageDistribution(
+  storageStack,
+  'CloudFrontManageDistribution',
+  originRequestLambda.role!.roleName,
+  distribution.distributionArn
+);
 
 // Add output for backend
 backend.addOutput({
