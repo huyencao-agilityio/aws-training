@@ -3,3 +3,5 @@
 amplify_outputs*
 amplifyconfiguration*
 .env
+build
+node_modules

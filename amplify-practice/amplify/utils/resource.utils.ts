@@ -9,5 +9,9 @@ import { APP_NAME } from '../shared/constants/app.const';
 export const buildResourceName = (
   resourceType: string
 ): string => {
-  return `${APP_NAME}-${resourceType}-amplify`;
+  const env = process.env.ENVIRONMENT || '';
+  const suffix = env ? `-${env}` : '';
+
+
+  return `${APP_NAME}-${resourceType}-amplify${suffix}`;
 };
