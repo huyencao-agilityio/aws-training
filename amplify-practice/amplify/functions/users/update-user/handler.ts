@@ -16,7 +16,7 @@ export const handler: Handler = async (
 ): Promise<User> => {
   console.log('API Update User Profile', JSON.stringify(event));
 
-  const { id, email, address, name } = event.arguments;
+  const { id, email, address, name, avatar, thumbnail } = event.arguments;
   const cognitoIdentity = event.identity as AppSyncIdentityCognito;
   const currentUserId = cognitoIdentity.sub;
   const group = cognitoIdentity.groups;
@@ -57,7 +57,9 @@ export const handler: Handler = async (
       data: {
         name,
         email,
-        address
+        address,
+        avatar,
+        thumbnail
       },
     });
 
