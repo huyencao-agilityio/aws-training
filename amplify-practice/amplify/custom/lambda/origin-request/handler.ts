@@ -12,9 +12,17 @@ import { HttpStatusCode } from '../../../shared/enums/http-status-code.enum';
 
 const S3 = new AWS.S3();
 
+/**
+ * Handler forLambda@Edge function for origin request
+ *
+ * @param event - The event object
+ * @returns The response object
+ */
 export const handler: Handler = async (
   event: CloudFrontResponseEvent
 ): Promise<CloudFrontResultResponse> => {
+  console.log('Lambda@Edge Origin Request:', event);
+
   const record = event.Records[0];
   const response = record.cf.response as CloudFrontResultResponse;
 

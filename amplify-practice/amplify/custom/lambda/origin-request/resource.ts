@@ -16,7 +16,6 @@ import {
   ENTRY_PATH
 } from '../../../shared/constants/lambda.constant';
 import { PolicyHelper } from '../../../utils/policy.utils';
-import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,7 +53,15 @@ export class OriginRequestLambdaConstruct extends Construct {
       handler: DEFAULT_LAMBDA_HANDLER,
       entry: path.join(__dirname, ENTRY_PATH),
       timeout: Duration.seconds(30),
-      functionName: lambdaFnName
+      functionName: lambdaFnName,
+      // Need to use bundling to build node modules for Lambda@Edge
+      // to avoid the error:
+      // "Error: Cannot find module 'sharp'" in Lambda Function
+      bundling: {
+        forceDockerBundling: true,
+        externalModules: [],
+        nodeModules: ['sharp', 'aws-sdk'],
+      },
     });
 
     // Add IAM role policy for Lambda function

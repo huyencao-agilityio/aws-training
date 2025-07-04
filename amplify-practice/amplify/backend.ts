@@ -5,19 +5,21 @@ import { auth } from './auth/resource';
 import { createAuthChallenge } from './auth/create-auth-challenge/resource';
 import { preSignUp } from './auth/pre-sign-up/resource';
 import { postConfirmation } from './auth/post-confirmation/resource';
-import { VpcConstruct } from './custom/vpc/resource';
-import { RdsConstruct } from './custom/rds/resource';
-import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
 import { data } from './data/resource';
+import { storage } from './storage/resource';
 import { login } from './functions/auth/login/resource';
 import { verifyOtp } from './functions/auth/verify-otp/resource';
 import { getProducts } from './functions/products/get-products/resource';
 import { updateUserProfile } from './functions/users/update-user/resource';
 import { uploadAvatar } from './functions/users/upload-avatar/resource';
-import { PolicyHelper } from './utils/policy.utils';
 import { CloudFrontConstruct } from './custom/cloudfront/resource';
-import { storage } from './storage/resource';
-import { OriginRequestLambdaConstruct } from './custom/lambda/origin-request/resource';
+import { VpcConstruct } from './custom/vpc/resource';
+import { RdsConstruct } from './custom/rds/resource';
+import { LambdaLayerConstruct } from './custom/lambda/layer/resource';
+import {
+  OriginRequestLambdaConstruct
+} from './custom/lambda/origin-request/resource';
+import { PolicyHelper } from './utils/policy.utils';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -74,9 +76,15 @@ cfnUserPoolClient.tokenValidityUnits = {
 // Create a new stack for custom resources
 const customResourceStack = backend.createStack('CustomResourceStack');
 // Create a new Lambda layer
-const { layer } = new LambdaLayerConstruct(customResourceStack, 'LambdaLayerConstruct');
+const { layer } = new LambdaLayerConstruct(
+  customResourceStack,
+  'LambdaLayerConstruct'
+);
 // Create a new VPC and security group
-const { vpc, securityGroup } = new VpcConstruct(customResourceStack, 'VpcConstruct');
+const { vpc, securityGroup } = new VpcConstruct(
+  customResourceStack,
+  'VpcConstruct'
+);
 // Create a new RDS instance
 const rds = new RdsConstruct(customResourceStack, 'RdsConstruct', {
   vpc,
@@ -85,7 +93,6 @@ const rds = new RdsConstruct(customResourceStack, 'RdsConstruct', {
 
 // Get the RDS endpoint
 const rdsEndpoint = rds.instance.dbInstanceEndpointAddress;
-
 // Get the storage stack
 const storageStack = backend.storage.stack;
 // Get the bucket
@@ -113,7 +120,6 @@ PolicyHelper.s3ObjectCrud(
   bucket.bucketName,
   originRequestLambda
 );
-
 // Add policy statement for CloudFront distribution management
 PolicyHelper.cloudfrontManageDistribution(
   storageStack,
@@ -138,11 +144,17 @@ createAuthChallengeLambda.addLayers(layer);
 
 const preSignUpLambda = backend.preSignUp.resources.lambda as NodejsFunction;
 preSignUpLambda.addLayers(layer);
-preSignUpLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+preSignUpLambda.addEnvironment(
+  'DB_HOST',
+  rdsEndpoint
+);
 
 const postConfirmationLambda = backend.postConfirmation.resources.lambda as NodejsFunction;
 postConfirmationLambda.addLayers(layer);
-postConfirmationLambda.addEnvironment('DB_HOST', rds.instance.dbInstanceEndpointAddress);
+postConfirmationLambda.addEnvironment(
+  'DB_HOST',
+  rdsEndpoint
+);
 
 const loginLambda = backend.login.resources.lambda as NodejsFunction;
 loginLambda.addLayers(layer);
@@ -163,14 +175,14 @@ const getProductsLambda = backend.getProducts.resources.lambda as NodejsFunction
 getProductsLambda.addLayers(layer);
 getProductsLambda.addEnvironment(
   'DB_HOST',
-  rds.instance.dbInstanceEndpointAddress
+  rdsEndpoint
 );
 
 const updateUserProfileLambda = backend.updateUserProfile.resources.lambda as NodejsFunction;
 updateUserProfileLambda.addLayers(layer);
 updateUserProfileLambda.addEnvironment(
   'DB_HOST',
-  rds.instance.dbInstanceEndpointAddress
+  rdsEndpoint
 );
 
 const uploadAvatarLambda = backend.uploadAvatar.resources.lambda as NodejsFunction;
