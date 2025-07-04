@@ -1,5 +1,7 @@
 import { ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { IVersion } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 /**
@@ -16,4 +18,5 @@ export interface RdsConstructProps {
  */
 export interface CloudFrontConstructProps {
   bucket: IBucket;
+  lambdaFnVersion: IVersion;
 }

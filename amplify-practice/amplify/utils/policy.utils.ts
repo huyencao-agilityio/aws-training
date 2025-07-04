@@ -1,6 +1,7 @@
 import { Stack } from 'aws-cdk-lib';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { CfnPolicy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Effect } from 'aws-cdk-lib/aws-iam';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
@@ -125,6 +126,93 @@ export class PolicyHelper {
           }
         }]
       }
+    });
+  }
+
+  /**
+   * Create a policy statement for Lambda function access
+   *
+   * @param scope - The scope of the stack
+   * @param lambdaFnName - The name of the Lambda function
+   * @returns The policy statement for Lambda function access
+   */
+  static lambdaFunctionAccess(
+    scope: Construct,
+    lambdaFnName: string
+  ): PolicyStatement {
+    const { region, account } = PolicyHelper.getAccountContext(scope);
+
+    return new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'lambda:GetFunction',
+        'lambda:EnableReplication',
+        'lambda:DisableReplication',
+      ],
+      resources: [
+        `arn:aws:lambda:${region}:${account}:function:${lambdaFnName}:*`,
+      ],
+    });
+  }
+
+  /**
+   * Create a policy statement for S3 object CRUD operations
+   *
+   * @param bucketName - The name of the bucket
+   * @returns The policy statement for S3 object CRUD operations
+   */
+  static s3ObjectCrud(scope: Construct, bucketName: string, lambdaFunction: NodejsFunction): CfnPolicy {
+    return new CfnPolicy(scope, 'ResizeImageS3Policy', {
+      policyName: 'ResizeImageS3AccessPolicy',
+      roles: [lambdaFunction.role!.roleName],
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: [
+              's3:GetObject',
+              's3:PutObject',
+              's3:DeleteObject',
+            ],
+            Resource: [`arn:aws:s3:::${bucketName}/*`],
+          },
+        ],
+      },
+    });
+  }
+
+  /**
+   * Create a policy statement for CloudFront distribution management
+   *
+   * @param scope - The scope of the stack
+   * @param distributionId - The ID of the distribution
+   * @returns The policy statement for CloudFront distribution management
+   */
+  static cloudfrontManageDistribution(
+    scope: Construct,
+    policyName: string,
+    roleName: string,
+    distributionArn: string
+  ): CfnPolicy {
+    return new CfnPolicy(scope, policyName, {
+      policyName: policyName,
+      roles: [ roleName ],
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'cloudfront:UpdateDistribution',
+              'cloudfront:CreateDistribution',
+            ],
+            Resource: [
+              distributionArn,
+            ],
+          },
+        ],
+      },
     });
   }
 }
