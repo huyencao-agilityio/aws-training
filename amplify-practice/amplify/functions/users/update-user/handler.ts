@@ -1,4 +1,8 @@
-import { AppSyncIdentityCognito, AppSyncResolverEvent, Handler } from 'aws-lambda';
+import {
+  AppSyncIdentityCognito,
+  AppSyncResolverEvent,
+  Handler
+} from 'aws-lambda';
 
 import { getPrismaClient } from '/opt/nodejs/prisma-client.js';
 

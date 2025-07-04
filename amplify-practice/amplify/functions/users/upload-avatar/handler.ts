@@ -12,7 +12,9 @@ import {
 
 import { UserGroup } from '../../../shared/enums/user-group.enum';
 import { HttpStatusCode } from '../../../shared/enums/http-status-code.enum';
-import { UploadAvatar } from '../../../shared/interfaces/upload-image.interface';
+import {
+  UploadAvatar
+} from '../../../shared/interfaces/upload-image.interface';
 
 const s3Client = new S3Client();
 

@@ -1,10 +1,11 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import { defineFunction } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { buildResourceName } from '../../../utils/resource.utils';
 import { SecretHelper } from '../../../utils/secret.utils';
@@ -12,7 +13,16 @@ import { PolicyHelper } from '../../../utils/policy.utils';
 import {
   EXTERNAL_MODULES
 } from '../../../shared/constants/external-modules.constant';
-import { ParameterKeys } from '../../../shared/constants/parameter-keys.constant';
+import {
+  ParameterKeys
+} from '../../../shared/constants/parameter-keys.constant';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  ENTRY_PATH
+} from '../../../shared/constants/lambda.constant';
+import {
+  ResourceGroupName
+} from '../../../shared/enums/resource-group-name.enum';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,9 +41,9 @@ function updateUserFn (scope: Construct) {
 
   // Create a update user Lambda function
   const lambdaFn = new NodejsFunction(scope, 'UpdateUserLambda', {
-    handler: 'index.handler',
+    handler: DEFAULT_LAMBDA_HANDLER,
     runtime: Runtime.NODEJS_22_X,
-    entry: path.join(__dirname, './handler.ts'),
+    entry: path.join(__dirname, ENTRY_PATH),
     functionName: buildResourceName('update-user'),
     bundling: {
       externalModules: EXTERNAL_MODULES,
@@ -58,6 +68,6 @@ function updateUserFn (scope: Construct) {
 export const updateUserProfile = defineFunction(
   (scope: Construct) => updateUserFn(scope),
   {
-    resourceGroupName: 'data',
+    resourceGroupName: ResourceGroupName.DATA,
   }
 );

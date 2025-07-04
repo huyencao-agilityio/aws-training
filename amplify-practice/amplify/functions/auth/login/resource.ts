@@ -1,15 +1,23 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import { defineFunction } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { buildResourceName } from '../../../utils/resource.utils';
 import {
   EXTERNAL_MODULES
 } from '../../../shared/constants/external-modules.constant';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  ENTRY_PATH
+} from '../../../shared/constants/lambda.constant';
+import {
+  ResourceGroupName
+} from '../../../shared/enums/resource-group-name.enum';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,9 +31,9 @@ const __dirname = path.dirname(__filename);
 function loginFn (scope: Construct) {
   // Create a login Lambda function
   const lambdaFn = new NodejsFunction(scope, 'LoginLambda', {
-    handler: 'index.handler',
+    handler: DEFAULT_LAMBDA_HANDLER,
     runtime: Runtime.NODEJS_22_X,
-    entry: path.join(__dirname, './handler.ts'),
+    entry: path.join(__dirname, ENTRY_PATH),
     functionName: buildResourceName('login-api'),
     bundling: {
       externalModules: EXTERNAL_MODULES,
@@ -42,6 +50,6 @@ function loginFn (scope: Construct) {
 export const login = defineFunction(
   (scope: Construct) => loginFn(scope),
   {
-    resourceGroupName: 'data',
+    resourceGroupName: ResourceGroupName.DATA,
   }
 );

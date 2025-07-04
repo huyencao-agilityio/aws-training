@@ -1,18 +1,28 @@
+import { fileURLToPath } from 'url';
+import path from 'path';
+
 import { defineFunction } from '@aws-amplify/backend';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { fileURLToPath } from 'url';
-import path from 'path';
 
 import { buildResourceName } from '../../utils/resource.utils';
+import { SecretHelper } from '../../utils/secret.utils';
+import { PolicyHelper } from '../../utils/policy.utils';
 import {
   EXTERNAL_MODULES
 } from '../../shared/constants/external-modules.constant';
-import { ParameterKeys } from '../../shared/constants/parameter-keys.constant';
-import { SecretHelper } from '../../utils/secret.utils';
-import { PolicyHelper } from '../../utils/policy.utils';
+import {
+  ParameterKeys
+} from '../../shared/constants/parameter-keys.constant';
+import {
+  DEFAULT_LAMBDA_HANDLER,
+  ENTRY_PATH
+} from '../../shared/constants/lambda.constant';
+import {
+  ResourceGroupName
+} from '../../shared/enums/resource-group-name.enum';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,9 +42,9 @@ function postConfirmationFn (scope: Construct) {
 
   // Create a post confirmation Lambda function
   const lambdaFn = new NodejsFunction(scope, 'PostConfirmationLambda', {
-    handler: 'index.handler',
+    handler: DEFAULT_LAMBDA_HANDLER,
     runtime: Runtime.NODEJS_22_X,
-    entry: path.join(__dirname, './handler.ts'),
+    entry: path.join(__dirname, ENTRY_PATH),
     functionName: buildResourceName('post-confirmation'),
     bundling: {
       externalModules: EXTERNAL_MODULES,
@@ -62,6 +72,6 @@ function postConfirmationFn (scope: Construct) {
 export const postConfirmation = defineFunction(
   (scope: Construct) => postConfirmationFn(scope),
   {
-    resourceGroupName: 'auth',
+    resourceGroupName: ResourceGroupName.AUTH,
   }
 );
