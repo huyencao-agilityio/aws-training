@@ -20,6 +20,7 @@ import {
   OriginRequestLambdaConstruct
 } from './custom/lambda/origin-request/resource';
 import { PolicyHelper } from './utils/policy.utils';
+import { weeklyReport } from './jobs/weekly-report/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -35,7 +36,8 @@ const backend = defineBackend({
   verifyOtp,
   getProducts,
   updateUserProfile,
-  uploadAvatar
+  uploadAvatar,
+  weeklyReport
 });
 
 /***********************************/
@@ -190,4 +192,11 @@ uploadAvatarLambda.addLayers(layer);
 uploadAvatarLambda.addEnvironment(
   'BUCKET_NAME',
   bucket.bucketName
+);
+
+const weeklyReportLambda = backend.weeklyReport.resources.lambda as NodejsFunction;
+weeklyReportLambda.addLayers(layer);
+weeklyReportLambda.addEnvironment(
+  'DB_HOST',
+  rdsEndpoint
 );

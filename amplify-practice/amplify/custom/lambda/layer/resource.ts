@@ -14,7 +14,6 @@ export class LambdaLayerConstruct extends Construct {
     this.layer = new LayerVersion(this, 'LibrariesLayer', {
       code: Code.fromAsset('layers'),
       compatibleRuntimes: [
-        Runtime.NODEJS_20_X,
         Runtime.NODEJS_22_X,
       ],
       description: 'Layer contains the libs using for the Lambda function',
