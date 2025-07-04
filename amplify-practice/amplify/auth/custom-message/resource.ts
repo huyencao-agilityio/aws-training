@@ -1,10 +1,12 @@
-import { defineFunction, defineStorage } from '@aws-amplify/backend';
+import { defineFunction } from '@aws-amplify/backend';
 
 import { buildResourceName } from '../../utils/resource.utils';
+import {
+  ResourceGroupName
+} from '../../shared/enums/resource-group-name.enum';
 
 export const customMessage = defineFunction({
   name: buildResourceName('custom-message'),
-  entry: './handler.ts',
   runtime: 22,
-  resourceGroupName: 'auth'
+  resourceGroupName: ResourceGroupName.AUTH
 });

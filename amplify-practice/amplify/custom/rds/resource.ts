@@ -17,9 +17,13 @@ import { Construct } from 'constructs';
 
 import { SecretHelper } from '../../utils/secret.utils';
 import { buildResourceName } from '../../utils/resource.utils';
-import { SecretManagerFields } from '../../shared/constants/secret-manage-field.const';
+import {
+  SecretManagerFields
+} from '../../shared/constants/secret-manage-field.const';
 import { ParameterKeys } from '../../shared/constants/parameter-keys.constant';
-import { RdsConstructProps } from '../../shared/interfaces/construct.interface';
+import {
+  RdsConstructProps
+} from '../../shared/interfaces/construct.interface';
 
 /**
  * Define the construct to create a new RDS
@@ -41,7 +45,10 @@ export class RdsConstruct extends Construct {
    * @param securityGroup - The security group to attach to the RDS instance.
    * @returns The created DatabaseInstance.
    */
-  createRdsInstance(vpc: IVpc, securityGroup: ISecurityGroup): DatabaseInstance {
+  createRdsInstance(
+    vpc: IVpc,
+    securityGroup: ISecurityGroup
+  ): DatabaseInstance {
     // Get the db password from the Secret Manager
     const dbPassword = SecretHelper.getSecretManager(
       SecretManagerFields.DbPassword
