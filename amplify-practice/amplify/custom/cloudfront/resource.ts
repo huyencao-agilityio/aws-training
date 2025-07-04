@@ -43,8 +43,6 @@ export class CloudFrontConstruct extends Construct {
 
     // Add bucket resource policy to allow CloudFront to access the bucket
     this.addBucketResourcePolicy(bucket);
-
-    // this.addLambdaFunctionPolicy(lambdaFunction, bucket);
   }
 
   /**
@@ -131,10 +129,4 @@ export class CloudFrontConstruct extends Construct {
       this.distribution.distributionArn
     );
   }
-
-  // addLambdaFunctionPolicy(lambdaFunction: NodejsFunction, bucket: IBucket): void {
-  //   lambdaFunction.addToRolePolicy(
-  //     PolicyHelper.s3ObjectCrud(bucket.bucketName)
-  //   );
-  // }
 }

@@ -58,7 +58,6 @@ export class OriginRequestLambdaConstruct extends Construct {
       // to avoid the error:
       // "Error: Cannot find module 'sharp'" in Lambda Function
       bundling: {
-        forceDockerBundling: true,
         externalModules: [],
         nodeModules: ['sharp', 'aws-sdk'],
       },
