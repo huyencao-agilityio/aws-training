@@ -17,9 +17,6 @@ import {
   ParameterKeys
 } from '../../shared/constants/parameter-keys.constant';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
-import {
-  SCHEDULE_EXPRESSIONS
-} from '../../shared/constants/schedule.constant';
 import { PolicyHelper } from '../../utils/policy.utils';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +42,7 @@ function weeklyReportFn (scope: Construct) {
     scope,
     ParameterKeys.AdminEmailAddress
   );
+  const schedule = process.env.SCHEDULE_EXPRESSIONS || 'cron(0 0 ? * 1 *)';
 
   // Create a weekly report Lambda function
   const lambdaFn = new NodejsFunction(scope, 'WeeklyReportLambda', {
@@ -72,7 +70,7 @@ function weeklyReportFn (scope: Construct) {
   const lambdaTarget = new LambdaFunction(lambdaFn);
   // Create a rule with schedule
   const rule = new Rule(lambdaFn, 'WeeklyReportRule', {
-    schedule: Schedule.expression(SCHEDULE_EXPRESSIONS.WEEKLY_REPORT),
+    schedule: Schedule.expression(schedule),
   });
 
   // Add target to the rule
