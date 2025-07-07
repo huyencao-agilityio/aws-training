@@ -88,13 +88,19 @@ npm run prisma:generate
 npm run layer:build
 ```
 
-4. Deploy amplify to Sandbox
+4. Build resolver
+
+```bash
+npm run resolver:build
+```
+
+5. Deploy amplify to Sandbox
 
 ```bash
 npm run amplify:sandbox
 ```
 
-5. Migration Database
+6. Migration Database
 
 ```bash
 npm run prisma:migrate

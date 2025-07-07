@@ -4,6 +4,7 @@ import { healthCheckSchema } from './schema/health-check';
 import { authSchema } from './schema/auth';
 import { productSchema } from './schema/product';
 import { userSchema } from './schema/user';
+import { buildResourceName } from '../utils/resource.utils';
 
 export type Schema = ClientSchema<typeof schema>;
 
@@ -15,6 +16,7 @@ const schema = a.schema({
 });
 
 export const data = defineData({
+  name: buildResourceName('api'),
   schema,
   authorizationModes: {
     defaultAuthorizationMode: 'userPool'
