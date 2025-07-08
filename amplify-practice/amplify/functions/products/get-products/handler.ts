@@ -40,7 +40,7 @@ export const handler: Handler = async (
         totalItems: totalItems,
         itemsPerPage: limit
       },
-      items: res.rows
+      items: res
     };
   } catch (error: any) {
     console.error('Error when getting all products:', error);

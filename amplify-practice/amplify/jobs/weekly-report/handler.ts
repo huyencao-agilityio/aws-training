@@ -46,7 +46,7 @@ const getTopOrderItems = async (
   const orderItems = await prisma.orderItem.groupBy({
     by: ['product_id'],
     where: {
-      orderId: { in: orderIds },
+      order_id: { in: orderIds },
     },
     _sum: {
       quantity: true,

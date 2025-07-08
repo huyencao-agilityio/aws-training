@@ -73,6 +73,10 @@ function weeklyReportFn (scope: Construct) {
     PolicyHelper.allowSecretManagerGetValue(scope, secretName)
   );
 
+  lambdaFn.addToRolePolicy(
+    PolicyHelper.allowSesSendEmail(scope, defaultEmailAddress)
+  );
+
   // Create target for the rule
   const lambdaTarget = new LambdaFunction(lambdaFn);
   // Create a rule with schedule
