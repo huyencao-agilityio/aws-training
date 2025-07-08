@@ -58,6 +58,10 @@ function getProductsFn (scope: Construct) {
   lambdaFn.addToRolePolicy(
     PolicyHelper.allowSecretManagerGetValue(scope, secretName)
   );
+  // Allow the Lambda function to access the EC2 instance
+  lambdaFn.addToRolePolicy(
+    PolicyHelper.allowEc2Access()
+  );
 
   return lambdaFn;
 }

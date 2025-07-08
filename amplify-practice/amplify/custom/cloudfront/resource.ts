@@ -11,7 +11,6 @@ import {
   LambdaEdgeEventType,
 } from 'aws-cdk-lib/aws-cloudfront';
 import { CfnBucketPolicy, IBucket } from 'aws-cdk-lib/aws-s3';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
@@ -21,7 +20,6 @@ import {
 import { buildResourceName } from '../../utils/resource.utils';
 import { BUCKET_NAME } from '../../shared/constants/bucket.constant';
 import { PolicyHelper } from '../../utils/policy.utils';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { IVersion } from 'aws-cdk-lib/aws-lambda';
 
 /**
