@@ -5,3 +5,4 @@ amplifyconfiguration*
 .env
 build
 node_modules
+*.js

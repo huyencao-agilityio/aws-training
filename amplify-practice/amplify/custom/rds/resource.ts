@@ -66,11 +66,11 @@ export class RdsConstruct extends Construct {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: SubnetType.PUBLIC,
+        subnetType: SubnetType.PRIVATE_ISOLATED,
       },
       securityGroups: [securityGroup],
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
-      publiclyAccessible: true,
+      publiclyAccessible: false,
       storageType: StorageType.GP2,
       allocatedStorage: 20,
       multiAz: false,

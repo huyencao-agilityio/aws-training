@@ -73,6 +73,25 @@ export class PolicyHelper {
   }
 
   /**
+   * Create a policy statement for EC2 access
+   *
+   * @returns The policy statement for EC2 access
+   */
+  static allowEc2Access(): PolicyStatement {
+    return new PolicyStatement({
+      actions: [
+        'ec2:CreateNetworkInterface',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeVpcs'
+      ],
+      resources: ['*'],
+    });
+  }
+
+  /**
    * Create a policy statement for accessing Cognito authentication
    *
    * @param scope - The scope of the stack

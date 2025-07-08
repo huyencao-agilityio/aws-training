@@ -68,11 +68,6 @@ export class VpcConstruct extends Construct {
     });
 
     securityGroup.addIngressRule(
-      Peer.anyIpv4(),
-      Port.allTcp(),
-      'Allow all TCP traffic from anywhere');
-
-    securityGroup.addIngressRule(
       securityGroup,
       Port.allTraffic(),
       'Allow all traffic from self'
