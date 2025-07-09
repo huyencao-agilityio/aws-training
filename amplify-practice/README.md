@@ -5,6 +5,9 @@ This is a practice repository for building a application on AWS for the E-commer
 ## Requirement
 [Amplify Practice](https://docs.google.com/document/d/10QVZvOZAORbfFw8TETMcolMFSFCySDyrxutMxuP8HOA/edit?tab=t.0)
 
+## High-level architecture
+[High-level architecture](https://drive.google.com/file/d/1PDY3yXcNrZXB10akZI4_znp_z6RyWWNr/view?usp=sharing)
+
 ## Prerequisites
 Node.js (>=22.x)
 
