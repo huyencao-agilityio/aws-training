@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import ConfirmSignUp from './components/ConfirmSignUp';
 import { customSignIn } from './services/signIn';
 import ConfirmLogin from './components/ConfirmLogin';
+import UserProfile from '../users/UserProfile';
 
 export default function AuthProvider() {
 
@@ -89,16 +90,21 @@ export default function AuthProvider() {
   if (step === 'AUTHENTICATED' && currentUser) {
     return (
       <main className="p-4">
-        <h1>Welcome, {currentUser?.username}</h1>
-        <Button
-          onClick={async () => {
-            await signOut();
-            setCurrentUser(null);
-            setStep('SIGN_IN');
-          }}
-        >
-          Sign out
-        </Button>
+        <div className="flex flex-col items-center justify-center">
+          <h1>Welcome, {currentUser?.username}</h1>
+          <Button
+            onClick={async () => {
+              await signOut();
+              setCurrentUser(null);
+              setStep('SIGN_IN');
+            }}
+          >
+            Sign out
+          </Button>
+        </div>
+
+        <UserProfile user={currentUser} />
+
       </main>
     );
   }
