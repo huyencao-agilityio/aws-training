@@ -89,24 +89,60 @@ export default function AuthProvider() {
 
   if (step === 'AUTHENTICATED' && currentUser) {
     return (
-      <main className="p-4">
-        <div className="flex flex-col items-center justify-center">
-          <h1>Welcome, {currentUser?.username}</h1>
-          <Button
-            onClick={async () => {
-              await signOut();
-              setCurrentUser(null);
-              setStep('SIGN_IN');
-            }}
-          >
-            Sign out
-          </Button>
-        </div>
+      <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+        {/* Header */}
+        <header className="bg-indigo-600 text-white px-6 py-4 shadow">
+          <div className="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold">User Profile</h1>
+            <Button
+              onClick={async () => {
+                await signOut();
+                setCurrentUser(null);
+                setStep('SIGN_IN');
+              }}
+              variation="link"
+            >
+              Sign out
+            </Button>
+          </div>
+        </header>
 
-        <UserProfile user={currentUser} />
+        {/* Main content */}
+        <main className="flex-1 px-6 py-8">
+          <div className="max-w-4xl mx-auto">
+            <UserProfile user={currentUser} />
+          </div>
+        </main>
 
-      </main>
+        {/* Footer */}
+        <footer className="bg-gray-100 text-center text-sm text-gray-600 py-4 border-t">
+          <div className="max-w-4xl mx-auto">
+            © 2025 Amplify app. All rights reserved.
+          </div>
+        </footer>
+      </div>
     );
+
+
+    // return (
+    //   <main className="p-4">
+    //     <div className="flex flex-col items-center justify-center">
+    //       <h1>Welcome, {currentUser?.username}</h1>
+    //       <Button
+    //         onClick={async () => {
+    //           await signOut();
+    //           setCurrentUser(null);
+    //           setStep('SIGN_IN');
+    //         }}
+    //       >
+    //         Sign out
+    //       </Button>
+    //     </div>
+
+    //     <UserProfile user={currentUser} />
+
+    //   </main>
+    // );
   }
 
   return (
