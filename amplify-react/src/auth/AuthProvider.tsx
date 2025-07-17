@@ -2,6 +2,7 @@ import {
   Authenticator,
   Button,
   useAuthenticator,
+  View,
 } from '@aws-amplify/ui-react';
 import {
   getCurrentUser,
@@ -10,6 +11,7 @@ import {
   type SignInOutput
 } from 'aws-amplify/auth';
 import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import ConfirmSignUp from './components/ConfirmSignUp';
 import { customSignIn } from './services/signIn';
@@ -23,6 +25,8 @@ export default function AuthProvider() {
   const [step, setStep] = useState<'SIGN_IN' | 'CUSTOM_CHALLENGE' | 'AUTHENTICATED'|'EMAIL_NOT_VERIFIED'>('SIGN_IN');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [username, setUsername] = useState<string>('');
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     getCurrentUser()
@@ -36,7 +40,14 @@ export default function AuthProvider() {
       });
   }, []);
 
+  useEffect(() => {
+    if (step === 'AUTHENTICATED' && location.pathname === '/login') {
+      navigate('/');
+    }
+  }, [step, navigate, pathname]);
+
   const services = {
+
     async handleSignIn(input: SignInInput): Promise<SignInOutput> {
       // eslint-disable-next-line no-useless-catch
       try {
@@ -69,6 +80,13 @@ export default function AuthProvider() {
     }
   }
 
+  const handleSignOut = async () => {
+    await signOut();
+    setCurrentUser(null);
+    setStep('SIGN_IN');
+    navigate('/');
+  };
+
   // Custom confirm sign up form when sign up
   if (route === 'confirmSignUp' || step === 'EMAIL_NOT_VERIFIED') {
     return <ConfirmSignUp
@@ -95,11 +113,7 @@ export default function AuthProvider() {
           <div className="max-w-4xl mx-auto flex justify-between items-center">
             <h1 className="text-xl font-bold">User Profile</h1>
             <Button
-              onClick={async () => {
-                await signOut();
-                setCurrentUser(null);
-                setStep('SIGN_IN');
-              }}
+              onClick={handleSignOut}
               variation="link"
             >
               Sign out
@@ -123,6 +137,26 @@ export default function AuthProvider() {
       </div>
     );
   }
+
+  // return (
+  //   <>
+  //     {!showLogin && (
+  //       <View position="absolute" top="1rem" right="1rem">
+  //         <Button onClick={() => setShowLogin(true)}>Login</Button>
+  //       </View>
+  //     )}
+  //     {showLogin && (
+  //       <Authenticator services={services}>
+  //         {({ signOut, user }) => (
+  //           <div className="p-4">
+  //             <p>Welcome, {user?.username}</p>
+  //             <button onClick={signOut}>Sign out</button>
+  //           </div>
+  //         )}
+  //       </Authenticator>
+  //     )}
+  //   </>
+  // );
 
   return (
     <Authenticator services={services}>
