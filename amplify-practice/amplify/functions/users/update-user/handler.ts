@@ -20,7 +20,18 @@ export const handler: Handler = async (
 ): Promise<User> => {
   console.log('API Update User Profile', JSON.stringify(event));
 
-  const { id, email, address, name, avatar, thumbnail } = event.arguments;
+  const { id, email } = event.arguments;
+
+  const filteredData = Object.fromEntries(
+    Object.entries(event.arguments).filter(
+      ([_, v]) =>
+        v !== null &&
+        v !== undefined &&
+        typeof v === 'string' &&
+        v.trim() !== ''
+    )
+  ) as Record<string, string>;
+
   const cognitoIdentity = event.identity as AppSyncIdentityCognito;
   const currentUserId = cognitoIdentity.sub;
   const group = cognitoIdentity.groups;
@@ -58,13 +69,7 @@ export const handler: Handler = async (
 
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        name,
-        email,
-        address,
-        avatar,
-        thumbnail
-      },
+      data: filteredData,
     });
 
     return updatedUser;
