@@ -22,6 +22,11 @@ export default function AvatarUploader(
   const MAX_SIZE_MB = 2;
   const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
+  /**
+   * Handles the file change event for the avatar uploader.
+   *
+   * @param e The change event from the file input.
+   */
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -55,12 +60,10 @@ export default function AvatarUploader(
 
       if (oldAvatar) {
         await remove({ path: oldAvatar });
-        console.log('Old avatar removed:', oldAvatar);
       }
 
       if (oldThumbnail) {
         await remove({ path: oldThumbnail });
-        console.log('Old thumbnail removed:', oldThumbnail);
       }
 
       setAvatarUrl(`${CLOUD_FRONT_DOMAIN}/${path}`);
