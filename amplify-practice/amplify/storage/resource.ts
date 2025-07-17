@@ -12,13 +12,13 @@ export const storage = defineStorage({
       allow.groups([
         UserGroup.ADMIN,
         UserGroup.USER]
-      ).to(['read', 'write'])
+      ).to(['read', 'write', 'delete'])
     ],
     'thumbnails/*': [
       allow.guest.to(['read']),
       allow.groups([
         UserGroup.ADMIN, UserGroup.USER
-      ]).to(['read', 'write'])
+      ]).to(['read', 'write', 'delete'])
     ],
   }),
 });

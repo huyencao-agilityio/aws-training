@@ -1,6 +1,7 @@
 import { a } from '@aws-amplify/backend';
 
 export const UserResponse = a.customType({
+  id: a.string(),
   name: a.string(),
   email: a.email(),
   address: a.string(),
