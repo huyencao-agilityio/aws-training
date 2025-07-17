@@ -122,27 +122,6 @@ export default function AuthProvider() {
         </footer>
       </div>
     );
-
-
-    // return (
-    //   <main className="p-4">
-    //     <div className="flex flex-col items-center justify-center">
-    //       <h1>Welcome, {currentUser?.username}</h1>
-    //       <Button
-    //         onClick={async () => {
-    //           await signOut();
-    //           setCurrentUser(null);
-    //           setStep('SIGN_IN');
-    //         }}
-    //       >
-    //         Sign out
-    //       </Button>
-    //     </div>
-
-    //     <UserProfile user={currentUser} />
-
-    //   </main>
-    // );
   }
 
   return (
