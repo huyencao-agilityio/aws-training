@@ -1,4 +1,4 @@
-import { Button, Heading, TextField, View } from '@aws-amplify/ui-react';
+import { Button, Heading, TextField, View, Text } from '@aws-amplify/ui-react';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { useState } from 'react';
 
@@ -10,16 +10,23 @@ export default function ConfirmLogin({
   onAuthenticated: (user: any) => void;
 }
 ) {
+  const [errorMessage, setErrorMessage] = useState('');
   const [challengeResponse, setChallengeResponse] = useState('');
 
   /**
    * Handles the submission of the challenge response
    */
   const handleSubmit = async () => {
-    await customHandleConfirmSignIn({ challengeResponse });
+    try {
+      await customHandleConfirmSignIn({ challengeResponse });
 
-    const user = await getCurrentUser();
-    onAuthenticated(user);
+      const user = await getCurrentUser();
+      onAuthenticated(user);
+    } catch (error: any) {
+      console.error('Sign-in error:', error);
+
+      setErrorMessage(error.message || 'Invalid verification code');
+    }
   };
 
   return (
@@ -41,6 +48,7 @@ export default function ConfirmLogin({
         onChange={(e) => setChallengeResponse(e.target.value)}
         marginTop="1rem"
       />
+      {errorMessage && <Text variation="error">{errorMessage}</Text>}
       <Button
         variation="primary"
         marginTop="1rem"
