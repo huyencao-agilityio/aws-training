@@ -1,12 +1,10 @@
 import {
   Authenticator,
-  Button,
   useAuthenticator,
-  View,
 } from '@aws-amplify/ui-react';
 import {
   getCurrentUser,
-  signOut,
+  type AuthUser,
   type SignInInput,
   type SignInOutput
 } from 'aws-amplify/auth';
@@ -17,13 +15,17 @@ import ConfirmSignUp from './components/ConfirmSignUp';
 import { customSignIn } from './services/signIn';
 import ConfirmLogin from './components/ConfirmLogin';
 import UserProfile from '../users/UserProfile';
+import Layout from '../layout/AppLayout';
 
 export default function AuthProvider() {
-
   const { route } = useAuthenticator();
-
-  const [step, setStep] = useState<'SIGN_IN' | 'CUSTOM_CHALLENGE' | 'AUTHENTICATED'|'EMAIL_NOT_VERIFIED'>('SIGN_IN');
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [step, setStep] = useState<
+    'SIGN_IN' |
+    'CUSTOM_CHALLENGE' |
+    'AUTHENTICATED' |
+    'EMAIL_NOT_VERIFIED'
+  >('SIGN_IN');
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [username, setUsername] = useState<string>('');
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -40,14 +42,25 @@ export default function AuthProvider() {
       });
   }, []);
 
+  // Handle flow when user is authenticated
   useEffect(() => {
-    if (step === 'AUTHENTICATED' && location.pathname === '/login') {
+    if (
+      step === 'AUTHENTICATED'
+      && currentUser &&
+      location.pathname === '/login'
+    ) {
       navigate('/');
     }
-  }, [step, navigate, pathname]);
+  }, [step, navigate, pathname, currentUser]);
 
+  // Override default services
   const services = {
-
+    /**
+     * Handles the sign in process
+     *
+     * @param input The sign in input
+     * @returns The sign in output
+     */
     async handleSignIn(input: SignInInput): Promise<SignInOutput> {
       // eslint-disable-next-line no-useless-catch
       try {
@@ -80,15 +93,9 @@ export default function AuthProvider() {
     }
   }
 
-  const handleSignOut = async () => {
-    await signOut();
-    setCurrentUser(null);
-    setStep('SIGN_IN');
-    navigate('/');
-  };
-
   // Custom confirm sign up form when sign up
   if (route === 'confirmSignUp' || step === 'EMAIL_NOT_VERIFIED') {
+    console.log('confirmSignUp');
     return <ConfirmSignUp
       username={username}
       onBack={() => setStep('SIGN_IN')}
@@ -105,66 +112,25 @@ export default function AuthProvider() {
     />;
   }
 
+  // Handle flow when user is authenticated
   if (step === 'AUTHENTICATED' && currentUser) {
+    if (location.pathname === '/login') {
+      return null;
+    }
+
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
-        {/* Header */}
-        <header className="bg-indigo-600 text-white px-6 py-4 shadow">
-          <div className="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">User Profile</h1>
-            <Button
-              onClick={handleSignOut}
-              variation="link"
-            >
-              Sign out
-            </Button>
-          </div>
-        </header>
-
-        {/* Main content */}
-        <main className="flex-1 px-6 py-8">
-          <div className="max-w-4xl mx-auto">
-            <UserProfile user={currentUser} />
-          </div>
-        </main>
-
-        {/* Footer */}
-        <footer className="bg-gray-100 text-center text-sm text-gray-600 py-4 border-t">
-          <div className="max-w-4xl mx-auto">
-            © 2025 Amplify app. All rights reserved.
-          </div>
-        </footer>
-      </div>
+      <Layout>
+        <UserProfile user={currentUser} />
+      </Layout>
     );
   }
 
-  // return (
-  //   <>
-  //     {!showLogin && (
-  //       <View position="absolute" top="1rem" right="1rem">
-  //         <Button onClick={() => setShowLogin(true)}>Login</Button>
-  //       </View>
-  //     )}
-  //     {showLogin && (
-  //       <Authenticator services={services}>
-  //         {({ signOut, user }) => (
-  //           <div className="p-4">
-  //             <p>Welcome, {user?.username}</p>
-  //             <button onClick={signOut}>Sign out</button>
-  //           </div>
-  //         )}
-  //       </Authenticator>
-  //     )}
-  //   </>
-  // );
-
   return (
     <Authenticator services={services}>
-      {({ signOut, user }) => (
-        <main className="p-4">
-          <h1>Welcome, {user?.username}</h1>
-          <button onClick={signOut}>Sign out</button>
-        </main>
+      {({ user }) => (
+        <Layout>
+          <UserProfile user={user} />
+        </Layout>
       )}
     </Authenticator>
   );

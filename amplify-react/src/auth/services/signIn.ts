@@ -7,6 +7,12 @@ import {
   type ConfirmSignInInput,
 } from 'aws-amplify/auth';
 
+/**
+ * Custom sign in process of Cognito
+ *
+ * @param input The sign in input
+ * @returns The sign in output
+ */
 export async function customSignIn(
   input: SignInInput
 ): Promise<SignInOutput> {
@@ -21,6 +27,12 @@ export async function customSignIn(
   });
 }
 
+/**
+ * Custom handle confirm sign in process of Cognito
+ *
+ * @param input The confirm sign in input
+ * @returns The confirm sign in output
+ */
 export async function customHandleConfirmSignIn(
   input: ConfirmSignInInput
 ): Promise<ConfirmSignInOutput> {

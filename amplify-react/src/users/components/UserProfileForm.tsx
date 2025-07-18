@@ -1,5 +1,12 @@
+import {
+  TextField,
+  Button,
+  View,
+  Flex,
+  Heading
+} from '@aws-amplify/ui-react';
 import { useState } from 'react';
-import { TextField, Button, View, Flex, Heading } from '@aws-amplify/ui-react';
+
 
 export default function UserProfileForm(
   { onSubmit }: { onSubmit: (data: any) => void }

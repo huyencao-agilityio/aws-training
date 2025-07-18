@@ -7,6 +7,9 @@ export default function ConfirmSignUp({
   username: string,
   onBack: () => void
 }) {
+  /**
+   * Handles the resend of the verification email
+     */
   const handleResend = async () => {
     try {
       await resendSignUpCode({ username: username || '' });

@@ -10,10 +10,13 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+
+    /**
+     * Fetches the products from the database
+     */
     const fetchProducts = async () => {
       const session = await fetchAuthSession();
       const isLoggedIn = session.userSub !== undefined;
-
       const options: any = {
         query: getProducts
       };
@@ -22,12 +25,7 @@ export default function ProductList() {
         options.authMode = 'iam';
       }
 
-      console.log('options', options);
-
       const result = await client.graphql(options);
-
-      console.log('result', result);
-
       const data = (result as GraphQLResult<any>).data;
 
       setProducts(data.getProducts.items);
