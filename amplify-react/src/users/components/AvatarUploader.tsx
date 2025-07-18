@@ -4,6 +4,7 @@ import { remove, uploadData } from 'aws-amplify/storage';
 
 import defaultAvatar from '../../assets/default-avatar.png';
 import outputs  from '../../../amplify_outputs.json';
+import { ALLOWED_TYPES, MAX_SIZE_MB } from '../../constants/image';
 
 export const CLOUD_FRONT_DOMAIN = `https://${outputs.custom.cloudfrontDistribution}`;
 
@@ -19,9 +20,6 @@ export default function AvatarUploader(
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const MAX_SIZE_MB = 2;
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
   /**
    * Handles the file change event for the avatar uploader.
    *
@@ -34,12 +32,13 @@ export default function AvatarUploader(
     const extension = selectedFile.type.split('/')[1];
     const path = `avatars/${user.username}/img-${Date.now()}.${extension}`;
 
-    // Validate
+    // Validate image type
     if (!ALLOWED_TYPES.includes(selectedFile.type)) {
       setError('Only JPG, PNG or WEBP files are allowed');
       return;
     }
 
+    // Validate image size
     if (selectedFile.size > MAX_SIZE_MB * 1024 * 1024) {
       setError(`Image size must be less than ${MAX_SIZE_MB}MB`);
       return;
@@ -55,8 +54,8 @@ export default function AvatarUploader(
         options: { contentType: extension },
       }).result;
 
-      const oldAvatar = user.avatar;
-      const oldThumbnail = user.thumbnail;
+      const oldAvatar = user?.avatar;
+      const oldThumbnail = user?.thumbnail;
 
       if (oldAvatar) {
         await remove({ path: oldAvatar });
@@ -75,6 +74,9 @@ export default function AvatarUploader(
     }
   };
 
+  /**
+   * Handles the click event for the avatar uploader.
+   */
   const handleClick = () => {
     fileInputRef.current?.click();
   };

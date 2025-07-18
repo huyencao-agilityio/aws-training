@@ -9,6 +9,10 @@ import { useState } from 'react';
 import VerifyEmailModal from './components/VerifyEmailModal';
 
 const client = generateClient();
+const ALLOWED_COGNITO_FIELDS = [
+  'email',
+  'name'
+];
 
 export default function UserProfile({ user }: { user: any }) {
   const [currentUser, setCurrentUser] = useState(user);
@@ -24,7 +28,8 @@ export default function UserProfile({ user }: { user: any }) {
     try {
       const { userId } = await getCurrentUser();
 
-      const filtered = Object.fromEntries(
+      // Normalize the input data
+      const normalizedData = Object.fromEntries(
         Object.entries(input).filter(
           ([_, v]) =>
             v !== null &&
@@ -34,12 +39,24 @@ export default function UserProfile({ user }: { user: any }) {
         )
       ) as Record<string, string>;
 
-      const hasEmailChanged = filtered.email && filtered.email !== currentUser.email;
+      // Check if the email has changed
+      const hasEmailChanged = normalizedData.email
+        && normalizedData.email !== currentUser.email;
 
-      const { email, ...rest } = filtered;
+      const { email, ...rest } = normalizedData;
+
+      const normalizedDataCognito = Object.entries(
+        normalizedData
+      ).reduce((acc, [key, value]) => {
+        if (ALLOWED_COGNITO_FIELDS.includes(key)) {
+          acc[key] = value;
+        }
+
+        return acc;
+      }, {} as Record<string, string>);
 
       await updateUserAttributes({
-        userAttributes: filtered,
+        userAttributes: normalizedDataCognito,
       });
 
       if (email && hasEmailChanged) {

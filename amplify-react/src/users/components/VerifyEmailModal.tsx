@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { View, TextField, Button, Text } from '@aws-amplify/ui-react';
 import { confirmUserAttribute } from 'aws-amplify/auth';
+import { useState } from 'react';
 
 export default function VerifyEmailModal({
   isOpen,
