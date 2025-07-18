@@ -175,11 +175,6 @@ verifyOtpLambda.addToRolePolicy(
 
 // Get the get products resource and add vpc for it
 const getProductsResource = backend.getProducts.resources;
-const cfnGetProducts = getProductsResource.cfnResources.cfnFunction;
-cfnGetProducts.vpcConfig = {
-  subnetIds: vpc.isolatedSubnets.map(s => s.subnetId),
-  securityGroupIds: [securityGroup.securityGroupId]
-};
 
 const getProductsLambda = getProductsResource.lambda as NodejsFunction;
 getProductsLambda.addLayers(layer);
@@ -190,11 +185,6 @@ getProductsLambda.addEnvironment(
 
 // Get the update user profile resource and add vpc for it
 const updateUserProfileResource = backend.updateUserProfile.resources;
-const cfnUpdateUserProfile = updateUserProfileResource.cfnResources.cfnFunction;
-cfnUpdateUserProfile.vpcConfig = {
-  subnetIds: vpc.isolatedSubnets.map(s => s.subnetId),
-  securityGroupIds: [securityGroup.securityGroupId]
-};
 
 const updateUserProfileLambda = updateUserProfileResource.lambda as NodejsFunction;
 updateUserProfileLambda.addLayers(layer);
@@ -205,11 +195,6 @@ updateUserProfileLambda.addEnvironment(
 
 // Get the upload avatar resource and add vpc for it
 const uploadAvatarResource = backend.uploadAvatar.resources;
-const cfnUploadAvatar = uploadAvatarResource.cfnResources.cfnFunction;
-cfnUploadAvatar.vpcConfig = {
-  subnetIds: vpc.isolatedSubnets.map(s => s.subnetId),
-  securityGroupIds: [securityGroup.securityGroupId]
-};
 
 const uploadAvatarLambda = uploadAvatarResource.lambda as NodejsFunction;
 uploadAvatarLambda.addLayers(layer);

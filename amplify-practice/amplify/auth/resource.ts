@@ -1,4 +1,5 @@
 import { defineAuth, secret } from '@aws-amplify/backend';
+import 'dotenv/config';
 
 import { UserGroup } from '../shared/enums/user-group.enum';
 import { COGNITO } from '../shared/constants/cognito.constant';
@@ -11,6 +12,16 @@ import { createAuthChallenge } from './create-auth-challenge/resource';
 import {
   verifyAuthChallengeResponse
 } from './verify-auth-challenge-response/resource';
+
+const callbackUrls = [
+  process.env.REACT_APP_URL || '',
+  COGNITO.REDIRECT_URI
+];
+
+const logoutUrls = [
+  process.env.LOGOUT_URL || '',
+  COGNITO.LOGOUT_URI
+];
 
 /**
  * Define and configure your auth resource
@@ -47,12 +58,8 @@ export const auth = defineAuth({
           givenName: 'name'
         },
       },
-      callbackUrls: [
-        COGNITO.REDIRECT_URI
-      ],
-      logoutUrls: [
-        COGNITO.LOGOUT_URI
-      ],
+      callbackUrls: callbackUrls,
+      logoutUrls: logoutUrls,
     },
   },
   // Define the attributes that are required when a new user is created
