@@ -6,6 +6,7 @@ export const Product = a.customType({
   price: a.integer(),
   description: a.string(),
   image: a.string(),
+  quantity: a.integer(),
 });
 
 export const ProductResponse = a.customType({

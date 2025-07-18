@@ -11,6 +11,7 @@
     "prisma:generate": "npx prisma generate",
     "layer:build": "tsc --project layers/nodejs",
     "resolver:build": "tsc --project amplify",
+    "init-data": "ts-node data/init-data.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -31,6 +32,7 @@
     "esbuild": "^0.25.5",
     "prisma": "^6.9.0",
     "sharp": "^0.34.2",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.1",
     "typescript": "^5.8.3"
   },
@@ -38,6 +40,7 @@
     "@aws-amplify/core": "^6.12.1",
     "@aws-appsync/utils": "^2.0.3",
     "@prisma/client": "^6.9.0",
-    "aws-amplify": "^6.15.0"
+    "aws-amplify": "^6.15.0",
+    "dotenv": "^17.2.0"
   }
 }
