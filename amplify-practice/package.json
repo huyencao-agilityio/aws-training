@@ -9,6 +9,7 @@
     "amplify:delete": "npx ampx sandbox delete",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:generate": "npx prisma generate",
+    "layer:install": "cd layers/nodejs && npm install",
     "layer:build": "tsc --project layers/nodejs",
     "resolver:build": "tsc --project amplify",
     "init-data": "ts-node data/init-data.ts",
