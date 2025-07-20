@@ -95,7 +95,6 @@ export default function AuthProvider() {
 
   // Custom confirm sign up form when sign up
   if (route === 'confirmSignUp' || step === 'EMAIL_NOT_VERIFIED') {
-    console.log('confirmSignUp');
     return <ConfirmSignUp
       username={username}
       onBack={() => setStep('SIGN_IN')}

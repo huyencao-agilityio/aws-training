@@ -20,7 +20,6 @@ function AppContent() {
     getCurrentUser()
       .then(
         (user) => {
-          console.log('user AppContent', user);
           setCurrentUser(user)
         }
       )

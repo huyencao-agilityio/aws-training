@@ -1,11 +1,11 @@
 import { Flex, View } from '@aws-amplify/ui-react';
 import { generateClient, type GraphQLResult } from 'aws-amplify/api';
 import { getCurrentUser, updateUserAttributes } from 'aws-amplify/auth';
+import { useState } from 'react';
 
 import { updateUser } from './graphql/mutations';
 import AvatarUploader from './components/AvatarUploader';
 import UserProfileForm from './components/UserProfileForm';
-import { useState } from 'react';
 import VerifyEmailModal from './components/VerifyEmailModal';
 
 const client = generateClient();
