@@ -85,25 +85,31 @@ npm run set-secrets
 npm run prisma:generate
 ```
 
-3. Build layer
+3. Install lib for layer
+
+```bash
+npm run layer:install
+```
+
+4. Build layer
 
 ```bash
 npm run layer:build
 ```
 
-4. Build resolver
+5. Build resolver
 
 ```bash
 npm run resolver:build
 ```
 
-5. Deploy amplify to Sandbox
+6. Deploy amplify to Sandbox
 
 ```bash
 npm run amplify:sandbox
 ```
 
-6. Migration Database
+7. Migration Database
 
 ```bash
 npm run prisma:migrate
