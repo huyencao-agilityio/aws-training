@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate:outputs": "npx ampx generate outputs --branch $BRANCH --app-id $APP_ID"
+    "generate:outputs": "npx ampx generate outputs --branch develop --app-id d2yrc5ov5fob18"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.11.2",
@@ -20,6 +20,7 @@
     "react-router-dom": "^7.7.0"
   },
   "devDependencies": {
+    "@aws-amplify/cli": "^14.0.0",
     "@eslint/js": "^9.30.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
