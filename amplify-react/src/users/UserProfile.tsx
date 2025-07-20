@@ -113,7 +113,7 @@ export default function UserProfile({ user }: { user: any }) {
     if (pendingEmail) {
       await updateUserToDB(currentUser.id, { email: pendingEmail });
 
-      setCurrentUser((prev) => ({
+      setCurrentUser((prev: any) => ({
         ...prev,
         email: pendingEmail,
       }));
