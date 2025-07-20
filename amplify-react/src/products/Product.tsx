@@ -10,7 +10,6 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-
     /**
      * Fetches the products from the database
      */
