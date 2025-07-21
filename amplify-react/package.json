@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate:outputs": "npx ampx generate outputs --branch develop --app-id d2yrc5ov5fob18"
+    "generate:outputs": "npx ampx generate outputs -branch $BRANCH --app-id $APP_ID"
   },
   "dependencies": {
     "@aws-amplify/backend-cli": "^1.8.0",
