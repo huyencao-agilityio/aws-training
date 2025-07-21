@@ -32,7 +32,7 @@ npm install
 ### 3. Pull Amplify outputs
 
 ```bash
-npx ampx generate outputs --branch <branch-name> --app-id <backend-app-id>
+BRANCH=branch-name APP_ID=backend-app-id npm run generate:outputs
 ```
 
 ### 4. Run the app locally
