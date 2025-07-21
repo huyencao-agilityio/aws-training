@@ -1,45 +1,66 @@
+import {
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  useAuthenticator
+} from '@aws-amplify/ui-react';
+import { View } from '@aws-amplify/ui-react';
 import { resendSignUpCode } from 'aws-amplify/auth';
+import { MdClose } from 'react-icons/md';
 
 export default function ConfirmSignUp({
-  username,
-  onBack
+  onClose
 }: {
-  username: string,
-  onBack: () => void
+  onClose: () => void
 }) {
+  const { username } = useAuthenticator((context) => [context.username]);
+
   /**
    * Handles the resend of the verification email
      */
   const handleResend = async () => {
     try {
       await resendSignUpCode({ username: username || '' });
+      alert(`Verification email have resent to ${username}`);
     } catch (err) {
       console.error(err);
       alert('Failed to resend confirmation email');
     }
   };
 
-  return (
-    <div className="p-4 text-center">
-      <h2 className="text-xl font-semibold mb-2">Verify email</h2>
-      <p className="mb-4">
-        <span>We have sent a verification email to your email address. </span>
-        <span>Please check your email and click the verification link.</span>
-      </p>
-      <div className="flex gap-4 justify-center">
-        <button
-          onClick={onBack}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    return (
+      <View
+        display="flex"
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <View
+          backgroundColor="white"
+          padding="2rem"
+          maxWidth="400px"
+          borderRadius="1rem"
+          boxShadow="0 4px 12px rgba(0, 0, 0, 0.2)"
+          position="relative"
+          textAlign="center"
         >
-          Back to login
-        </button>
-        <button
-          onClick={handleResend}
-          className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-        >
-          Resend verification email
-        </button>
-      </div>
-    </div>
+          <Heading level={2}>Verify email</Heading>
+          <View marginBottom="1.5rem">
+              We have sent a verification email to your email address.
+              Please check your inbox and click the verification link.
+          </View>
+
+          <Flex gap="1rem" justifyContent="center">
+            <Button variation="primary" onClick={onClose}>
+              Back to Sign In
+            </Button>
+            <Button onClick={handleResend}>
+              Resend email
+            </Button>
+          </Flex>
+        </View>
+      </View>
   );
 }

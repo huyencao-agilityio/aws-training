@@ -26,9 +26,9 @@ export default function AuthProvider() {
     'EMAIL_NOT_VERIFIED'
   >('SIGN_IN');
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [username, setUsername] = useState<string>('');
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { toSignIn } = useAuthenticator();
 
   useEffect(() => {
     getCurrentUser()
@@ -65,7 +65,6 @@ export default function AuthProvider() {
       // eslint-disable-next-line no-useless-catch
       try {
         const result = await customSignIn(input);
-        setUsername(input.username);
 
         if (
           result.nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE'
@@ -96,8 +95,12 @@ export default function AuthProvider() {
   // Custom confirm sign up form when sign up
   if (route === 'confirmSignUp' || step === 'EMAIL_NOT_VERIFIED') {
     return <ConfirmSignUp
-      username={username}
-      onBack={() => setStep('SIGN_IN')}
+      onClose={
+        () => {
+          setStep('SIGN_IN');
+          toSignIn();
+        }
+      }
     />;
   }
 
