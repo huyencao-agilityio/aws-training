@@ -2,12 +2,10 @@ import {
   Button,
   Flex,
   Heading,
-  Icon,
   useAuthenticator
 } from '@aws-amplify/ui-react';
 import { View } from '@aws-amplify/ui-react';
 import { resendSignUpCode } from 'aws-amplify/auth';
-import { MdClose } from 'react-icons/md';
 
 export default function ConfirmSignUp({
   onClose
